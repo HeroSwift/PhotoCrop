@@ -14,9 +14,17 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let photoCrop = PhotoCrop(frame: CGRect(x: 50, y: 100, width: 300, height: 300))
+        let photoCrop = PhotoCrop()
         photoCrop.backgroundColor = .red
+        photoCrop.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(photoCrop)
+        
+        view.addConstraints([
+            NSLayoutConstraint(item: photoCrop, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: photoCrop, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: photoCrop, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: photoCrop, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1, constant: 0),
+        ])
         
         view.backgroundColor = .gray
 

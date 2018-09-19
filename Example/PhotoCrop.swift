@@ -3,7 +3,7 @@ import UIKit
 
 public class PhotoCrop: UIView {
     
-    let scrollView = UIScrollView()
+    let scrollView = PhotoCropScrollView()
     
     let photoView = UIImageView()
     
@@ -25,19 +25,10 @@ public class PhotoCrop: UIView {
         scrollView.addSubview(photoView)
         scrollView.delegate = self
         scrollView.backgroundColor = .blue
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.showsVerticalScrollIndicator = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
 
-        // min 和 max 必须不一样，否则不能缩放
-        // 最大不能超过图片自身的尺寸，否则会模糊
-        // 最小则需要计算
-        scrollView.maximumZoomScale = 1
-        
         addSubview(scrollView)
-        
-        
-        
+
         addConstraints([
             NSLayoutConstraint(item: scrollView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0),
             NSLayoutConstraint(item: scrollView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0),
@@ -76,17 +67,21 @@ public class PhotoCrop: UIView {
             return
         }
         
+        // 当布局变化时，比如旋转屏幕
+        // 需把图片完整的展现在 scrollView 中
+        // 因此这里要计算缩放值，以及重置图片大小
         let scaleX = bounds.width / image.size.width
         let scaleY = bounds.height / image.size.height
         let scale = min(1, min(scaleX, scaleY))
-        
+ 
         scrollView.zoomScale = scale
         scrollView.minimumZoomScale = scale
         
+        print("\(scale) \(photoView.bounds) \(photoView.frame) \(image.size.width * scale)")
         // 根据 scale 修改图片的尺寸
-        photoView.frame = CGRect(x: 0, y: 0, width: image.size.width * scale, height: image.size.height * scale)
+//        photoView.frame = CGRect(x: 0, y: 0, width: image.size.width * scale, height: image.size.height * scale)
         
-        // 居中定位
+        // 居中定位图片
         centerScrollViewContents()
     }
     

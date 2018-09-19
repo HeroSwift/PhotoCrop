@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class CropLayer: UIView {
+public class PhotoCropOverlay: UIView {
     
     var outerLines = [UIView]()
     
@@ -19,7 +19,7 @@ public class CropLayer: UIView {
     var outerLineColor = UIColor.white
     
     var innerLineWidth = CGFloat(1) / UIScreen.main.scale
-    var innerLineColor = UIColor.white
+    var innerLineColor = UIColor.white.withAlphaComponent(0.5)
 
     var cornerLineWidth = CGFloat(3)
     var cornerLineColor = UIColor.white
@@ -259,19 +259,22 @@ public class CropLayer: UIView {
         }
         
         // 中间的横竖线
-        let count = CGFloat(horizontalLines.count)
-        let rowSpacing = (bounds.height - cornerButtonHeight - outerLineWidth * 2 - innerLineWidth * count) / (count + 1)
-        let columnSpacing = (bounds.width - cornerButtonWidth - outerLineWidth * 2 - innerLineWidth * count) / (count + 1)
+        let rowSpacing = (bounds.height - cornerButtonHeight - outerLineWidth * 2 - innerLineWidth * CGFloat(horizontalLines.count)) / CGFloat(horizontalLines.count + 1)
+        let columnSpacing = (bounds.width - cornerButtonWidth - outerLineWidth * 2 - innerLineWidth * CGFloat(verticalLines.count)) / CGFloat(verticalLines.count + 1)
 
         for i in 0..<horizontalLines.count {
-            let hLine = horizontalLines[i]
-            let vLine = verticalLines[i]
+
+            let offset = rowSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
             
-            let hOffset = columnSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
-            let vOffset = rowSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
+            horizontalLines[i].frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth, y: cornerButtonHeight / 2 + outerLineWidth + offset, width: bounds.width - cornerButtonWidth - outerLineWidth * 2, height: innerLineWidth)
             
-            hLine.frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth, y: cornerButtonHeight / 2 + outerLineWidth + vOffset, width: bounds.width - cornerButtonWidth - outerLineWidth * 2, height: innerLineWidth)
-            vLine.frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth + hOffset, y: cornerButtonHeight / 2 + outerLineWidth, width: innerLineWidth, height: bounds.height - cornerButtonHeight - outerLineWidth * 2)
+        }
+        
+        for i in 0..<verticalLines.count {
+
+            let offset = columnSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
+            
+            verticalLines[i].frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth + offset, y: cornerButtonHeight / 2 + outerLineWidth, width: innerLineWidth, height: bounds.height - cornerButtonHeight - outerLineWidth * 2)
             
         }
     }

@@ -53,6 +53,16 @@ public class PhotoCropOverlay: UIView {
         
         backgroundColor = .clear
         
+        let mask = createMask()
+        
+        let blurEffect = UIBlurEffect(style: .dark)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.alpha = 0.6
+        
+        blurEffectView.frame = mask.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        mask.addSubview(blurEffectView)
+        
         outerLines = [createLine(color: outerLineColor), createLine(color: outerLineColor), createLine(color: outerLineColor), createLine(color: outerLineColor)]
         horizontalLines = [createLine(color: innerLineColor), createLine(color: innerLineColor)]
         verticalLines = [createLine(color: innerLineColor), createLine(color: innerLineColor)]
@@ -70,6 +80,13 @@ public class PhotoCropOverlay: UIView {
             frame = CGRect(origin: frame.origin, size: CGSize(width: frame.size.width, height: frame.size.width / ratio))
         }
         
+    }
+    
+    private func createMask() -> UIView {
+        let mask = UIView()
+        mask.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        addSubview(mask)
+        return mask
     }
     
     private func createLine(color: UIColor) -> UIView {
@@ -262,19 +279,19 @@ public class PhotoCropOverlay: UIView {
         let rowSpacing = (bounds.height - cornerButtonHeight - outerLineWidth * 2 - innerLineWidth * CGFloat(horizontalLines.count)) / CGFloat(horizontalLines.count + 1)
         let columnSpacing = (bounds.width - cornerButtonWidth - outerLineWidth * 2 - innerLineWidth * CGFloat(verticalLines.count)) / CGFloat(verticalLines.count + 1)
 
-        for i in 0..<horizontalLines.count {
+        for (i, line) in horizontalLines.enumerated() {
 
             let offset = rowSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
             
-            horizontalLines[i].frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth, y: cornerButtonHeight / 2 + outerLineWidth + offset, width: bounds.width - cornerButtonWidth - outerLineWidth * 2, height: innerLineWidth)
+            line.frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth, y: cornerButtonHeight / 2 + outerLineWidth + offset, width: bounds.width - cornerButtonWidth - outerLineWidth * 2, height: innerLineWidth)
             
         }
         
-        for i in 0..<verticalLines.count {
+        for (i, line) in verticalLines.enumerated() {
 
             let offset = columnSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
             
-            verticalLines[i].frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth + offset, y: cornerButtonHeight / 2 + outerLineWidth, width: innerLineWidth, height: bounds.height - cornerButtonHeight - outerLineWidth * 2)
+            line.frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth + offset, y: cornerButtonHeight / 2 + outerLineWidth, width: innerLineWidth, height: bounds.height - cornerButtonHeight - outerLineWidth * 2)
             
         }
     }

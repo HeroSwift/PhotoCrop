@@ -21,44 +21,13 @@ public class PhotoCrop: UIView {
         
         photoView.image = UIImage(named: "bg")
         photoView.sizeToFit()
-        
+
         scrollView.addSubview(photoView)
         scrollView.delegate = self
         scrollView.backgroundColor = .blue
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
 
         addSubview(scrollView)
 
-        addConstraints([
-            NSLayoutConstraint(item: scrollView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: scrollView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: scrollView, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: scrollView, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: 0),
-        ])
-        
-        print(scrollView.frame)
-        
-        
-        
-    }
-    
-    func centerScrollViewContents() {
-        let size = bounds.size
-        var photoFrame = photoView.frame
-        
-        if photoFrame.size.width < size.width {
-            photoFrame.origin.x = (size.width - photoFrame.size.width) / 2
-        } else {
-            photoFrame.origin.x = 0
-        }
-        
-        if photoFrame.size.height < size.height {
-            photoFrame.origin.y = (size.height - photoFrame.size.height) / 2
-        } else {
-            photoFrame.origin.y = 0
-        }
-        
-        photoView.frame = photoFrame
     }
     
     public override func layoutSubviews() {
@@ -67,11 +36,13 @@ public class PhotoCrop: UIView {
             return
         }
         
+        scrollView.frame = CGRect(origin: .zero, size: bounds.size)
+
         // 当布局变化时，比如旋转屏幕
         // 需把图片完整的展现在 scrollView 中
         // 因此这里要计算缩放值，以及重置图片大小
-        let scaleX = bounds.width / image.size.width
-        let scaleY = bounds.height / image.size.height
+        let scaleX = scrollView.contentWidth / image.size.width
+        let scaleY = scrollView.contentHeight / image.size.height
         let scale = min(1, min(scaleX, scaleY))
  
         scrollView.zoomScale = scale
@@ -82,7 +53,7 @@ public class PhotoCrop: UIView {
 //        photoView.frame = CGRect(x: 0, y: 0, width: image.size.width * scale, height: image.size.height * scale)
         
         // 居中定位图片
-        centerScrollViewContents()
+        scrollView.centerContent(view: photoView)
     }
     
 }
@@ -95,7 +66,7 @@ extension PhotoCrop: UIScrollViewDelegate {
     }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        centerScrollViewContents()
+        self.scrollView.centerContent(view: photoView)
     }
     
 }

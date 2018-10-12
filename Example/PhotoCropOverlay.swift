@@ -15,29 +15,30 @@ public class PhotoCropOverlay: UIView {
     
     var cornerButtons = [UIButton]()
 
-    var outerLineWidth = CGFloat(1)
-    var outerLineColor = UIColor.white
+    var outerLineWidth: CGFloat = 1
+    var outerLineColor: UIColor = .white
     
-    var innerLineWidth = CGFloat(1) / UIScreen.main.scale
-    var innerLineColor = UIColor.white.withAlphaComponent(0.5)
+    var innerLineWidth: CGFloat = 1 / UIScreen.main.scale
+    var innerLineColor: UIColor = UIColor.white.withAlphaComponent(0.5)
 
-    var cornerLineWidth = CGFloat(3)
-    var cornerLineColor = UIColor.white
+    var cornerLineWidth: CGFloat = 2
+    var cornerLineColor: UIColor = .white
     
-    var cornerButtonWidth = CGFloat(26)
-    var cornerButtonHeight = CGFloat(26)
+    var cornerButtonWidth: CGFloat = 30
+    var cornerButtonHeight: CGFloat = 30
     
-    var minWidth = CGFloat(100)
-    var minHeight = CGFloat(100)
+    // 裁剪的最小尺寸
+    var minWidth: CGFloat = 100
+    var minHeight: CGFloat = 100
     
     // 是否可改变尺寸
     var isResizable = true
     
     // 是否可移动
-    var isMovable = true
+    var isMovable = false
     
     // 当改变尺寸时，是否保持比例
-    var ratio = CGFloat(16.0 / 9.0)
+    var ratio: CGFloat = 16.0 / 9.0
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -218,16 +219,16 @@ public class PhotoCropOverlay: UIView {
             
             switch i {
             case 0:
-                lineFrame = CGRect(x: cornerButtonWidth, y: cornerButtonHeight / 2, width: bounds.width - cornerButtonWidth * 2, height: outerLineWidth)
+                lineFrame = CGRect(x: cornerButtonWidth / 2, y: cornerButtonHeight / 2, width: bounds.width - cornerButtonWidth, height: outerLineWidth)
                 break
             case 1:
-                lineFrame = CGRect(x: bounds.width - cornerButtonWidth / 2 - outerLineWidth, y: cornerButtonHeight, width: outerLineWidth, height: bounds.height - cornerButtonHeight * 2)
+                lineFrame = CGRect(x: bounds.width - cornerButtonWidth / 2 - outerLineWidth, y: cornerButtonHeight / 2, width: outerLineWidth, height: bounds.height - cornerButtonHeight)
                 break
             case 2:
-                lineFrame = CGRect(x: cornerButtonWidth, y: bounds.height - cornerButtonHeight / 2 - outerLineWidth, width: bounds.width - cornerButtonWidth * 2, height: outerLineWidth)
+                lineFrame = CGRect(x: cornerButtonWidth / 2, y: bounds.height - cornerButtonHeight / 2 - outerLineWidth, width: bounds.width - cornerButtonWidth, height: outerLineWidth)
                 break
             default:
-                lineFrame = CGRect(x: cornerButtonWidth / 2, y: cornerButtonHeight, width: outerLineWidth, height: bounds.height - cornerButtonHeight * 2)
+                lineFrame = CGRect(x: cornerButtonWidth / 2, y: cornerButtonHeight / 2, width: outerLineWidth, height: bounds.height - cornerButtonHeight)
                 break
             }
             
@@ -246,26 +247,26 @@ public class PhotoCropOverlay: UIView {
             switch i {
             // left top
             case 0:
-                horizontalFrame = CGRect(x: cornerButtonWidth / 2, y: cornerButtonHeight / 2, width: cornerButtonWidth / 2, height: cornerLineWidth)
-                verticalFrame = CGRect(x: cornerButtonWidth / 2, y: cornerButtonHeight / 2, width: cornerLineWidth, height: cornerButtonHeight / 2)
+                horizontalFrame = CGRect(x: cornerButtonWidth / 2 - cornerLineWidth, y: cornerButtonHeight / 2 - cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
+                verticalFrame = CGRect(x: cornerButtonWidth / 2 - cornerLineWidth, y: cornerButtonHeight / 2 - cornerLineWidth, width: cornerLineWidth, height: cornerButtonHeight / 2)
                 buttonFrame = CGRect(x: 0, y: 0, width: cornerButtonWidth, height: cornerButtonHeight)
                 break
             // right top
             case 1:
-                horizontalFrame = CGRect(x: bounds.width - cornerButtonWidth, y: cornerButtonHeight / 2, width: cornerButtonWidth / 2, height: cornerLineWidth)
-                verticalFrame = CGRect(x: bounds.width - cornerButtonWidth / 2 - cornerLineWidth, y: cornerButtonHeight / 2, width: cornerLineWidth, height: cornerButtonHeight / 2)
+                horizontalFrame = CGRect(x: bounds.width - cornerButtonWidth + cornerLineWidth, y: cornerButtonHeight / 2 - cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
+                verticalFrame = CGRect(x: bounds.width - cornerButtonWidth / 2 - cornerLineWidth + cornerLineWidth, y: cornerButtonHeight / 2 - cornerLineWidth, width: cornerLineWidth, height: cornerButtonHeight / 2)
                 buttonFrame = CGRect(x: bounds.width - cornerButtonWidth, y: 0, width: cornerButtonWidth, height: cornerButtonHeight)
                 break
             // right bottom
             case 2:
-                horizontalFrame = CGRect(x: bounds.width - cornerButtonWidth, y: bounds.height - cornerButtonHeight / 2 - cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
-                verticalFrame = CGRect(x: bounds.width - cornerButtonHeight / 2 - cornerLineWidth, y: bounds.height - cornerButtonHeight, width: cornerLineWidth, height: cornerButtonHeight / 2)
+                horizontalFrame = CGRect(x: bounds.width - cornerButtonWidth + cornerLineWidth, y: bounds.height - cornerButtonHeight / 2 - cornerLineWidth + cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
+                verticalFrame = CGRect(x: bounds.width - cornerButtonHeight / 2 - cornerLineWidth + cornerLineWidth, y: bounds.height - cornerButtonHeight + cornerLineWidth, width: cornerLineWidth, height: cornerButtonHeight / 2)
                 buttonFrame = CGRect(x: bounds.width - cornerButtonWidth, y: bounds.height - cornerButtonHeight, width: cornerButtonWidth, height: cornerButtonHeight)
                 break
             // left bottom
             default:
-                horizontalFrame = CGRect(x: cornerButtonWidth / 2, y: bounds.height - cornerButtonHeight / 2 - cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
-                verticalFrame = CGRect(x: cornerButtonWidth / 2, y: bounds.height - cornerButtonHeight, width: cornerLineWidth, height: cornerButtonHeight / 2)
+                horizontalFrame = CGRect(x: cornerButtonWidth / 2 - cornerLineWidth, y: bounds.height - cornerButtonHeight / 2 - cornerLineWidth + cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
+                verticalFrame = CGRect(x: cornerButtonWidth / 2 - cornerLineWidth, y: bounds.height - cornerButtonHeight + cornerLineWidth, width: cornerLineWidth, height: cornerButtonHeight / 2)
                 buttonFrame = CGRect(x: 0, y: bounds.height - cornerButtonHeight, width: cornerButtonWidth, height: cornerButtonHeight)
                 break
             }

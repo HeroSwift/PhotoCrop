@@ -9,8 +9,14 @@ public class PhotoCrop: UIView {
     // 图片容器，可缩放
     let scrollView = PhotoCropScrollView()
     
+    // 裁剪器
+    let cropOverlay = PhotoCropOverlay()
+    
     // 旋转角度
     var angle = 0.0
+    
+    // 是否正在动画中
+    var isAnimating = false
     
     private var currentRect: CGRect {
         return CGRect(
@@ -61,7 +67,7 @@ public class PhotoCrop: UIView {
         
     }
     
-    public func rotate(duration: TimeInterval = 0.3, options: UIViewAnimationOptions = .curveEaseInOut) {
+    public func rotate(animationDuration: TimeInterval = 0.5, options: UIViewAnimationOptions = .curveEaseInOut) {
         
         angle += Double.pi / 2
         
@@ -76,8 +82,57 @@ public class PhotoCrop: UIView {
             }
         }
         
-        UIView.animate(withDuration: duration, delay: 0, options: options, animations: animations, completion: completion)
+        animate(animationDuration: animationDuration, options: options, animations: animations, completion: completion)
         
+    }
+    
+    public func reset(animationDuration: TimeInterval = 0.3, options: UIViewAnimationOptions = .curveEaseInOut) {
+        
+        
+        
+    }
+    
+    public func showCropOverlay(animationDuration: TimeInterval = 0.3, options: UIViewAnimationOptions = .curveEaseInOut) {
+        
+        cropOverlay.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+        rotateView.addSubview(cropOverlay)
+        
+        
+        
+        let animations: () -> Void = {
+            self.scrollView.updateFrame()
+            self.scrollView.contentOffset = CGPoint(x: -self.cropOverlay.cornerButtonWidth, y: -self.cropOverlay.cornerButtonHeight)
+        }
+        
+        let completion: (Bool) -> Void = { finished in
+            
+        }
+        
+        animate(animationDuration: animationDuration, options: options, animations: animations, completion: completion)
+    }
+    
+    public func hideCropOverlay() {
+        
+        cropOverlay.removeFromSuperview()
+        
+    }
+    
+    private func animate(animationDuration: TimeInterval = 0.5, options: UIViewAnimationOptions = .curveEaseInOut, animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
+        
+        isAnimating = true
+        
+        let animationCompletion: (Bool) -> Void = { finished in
+            self.isAnimating = false
+            completion?(finished)
+        }
+        
+        if animationDuration > 0 {
+            UIView.animate(withDuration: animationDuration, delay: 0, options: options, animations: animations, completion: animationCompletion)
+        }
+        else {
+            animations()
+            animationCompletion(true)
+        }
     }
     
 }

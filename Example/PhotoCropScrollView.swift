@@ -66,7 +66,6 @@ class PhotoCropScrollView: UIScrollView {
         
         delegate = self
         
-
         addSubview(photoView)
         addObservers()
         
@@ -159,7 +158,6 @@ extension PhotoCropScrollView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        print("zoom end  \(zoomScale) \(contentSize) \(contentWidth) \(contentHeight)")
         centerPhoto()
     }
     

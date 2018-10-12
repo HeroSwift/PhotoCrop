@@ -3,9 +3,23 @@ import UIKit
 
 public class PhotoCrop: UIView {
     
+    // 旋转容器
+    let rotateView = UIView()
+    
+    // 图片容器，可缩放
     let scrollView = PhotoCropScrollView()
     
-    let photoView = UIImageView()
+    // 旋转角度
+    var angle = 0.0
+    
+    private var currentRect: CGRect {
+        return CGRect(
+            origin: .zero,
+            size: angle.truncatingRemainder(dividingBy: Double.pi) == 0
+                ? frame.size
+                : CGSize(width: frame.size.height, height: frame.size.width)
+        )
+    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -18,56 +32,55 @@ public class PhotoCrop: UIView {
     }
     
     private func setup() {
+
+        backgroundColor = .blue
         
-        photoView.image = UIImage(named: "bg")
-        photoView.sizeToFit()
-
-        scrollView.addSubview(photoView)
-        scrollView.delegate = self
-        scrollView.backgroundColor = .blue
-
-        addSubview(scrollView)
-
+        rotateView.backgroundColor = .green
+        
+        addSubview(rotateView)
+        
+        scrollView.backgroundColor = .red
+        scrollView.photo = UIImage(named: "bg")
+        
+        rotateView.addSubview(scrollView)
+        
     }
     
     public override func layoutSubviews() {
         
-        guard let image = photoView.image else {
-            return
+        // rotateView 填满本视图
+        rotateView.frame = CGRect(origin: .zero, size: frame.size)
+        
+        // 这句很重要
+        // 根据当前的旋转角度设置 frame
+        scrollView.frame = currentRect
+        
+        scrollView.updateFrame()
+        
+        print("layoutSubviews: \(frame) \(rotateView.frame) \(scrollView.frame)")
+        
+    }
+    
+    public func rotate(duration: TimeInterval = 0.3, options: UIViewAnimationOptions = .curveEaseInOut) {
+        
+        angle += Double.pi / 2
+        
+        let animations: () -> Void = {
+            self.rotateView.transform = CGAffineTransform(rotationAngle: CGFloat(self.angle))
+            self.layoutSubviews()
         }
         
-        scrollView.frame = CGRect(origin: .zero, size: bounds.size)
-
-        // 当布局变化时，比如旋转屏幕
-        // 需把图片完整的展现在 scrollView 中
-        // 因此这里要计算缩放值，以及重置图片大小
-        let scaleX = scrollView.contentWidth / image.size.width
-        let scaleY = scrollView.contentHeight / image.size.height
-        let scale = min(1, min(scaleX, scaleY))
- 
-        scrollView.zoomScale = scale
-        scrollView.minimumZoomScale = scale
+        let completion: (Bool) -> Void = { finished in
+            if self.angle == 2 * Double.pi {
+                self.angle = 0
+            }
+        }
         
-        print("\(scale) \(photoView.bounds) \(photoView.frame) \(image.size.width * scale)")
-        // 根据 scale 修改图片的尺寸
-//        photoView.frame = CGRect(x: 0, y: 0, width: image.size.width * scale, height: image.size.height * scale)
+        UIView.animate(withDuration: duration, delay: 0, options: options, animations: animations, completion: completion)
         
-        // 居中定位图片
-        scrollView.centerContent(view: photoView)
     }
     
 }
 
-extension PhotoCrop: UIScrollViewDelegate {
-    
-    // 指定需要缩放的 view
-    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return photoView 
-    }
-    
-    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        self.scrollView.centerContent(view: photoView)
-    }
-    
-}
+
 

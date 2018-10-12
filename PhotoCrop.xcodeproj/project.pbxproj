@@ -15,6 +15,7 @@
 		9D7DBC2D214F3F5E00F9923D /* PhotoCropOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DBC29214E566D00F9923D /* PhotoCropOverlay.swift */; };
 		9D7DBC482150A33300F9923D /* PhotoCrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DBC472150A33300F9923D /* PhotoCrop.swift */; };
 		9D7DBD7421524E4600F9923D /* PhotoCropScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DBD7321524E4600F9923D /* PhotoCropScrollView.swift */; };
+		9D960803216DFE2E006684D6 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D960802216DFE2E006684D6 /* SimpleButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 		9D7DBC29214E566D00F9923D /* PhotoCropOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropOverlay.swift; sourceTree = "<group>"; };
 		9D7DBC472150A33300F9923D /* PhotoCrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCrop.swift; sourceTree = "<group>"; };
 		9D7DBD7321524E4600F9923D /* PhotoCropScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropScrollView.swift; sourceTree = "<group>"; };
+		9D960802216DFE2E006684D6 /* SimpleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +93,7 @@
 			children = (
 				9D7DBC29214E566D00F9923D /* PhotoCropOverlay.swift */,
 				9D7DBC19214E530D00F9923D /* AppDelegate.swift */,
+				9D960802216DFE2E006684D6 /* SimpleButton.swift */,
 				9D7DBC1B214E530D00F9923D /* ViewController.swift */,
 				9D7DBC1D214E530D00F9923D /* Main.storyboard */,
 				9D7DBC20214E530E00F9923D /* Assets.xcassets */,
@@ -226,6 +229,7 @@
 				9D7DBC1C214E530D00F9923D /* ViewController.swift in Sources */,
 				9D7DBC1A214E530D00F9923D /* AppDelegate.swift in Sources */,
 				9D7DBC2D214F3F5E00F9923D /* PhotoCropOverlay.swift in Sources */,
+				9D960803216DFE2E006684D6 /* SimpleButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,17 +3,16 @@ import UIKit
 
 class PhotoCropScrollView: UIScrollView {
     
-    let photoView = UIImageView()
+    private let photoView = UIImageView()
     
     var photo: UIImage! {
         didSet {
             
-            zoomScale = 1
-       
             photoView.image = photo
             photoView.frame.size = photo.size
             
             contentSize = photo.size
+
         }
     }
     
@@ -65,9 +64,11 @@ class PhotoCropScrollView: UIScrollView {
         showsVerticalScrollIndicator = false
         showsHorizontalScrollIndicator = false
         
-        contentInset = UIEdgeInsetsMake(10, 10, 10, 10)
+        delegate = self
+        
 
         addSubview(photoView)
+        addObservers()
         
     }
     
@@ -87,15 +88,48 @@ class PhotoCropScrollView: UIScrollView {
         guard let keyPath = keyPath else {
             return
         }
-        print("\(keyPath) is changed")
+        switch keyPath {
+        case "contentOffset":
+            updateContentOffset()
+            break
+        default:
+            updateContentSize()
+            break
+        }
     }
     
-    func centerContent(view: UIView) {
+    func updateFrame() {
+        
+        // 当布局变化时，比如旋转屏幕
+        // 需把图片完整的展现在 scrollView 中
+        // 因此这里要计算缩放值，以及重置图片大小
+        let scaleX = contentWidth / photo.size.width
+        let scaleY = contentHeight / photo.size.height
+        let scale = min(1, min(scaleX, scaleY))
+        
+        // 展现完整的图片
+        // 注意，必须先设置 minimumZoomScale 再设置 zoomScale
+        // 否则旋转屏幕时，图片的尺寸不能正常复原
+        maximumZoomScale = 1
+        minimumZoomScale = scale
+        zoomScale = scale
+        
+    }
+    
+    private func updateContentOffset() {
+        print("contentOffset: \(contentOffset)")
+    }
+    
+    private func updateContentSize() {
+        print("contentSize: \(contentSize)")
+    }
+    
+    func centerPhoto() {
         
         let width = contentWidth
         let height = contentHeight
         
-        var viewFrame = view.frame
+        var viewFrame = photoView.frame
         
         if viewFrame.size.width < width {
             viewFrame.origin.x = (width - viewFrame.size.width) / 2
@@ -111,8 +145,23 @@ class PhotoCropScrollView: UIScrollView {
             viewFrame.origin.y = 0
         }
         
-        view.frame = viewFrame
+        photoView.frame = viewFrame
         
     }
     
 }
+
+extension PhotoCropScrollView: UIScrollViewDelegate {
+    
+    // 指定需要缩放的 view
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return photoView
+    }
+    
+    public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        print("zoom end  \(zoomScale) \(contentSize) \(contentWidth) \(contentHeight)")
+        centerPhoto()
+    }
+    
+}
+

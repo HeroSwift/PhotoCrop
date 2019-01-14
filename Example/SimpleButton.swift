@@ -31,7 +31,7 @@ public class SimpleButton: UIButton {
         addTarget(self, action: #selector(self.touchUpInside), for: .touchUpInside)
     }
     
-    public func setBackgroundColor(color: UIColor, for state: UIControlState) {
+    public func setBackgroundColor(color: UIColor, for state: UIControl.State) {
         if let image = makeImage(color: color) {
             setBackgroundImage(UIImage(cgImage: image), for: state)
         }

@@ -67,7 +67,7 @@ public class PhotoCrop: UIView {
         
     }
     
-    public func rotate(animationDuration: TimeInterval = 0.5, options: UIViewAnimationOptions = .curveEaseInOut) {
+    public func rotate(animationDuration: TimeInterval = 0.5, options: UIView.AnimationOptions = .curveEaseInOut) {
         
         angle += Double.pi / 2
         
@@ -86,13 +86,13 @@ public class PhotoCrop: UIView {
         
     }
     
-    public func reset(animationDuration: TimeInterval = 0.3, options: UIViewAnimationOptions = .curveEaseInOut) {
+    public func reset(animationDuration: TimeInterval = 0.3, options: UIView.AnimationOptions = .curveEaseInOut) {
         
         
         
     }
     
-    public func showCropOverlay(animationDuration: TimeInterval = 0.3, options: UIViewAnimationOptions = .curveEaseInOut) {
+    public func showCropOverlay(animationDuration: TimeInterval = 0.3, options: UIView.AnimationOptions = .curveEaseInOut) {
         
         cropOverlay.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
         rotateView.addSubview(cropOverlay)
@@ -109,6 +109,7 @@ public class PhotoCrop: UIView {
         }
         
         animate(animationDuration: animationDuration, options: options, animations: animations, completion: completion)
+        
     }
     
     public func hideCropOverlay() {
@@ -117,7 +118,12 @@ public class PhotoCrop: UIView {
         
     }
     
-    private func animate(animationDuration: TimeInterval = 0.5, options: UIViewAnimationOptions = .curveEaseInOut, animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
+    private func center() {
+        
+        
+    }
+    
+    private func animate(animationDuration: TimeInterval = 0.5, options: UIView.AnimationOptions = .curveEaseInOut, animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
         
         isAnimating = true
         

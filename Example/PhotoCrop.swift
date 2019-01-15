@@ -3,14 +3,35 @@ import UIKit
 
 public class PhotoCrop: UIView {
     
+    var image: UIImage! {
+        didSet {
+            photoView.imageView.image = image
+            updateCropAreaByImageView()
+        }
+    }
+    
     // 旋转容器
-    let rotateView = UIView()
+    private lazy var rotateView: UIView = {
+        
+        let view = UIView()
+        view.backgroundColor = .clear
+        
+        return view
+        
+    }()
     
     // 图片容器，可缩放
-    let scrollView = PhotoCropScrollView()
+    lazy var photoView: PhotoView = {
+       
+        let view = PhotoView()
+        view.backgroundColor = .red
+
+        return view
+        
+    }()
     
     // 裁剪器
-    let cropOverlay = PhotoCropOverlay()
+    let cropView = PhotoCropOverlay()
     
     // 旋转角度
     var angle = 0.0
@@ -27,6 +48,8 @@ public class PhotoCrop: UIView {
         )
     }
     
+    
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -41,30 +64,22 @@ public class PhotoCrop: UIView {
 
         backgroundColor = .blue
         
-        rotateView.backgroundColor = .green
-        
         addSubview(rotateView)
         
-        scrollView.backgroundColor = .red
-        scrollView.photo = UIImage(named: "bg")
-        
-        rotateView.addSubview(scrollView)
+        rotateView.addSubview(photoView)
         
     }
     
     public override func layoutSubviews() {
         
-        // rotateView 填满本视图
-        rotateView.frame = CGRect(origin: .zero, size: frame.size)
+        rotateView.frame = bounds
+        photoView.frame = bounds
+        cropView.frame = bounds
         
         // 这句很重要
         // 根据当前的旋转角度设置 frame
-        scrollView.frame = currentRect
-        
-        scrollView.updateFrame()
-        
-        print("layoutSubviews: \(frame) \(rotateView.frame) \(scrollView.frame)")
-        
+//        photoView.frame = currentRect
+
     }
     
     public func rotate(animationDuration: TimeInterval = 0.5, options: UIView.AnimationOptions = .curveEaseInOut) {
@@ -95,13 +110,11 @@ public class PhotoCrop: UIView {
     public func showCropOverlay(animationDuration: TimeInterval = 0.3, options: UIView.AnimationOptions = .curveEaseInOut) {
         
         
-        rotateView.addSubview(cropOverlay)
-        cropOverlay.frame = bounds
+        rotateView.addSubview(cropView)
         
         
         let animations: () -> Void = {
-            self.scrollView.updateFrame()
-            self.scrollView.contentOffset = CGPoint(x: -self.cropOverlay.cornerButtonWidth, y: -self.cropOverlay.cornerButtonHeight)
+            
         }
         
         let completion: (Bool) -> Void = { finished in
@@ -114,8 +127,14 @@ public class PhotoCrop: UIView {
     
     public func hideCropOverlay() {
         
-        cropOverlay.removeFromSuperview()
+        cropView.removeFromSuperview()
+        updateCropAreaByImageView()
         
+    }
+    
+    private func updateCropAreaByImageView() {
+        let frame = photoView.imageView.frame
+        cropView.cropArea = CropArea(top: frame.origin.y, left: frame.origin.x, bottom: frame.origin.y + frame.height, right: frame.origin.x + frame.width)
     }
     
     private func center() {

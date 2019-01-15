@@ -10,11 +10,12 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    let photoCrop = PhotoCrop()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let photoCrop = PhotoCrop()
         photoCrop.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(photoCrop)
         
@@ -22,7 +23,7 @@ class ViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("rotate", for: .normal)
         button.onClick = {
-            photoCrop.rotate()
+            self.photoCrop.rotate()
         }
         view.addSubview(button)
         
@@ -30,7 +31,7 @@ class ViewController: UIViewController {
         showButton.translatesAutoresizingMaskIntoConstraints = false
         showButton.setTitle("show", for: .normal)
         showButton.onClick = {
-            photoCrop.showCropOverlay()
+            self.photoCrop.showCropOverlay()
         }
         view.addSubview(showButton)
         
@@ -38,7 +39,7 @@ class ViewController: UIViewController {
         hideButton.translatesAutoresizingMaskIntoConstraints = false
         hideButton.setTitle("hide", for: .normal)
         hideButton.onClick = {
-            photoCrop.hideCropOverlay()
+            self.photoCrop.hideCropOverlay()
         }
         view.addSubview(hideButton)
         
@@ -58,6 +59,10 @@ class ViewController: UIViewController {
         
         view.backgroundColor = .gray
 
+    }
+    
+    override func viewDidLayoutSubviews() {
+        photoCrop.image = UIImage(named: "bg")
     }
 
     override func didReceiveMemoryWarning() {

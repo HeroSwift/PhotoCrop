@@ -30,11 +30,11 @@ public class PhotoCropOverlay: UIView {
     var innerLineWidth: CGFloat = 1 / UIScreen.main.scale
     var innerLineColor: UIColor = UIColor.white.withAlphaComponent(0.5)
     
-    var cornerLineWidth: CGFloat = 2
+    var cornerLineWidth: CGFloat = 3
     var cornerLineColor: UIColor = .white
     
-    var cornerButtonWidth: CGFloat = 30
-    var cornerButtonHeight: CGFloat = 30
+    var cornerButtonWidth: CGFloat = 36
+    var cornerButtonHeight: CGFloat = 36
     
     
     
@@ -48,7 +48,7 @@ public class PhotoCropOverlay: UIView {
     var bottomLeftCornerLines = [UIView]()
     var bottomRightCornerLines = [UIView]()
     
-    var cornerButtons = [UIButton]()
+    var cornerButtons = [UIView]()
 
     // 裁剪的最小尺寸
     var minWidth: CGFloat = 100
@@ -62,56 +62,11 @@ public class PhotoCropOverlay: UIView {
     
     var cropArea = CropArea(top: 0, left: 0, bottom: 0, right: 0) {
         didSet {
-            
-            // 利用了 CAShapeLayerFillRule.evenOdd
-            let path = UIBezierPath(rect: translucencyView.bounds)
-            path.append(UIBezierPath(rect: cropArea.rect))
-            translucencyLayer.path = path.cgPath
-
-            let left = cropArea.left
-            let top = cropArea.top
-            let right = cropArea.right
-            let bottom = cropArea.bottom
-            
-            // 外围四条线
-            outerLines[0].frame = CGRect(x: left, y: top - outerLineWidth, width: right - left, height: outerLineWidth)
-            outerLines[1].frame = CGRect(x: right, y: top, width: outerLineWidth, height: bottom - top)
-            outerLines[2].frame = CGRect(x: left, y: bottom, width: right - left, height: outerLineWidth)
-            outerLines[3].frame = CGRect(x: left - outerLineWidth, y: top, width: outerLineWidth, height: bottom - top)
-
-            // 四个角
-            cornerButtons[0].frame.origin = CGPoint(x: left - cornerButtonWidth / 2, y: top - cornerButtonHeight / 2)
-            topLeftCornerLines[0].frame.origin = CGPoint(x: left - cornerLineWidth, y: top - cornerLineWidth)
-            topLeftCornerLines[1].frame.origin = CGPoint(x: left - cornerLineWidth, y: top - cornerLineWidth)
-
-            cornerButtons[1].frame.origin = CGPoint(x: right - cornerButtonWidth / 2, y: top - cornerButtonHeight / 2)
-            topRightCornerLines[0].frame.origin = CGPoint(x: right - cornerButtonWidth / 2, y: top - cornerLineWidth)
-            topRightCornerLines[1].frame.origin = CGPoint(x: right, y: top - cornerLineWidth)
-
-            cornerButtons[2].frame.origin = CGPoint(x: right + cornerLineWidth - cornerButtonWidth / 2, y: bottom - cornerButtonHeight / 2)
-            bottomRightCornerLines[0].frame.origin = CGPoint(x: right + cornerLineWidth - cornerButtonWidth / 2, y: bottom)
-            bottomRightCornerLines[1].frame.origin = CGPoint(x: right, y: bottom + cornerLineWidth - cornerButtonHeight / 2)
-
-            cornerButtons[3].frame.origin = CGPoint(x: left - cornerButtonWidth / 2, y: bottom - cornerButtonHeight / 2)
-            bottomLeftCornerLines[0].frame.origin = CGPoint(x: left - cornerLineWidth, y: bottom)
-            bottomLeftCornerLines[1].frame.origin = CGPoint(x: left - cornerLineWidth, y: bottom - cornerButtonHeight / 2)
-            
-            // 中间的横竖线
-            let rowSpacing = (bottom - top) / CGFloat(horizontalLines.count + 1)
-            let columnSpacing = (right - left) / CGFloat(verticalLines.count + 1)
-
-            for (i, line) in horizontalLines.enumerated() {
-                let offset = rowSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
-                line.frame = CGRect(x: left, y: top + offset, width: right - left, height: innerLineWidth)
-            }
-
-            for (i, line) in verticalLines.enumerated() {
-                let offset = columnSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
-                line.frame = CGRect(x: left + offset, y: top, width: innerLineWidth, height: bottom - top)
-            }
-            
+            updateCropArea()
         }
     }
+    
+    private var resizeCropAreaTimer: Timer?
     
     private var size = CGSize.zero {
         didSet {
@@ -124,6 +79,8 @@ public class PhotoCropOverlay: UIView {
             blueEffectView.frame = frame
             translucencyView.frame = frame
             translucencyLayer.frame = frame
+            
+            resizeCropArea()
             
         }
     }
@@ -217,12 +174,22 @@ public class PhotoCropOverlay: UIView {
         addSubview(button)
         return button
     }
-    
+
     @objc func resize(gestureRecognizer: UIPanGestureRecognizer) {
         
-        guard resizable, let button = gestureRecognizer.view as? UIButton, gestureRecognizer.state == .began || gestureRecognizer.state == .changed else {
+        guard resizable, let button = gestureRecognizer.view as? UIButton else {
             return
         }
+        
+        let state = gestureRecognizer.state
+        guard state == .began || state == .changed else {
+            if state == .ended {
+                resizeCropAreaTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(resizeCropArea), userInfo: nil, repeats: false)
+            }
+            return
+        }
+        
+        removeResizeCropAreaTimer()
         
         // 位移量
         let translation = gestureRecognizer.translation(in: self)
@@ -287,18 +254,94 @@ public class PhotoCropOverlay: UIView {
         
     }
     
+    @objc private func resizeCropArea() {
+        
+        removeResizeCropAreaTimer()
+        
+        let width = size.width - cornerButtonWidth
+        let height = width / ratio
+        let top = (size.height - height) / 2
+        let left = (size.width - width) / 2
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            self.cropArea = CropArea(top: top, left: left, bottom: top + height, right: left + width)
+        })
+        
+    }
+    
+    private func updateCropArea() {
+        
+        // 利用了 CAShapeLayerFillRule.evenOdd
+        let path = UIBezierPath(rect: translucencyView.bounds)
+        path.append(UIBezierPath(rect: cropArea.rect))
+        translucencyLayer.path = path.cgPath
+        
+        let left = cropArea.left
+        let top = cropArea.top
+        let right = cropArea.right
+        let bottom = cropArea.bottom
+        
+        // 外围四条线
+        outerLines[0].frame = CGRect(x: left, y: top - outerLineWidth, width: right - left, height: outerLineWidth)
+        outerLines[1].frame = CGRect(x: right, y: top, width: outerLineWidth, height: bottom - top)
+        outerLines[2].frame = CGRect(x: left, y: bottom, width: right - left, height: outerLineWidth)
+        outerLines[3].frame = CGRect(x: left - outerLineWidth, y: top, width: outerLineWidth, height: bottom - top)
+        
+        // 四个角
+        cornerButtons[0].frame.origin = CGPoint(x: left - cornerButtonWidth / 2, y: top - cornerButtonHeight / 2)
+        topLeftCornerLines[0].frame.origin = CGPoint(x: left - cornerLineWidth, y: top - cornerLineWidth)
+        topLeftCornerLines[1].frame.origin = CGPoint(x: left - cornerLineWidth, y: top - cornerLineWidth)
+        
+        cornerButtons[1].frame.origin = CGPoint(x: right - cornerButtonWidth / 2, y: top - cornerButtonHeight / 2)
+        topRightCornerLines[0].frame.origin = CGPoint(x: right - cornerButtonWidth / 2, y: top - cornerLineWidth)
+        topRightCornerLines[1].frame.origin = CGPoint(x: right, y: top - cornerLineWidth)
+        
+        cornerButtons[2].frame.origin = CGPoint(x: right + cornerLineWidth - cornerButtonWidth / 2, y: bottom - cornerButtonHeight / 2)
+        bottomRightCornerLines[0].frame.origin = CGPoint(x: right + cornerLineWidth - cornerButtonWidth / 2, y: bottom)
+        bottomRightCornerLines[1].frame.origin = CGPoint(x: right, y: bottom + cornerLineWidth - cornerButtonHeight / 2)
+        
+        cornerButtons[3].frame.origin = CGPoint(x: left - cornerButtonWidth / 2, y: bottom - cornerButtonHeight / 2)
+        bottomLeftCornerLines[0].frame.origin = CGPoint(x: left - cornerLineWidth, y: bottom)
+        bottomLeftCornerLines[1].frame.origin = CGPoint(x: left - cornerLineWidth, y: bottom - cornerButtonHeight / 2)
+        
+        // 中间的横竖线
+        let rowSpacing = (bottom - top) / CGFloat(horizontalLines.count + 1)
+        let columnSpacing = (right - left) / CGFloat(verticalLines.count + 1)
+        
+        for (i, line) in horizontalLines.enumerated() {
+            let offset = rowSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
+            line.frame = CGRect(x: left, y: top + offset, width: right - left, height: innerLineWidth)
+        }
+        
+        for (i, line) in verticalLines.enumerated() {
+            let offset = columnSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
+            line.frame = CGRect(x: left + offset, y: top, width: innerLineWidth, height: bottom - top)
+        }
+
+    }
+    
+    private func removeResizeCropAreaTimer() {
+        if let timer = resizeCropAreaTimer {
+            timer.invalidate()
+            resizeCropAreaTimer = nil
+        }
+    }
+
     public override func layoutSubviews() {
         super.layoutSubviews()
         size = frame.size
     }
     
-    func getCropRect(frame: CGRect) -> CGRect {
-        return CGRect(
-            x: frame.origin.x + cornerButtonWidth / 2,
-            y: frame.origin.y + cornerButtonHeight / 2,
-            width: frame.size.width - cornerButtonWidth,
-            height: frame.size.height - cornerButtonHeight
-        )
+    public override func removeFromSuperview() {
+        super.removeFromSuperview()
+        removeResizeCropAreaTimer()
+    }
+    
+    public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        guard let view = super.hitTest(point, with: event), resizable else {
+            return nil
+        }
+        return cornerButtons.contains(view) ? view : nil
     }
     
     func cropPhoto(photo: UIImage, rect: CGRect) -> UIImage {

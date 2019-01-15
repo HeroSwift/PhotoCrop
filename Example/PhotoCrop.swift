@@ -94,7 +94,8 @@ public class PhotoCrop: UIView {
     
     public func showCropOverlay(animationDuration: TimeInterval = 0.3, options: UIView.AnimationOptions = .curveEaseInOut) {
         
-        cropOverlay.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+        cropOverlay.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.height)
+        cropOverlay.cropArea = CropArea(top: 50, left: 50, bottom: 300, right: 300)
         rotateView.addSubview(cropOverlay)
         
         

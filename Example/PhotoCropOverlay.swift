@@ -1,7 +1,42 @@
 
 import UIKit
 
+class CropArea {
+    
+    var top: CGFloat
+    var bottom: CGFloat
+    
+    var left: CGFloat
+    var right: CGFloat
+    
+    lazy var rect: CGRect = {
+        return CGRect(x: left, y: top, width: right - left, height: bottom - top)
+    }()
+    
+    init(top: CGFloat, left: CGFloat, bottom: CGFloat, right: CGFloat) {
+        self.top = top
+        self.left = left
+        self.bottom = bottom
+        self.right = right
+    }
+    
+}
+
 public class PhotoCropOverlay: UIView {
+    
+    var outerLineWidth: CGFloat = 1
+    var outerLineColor: UIColor = .white
+    
+    var innerLineWidth: CGFloat = 1 / UIScreen.main.scale
+    var innerLineColor: UIColor = UIColor.white.withAlphaComponent(0.5)
+    
+    var cornerLineWidth: CGFloat = 2
+    var cornerLineColor: UIColor = .white
+    
+    var cornerButtonWidth: CGFloat = 30
+    var cornerButtonHeight: CGFloat = 30
+    
+    
     
     var outerLines = [UIView]()
     
@@ -15,30 +50,116 @@ public class PhotoCropOverlay: UIView {
     
     var cornerButtons = [UIButton]()
 
-    var outerLineWidth: CGFloat = 1
-    var outerLineColor: UIColor = .white
-    
-    var innerLineWidth: CGFloat = 1 / UIScreen.main.scale
-    var innerLineColor: UIColor = UIColor.white.withAlphaComponent(0.5)
-
-    var cornerLineWidth: CGFloat = 2
-    var cornerLineColor: UIColor = .white
-    
-    var cornerButtonWidth: CGFloat = 30
-    var cornerButtonHeight: CGFloat = 30
-    
     // 裁剪的最小尺寸
     var minWidth: CGFloat = 100
     var minHeight: CGFloat = 100
     
     // 是否可改变尺寸
-    var isResizable = true
-    
-    // 是否可移动
-    var isMovable = false
+    var resizable = true
     
     // 当改变尺寸时，是否保持比例
     var ratio: CGFloat = 16.0 / 9.0
+    
+    var cropArea = CropArea(top: 0, left: 0, bottom: 0, right: 0) {
+        didSet {
+            
+            // 利用了 CAShapeLayerFillRule.evenOdd
+            let path = UIBezierPath(rect: translucencyView.bounds)
+            path.append(UIBezierPath(rect: cropArea.rect))
+            translucencyLayer.path = path.cgPath
+
+            let left = cropArea.left
+            let top = cropArea.top
+            let right = cropArea.right
+            let bottom = cropArea.bottom
+            
+            // 外围四条线
+            outerLines[0].frame = CGRect(x: left, y: top - outerLineWidth, width: right - left, height: outerLineWidth)
+            outerLines[1].frame = CGRect(x: right, y: top, width: outerLineWidth, height: bottom - top)
+            outerLines[2].frame = CGRect(x: left, y: bottom, width: right - left, height: outerLineWidth)
+            outerLines[3].frame = CGRect(x: left - outerLineWidth, y: top, width: outerLineWidth, height: bottom - top)
+
+            // 四个角
+            cornerButtons[0].frame.origin = CGPoint(x: left - cornerButtonWidth / 2, y: top - cornerButtonHeight / 2)
+            topLeftCornerLines[0].frame.origin = CGPoint(x: left - cornerLineWidth, y: top - cornerLineWidth)
+            topLeftCornerLines[1].frame.origin = CGPoint(x: left - cornerLineWidth, y: top - cornerLineWidth)
+
+            cornerButtons[1].frame.origin = CGPoint(x: right - cornerButtonWidth / 2, y: top - cornerButtonHeight / 2)
+            topRightCornerLines[0].frame.origin = CGPoint(x: right - cornerButtonWidth / 2, y: top - cornerLineWidth)
+            topRightCornerLines[1].frame.origin = CGPoint(x: right, y: top - cornerLineWidth)
+
+            cornerButtons[2].frame.origin = CGPoint(x: right + cornerLineWidth - cornerButtonWidth / 2, y: bottom - cornerButtonHeight / 2)
+            bottomRightCornerLines[0].frame.origin = CGPoint(x: right + cornerLineWidth - cornerButtonWidth / 2, y: bottom)
+            bottomRightCornerLines[1].frame.origin = CGPoint(x: right, y: bottom + cornerLineWidth - cornerButtonHeight / 2)
+
+            cornerButtons[3].frame.origin = CGPoint(x: left - cornerButtonWidth / 2, y: bottom - cornerButtonHeight / 2)
+            bottomLeftCornerLines[0].frame.origin = CGPoint(x: left - cornerLineWidth, y: bottom)
+            bottomLeftCornerLines[1].frame.origin = CGPoint(x: left - cornerLineWidth, y: bottom - cornerButtonHeight / 2)
+            
+            // 中间的横竖线
+            let rowSpacing = (bottom - top) / CGFloat(horizontalLines.count + 1)
+            let columnSpacing = (right - left) / CGFloat(verticalLines.count + 1)
+
+            for (i, line) in horizontalLines.enumerated() {
+                let offset = rowSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
+                line.frame = CGRect(x: left, y: top + offset, width: right - left, height: innerLineWidth)
+            }
+
+            for (i, line) in verticalLines.enumerated() {
+                let offset = columnSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
+                line.frame = CGRect(x: left + offset, y: top, width: innerLineWidth, height: bottom - top)
+            }
+            
+        }
+    }
+    
+    private var size = CGSize.zero {
+        didSet {
+            
+            guard size.width != oldValue.width || size.height != oldValue.height else {
+                return
+            }
+            
+            let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+            blueEffectView.frame = frame
+            translucencyView.frame = frame
+            translucencyLayer.frame = frame
+            
+        }
+    }
+    
+    private lazy var blueEffectView: UIVisualEffectView = {
+        
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        view.alpha = 0.6
+        
+        translucencyView.addSubview(view)
+
+        return view
+        
+    }()
+    
+    private lazy var translucencyLayer: CAShapeLayer = {
+        
+        // https://jayeshkawli.ghost.io/making-a-hole-in-uiview-with-calayer/
+        let layer = CAShapeLayer()
+        layer.fillRule = .evenOdd
+        
+        return layer
+        
+    }()
+    
+    private lazy var translucencyView: UIView = {
+    
+        let view = UIView()
+        view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.6)
+        insertSubview(view, at: 0)
+        
+        view.layer.mask = translucencyLayer
+        
+        return view
+        
+    }()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,43 +174,22 @@ public class PhotoCropOverlay: UIView {
     private func setup() {
         
         backgroundColor = .clear
-        
-        let mask = createMask()
-        
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        blurEffectView.alpha = 0.6
-        
-        blurEffectView.frame = mask.bounds
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        mask.addSubview(blurEffectView)
+
+        size = frame.size
         
         outerLines = [createLine(color: outerLineColor), createLine(color: outerLineColor), createLine(color: outerLineColor), createLine(color: outerLineColor)]
         horizontalLines = [createLine(color: innerLineColor), createLine(color: innerLineColor)]
         verticalLines = [createLine(color: innerLineColor), createLine(color: innerLineColor)]
         
-        topLeftCornerLines = [createLine(color: cornerLineColor), createLine(color: cornerLineColor)]
-        topRightCornerLines = [createLine(color: cornerLineColor), createLine(color: cornerLineColor)]
-        bottomLeftCornerLines = [createLine(color: cornerLineColor), createLine(color: cornerLineColor)]
-        bottomRightCornerLines = [createLine(color: cornerLineColor), createLine(color: cornerLineColor)]
+        topLeftCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
+        topRightCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
+        bottomLeftCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
+        bottomRightCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
         
         cornerButtons = [createButton(), createButton(), createButton(), createButton()]
-        
-        addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(move)))
-        
-        if ratio > 0 && bounds.width / bounds.height != ratio {
-            frame = CGRect(origin: frame.origin, size: CGSize(width: frame.size.width, height: frame.size.width / ratio))
-        }
-        
+
     }
-    
-    private func createMask() -> UIView {
-        let mask = UIView()
-        mask.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        addSubview(mask)
-        return mask
-    }
-    
+
     private func createLine(color: UIColor) -> UIView {
         let line = UIView()
         line.backgroundColor = color
@@ -97,204 +197,99 @@ public class PhotoCropOverlay: UIView {
         return line
     }
     
+    private func createHorizontalCornerLine(color: UIColor) -> UIView {
+        let line = createLine(color: color)
+        line.frame = CGRect(x: 0, y: 0, width: cornerButtonWidth / 2, height: cornerLineWidth)
+        return line
+    }
+    
+    private func createVerticalCornerLine(color: UIColor) -> UIView {
+        let line = createLine(color: color)
+        line.frame = CGRect(x: 0, y: 0, width: cornerLineWidth, height: cornerButtonHeight / 2)
+        return line
+    }
+    
     private func createButton() -> UIButton {
         let button = UIButton()
         button.backgroundColor = .clear
+        button.frame = CGRect(x: 0, y: 0, width: cornerButtonWidth, height: cornerButtonHeight)
         button.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(resize)))
         addSubview(button)
         return button
     }
     
     @objc func resize(gestureRecognizer: UIPanGestureRecognizer) {
-        guard isResizable, let button = gestureRecognizer.view as? UIButton, gestureRecognizer.state == .began || gestureRecognizer.state == .changed else {
+        
+        guard resizable, let button = gestureRecognizer.view as? UIButton, gestureRecognizer.state == .began || gestureRecognizer.state == .changed else {
             return
         }
+        
+        // 位移量
         let translation = gestureRecognizer.translation(in: self)
+        let transX = translation.x
+        let transY = translation.y
+
+        // 裁剪区域
+        var left = cropArea.left
+        var top = cropArea.top
         
-        let superBounds = self.superview!.bounds
+        var right = cropArea.right
+        var bottom = cropArea.bottom
         
-        var left = frame.origin.x
-        var top = frame.origin.y
-        var right = left + frame.size.width
-        var bottom = top + frame.size.height
+        let minLeft = cornerButtonWidth / 2
+        let minTop = cornerButtonHeight / 2
+        
+        let maxRight = size.width - minLeft
+        let maxBottom = size.height - minTop
         
         switch button {
         case cornerButtons[0]:
-            left = min(right - minWidth, max(0, left + translation.x))
+            left = min(right - minWidth, max(minLeft, left + transX))
             if ratio > 0 {
                 top = bottom - (right - left) / ratio
             }
             else {
-                top = min(bottom - minHeight, max(0, top + translation.y))
+                top = min(bottom - minHeight, max(minTop, top + transY))
             }
             break
         case cornerButtons[1]:
-            right = min(superBounds.width, max(left + minWidth, right + translation.x))
+            right = min(maxRight, max(left + minWidth, right + transX))
             if ratio > 0 {
                 top = bottom - (right - left) / ratio
             }
             else {
-                top = min(bottom - minHeight, max(0, top + translation.y))
+                top = min(bottom - minHeight, max(minTop, top + transY))
             }
             break
         case cornerButtons[2]:
-            right = min(superBounds.width, max(left + minWidth, right + translation.x))
+            right = min(maxRight, max(left + minWidth, right + transX))
             if ratio > 0 {
                 bottom = top + (right - left) / ratio
             }
             else {
-                bottom = min(superBounds.height, max(top + minHeight, bottom + translation.y))
+                bottom = min(maxBottom, max(top + minHeight, bottom + transY))
             }
             break
         default:
-            left = min(right - minWidth, max(0, left + translation.x))
+            left = min(right - minWidth, max(minLeft, left + transX))
             if ratio > 0 {
                 bottom = top + (right - left) / ratio
             }
             else {
-                bottom = min(superBounds.height, max(top + minHeight, bottom + translation.y))
+                bottom = min(maxBottom, max(top + minHeight, bottom + transY))
             }
             break
         }
         
-        frame = CGRect(
-            x: left,
-            y: top,
-            width: right - left,
-            height: bottom - top
-        )
-        
-        setNeedsLayout()
-        
-        gestureRecognizer.setTranslation(.zero, in: self)
-        
-    }
-    
-    @objc func move(gestureRecognizer: UIPanGestureRecognizer) {
-        guard isMovable, gestureRecognizer.state == .began || gestureRecognizer.state == .changed else {
-            return
-        }
-        let translation = gestureRecognizer.translation(in: self)
-        
-        let superBounds = self.superview!.bounds
-        
-        var centerX = center.x + translation.x
-        var centerY = center.y + translation.y
-        
-        if centerX - bounds.width / 2 < 0 {
-            centerX = bounds.width / 2
-        }
-        else if centerX + bounds.width / 2 > superBounds.width {
-            centerX = superBounds.width - bounds.width / 2
-        }
-        
-        if centerY - bounds.height / 2 < 0 {
-            centerY = bounds.height / 2
-        }
-        else if centerY + bounds.height / 2 > superBounds.height {
-            centerY = superBounds.height - bounds.height / 2
-        }
+        cropArea = CropArea(top: top, left: left, bottom: bottom, right: right)
 
-        center = CGPoint(x: centerX, y: centerY)
         gestureRecognizer.setTranslation(.zero, in: self)
-    }
-    
-    public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let view = super.hitTest(point, with: event)
-        if !isMovable && isResizable && view != nil {
-            let isButton = cornerButtons.reduce(false) { $1.hitTest(convert(point, to: $1), with: event) != nil || $0 }
-            if !isButton {
-                return nil
-            }
-        }
-        return view
+        
     }
     
     public override func layoutSubviews() {
-        
-        // 外围四条线
-        for i in 0..<outerLines.count {
-            let line = outerLines[i]
-            let lineFrame: CGRect
-            
-            switch i {
-            case 0:
-                lineFrame = CGRect(x: cornerButtonWidth / 2, y: cornerButtonHeight / 2, width: bounds.width - cornerButtonWidth, height: outerLineWidth)
-                break
-            case 1:
-                lineFrame = CGRect(x: bounds.width - cornerButtonWidth / 2 - outerLineWidth, y: cornerButtonHeight / 2, width: outerLineWidth, height: bounds.height - cornerButtonHeight)
-                break
-            case 2:
-                lineFrame = CGRect(x: cornerButtonWidth / 2, y: bounds.height - cornerButtonHeight / 2 - outerLineWidth, width: bounds.width - cornerButtonWidth, height: outerLineWidth)
-                break
-            default:
-                lineFrame = CGRect(x: cornerButtonWidth / 2, y: cornerButtonHeight / 2, width: outerLineWidth, height: bounds.height - cornerButtonHeight)
-                break
-            }
-            
-            line.frame = lineFrame
-        }
-        
-        // 四个角
-        let corners = [topLeftCornerLines, topRightCornerLines, bottomLeftCornerLines, bottomRightCornerLines]
-        for i in 0..<corners.count {
-            let corner = corners[i]
-            
-            let horizontalFrame: CGRect
-            let verticalFrame: CGRect
-            let buttonFrame: CGRect
-            
-            switch i {
-            // left top
-            case 0:
-                horizontalFrame = CGRect(x: cornerButtonWidth / 2 - cornerLineWidth, y: cornerButtonHeight / 2 - cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
-                verticalFrame = CGRect(x: cornerButtonWidth / 2 - cornerLineWidth, y: cornerButtonHeight / 2 - cornerLineWidth, width: cornerLineWidth, height: cornerButtonHeight / 2)
-                buttonFrame = CGRect(x: 0, y: 0, width: cornerButtonWidth, height: cornerButtonHeight)
-                break
-            // right top
-            case 1:
-                horizontalFrame = CGRect(x: bounds.width - cornerButtonWidth + cornerLineWidth, y: cornerButtonHeight / 2 - cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
-                verticalFrame = CGRect(x: bounds.width - cornerButtonWidth / 2 - cornerLineWidth + cornerLineWidth, y: cornerButtonHeight / 2 - cornerLineWidth, width: cornerLineWidth, height: cornerButtonHeight / 2)
-                buttonFrame = CGRect(x: bounds.width - cornerButtonWidth, y: 0, width: cornerButtonWidth, height: cornerButtonHeight)
-                break
-            // right bottom
-            case 2:
-                horizontalFrame = CGRect(x: bounds.width - cornerButtonWidth + cornerLineWidth, y: bounds.height - cornerButtonHeight / 2 - cornerLineWidth + cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
-                verticalFrame = CGRect(x: bounds.width - cornerButtonHeight / 2 - cornerLineWidth + cornerLineWidth, y: bounds.height - cornerButtonHeight + cornerLineWidth, width: cornerLineWidth, height: cornerButtonHeight / 2)
-                buttonFrame = CGRect(x: bounds.width - cornerButtonWidth, y: bounds.height - cornerButtonHeight, width: cornerButtonWidth, height: cornerButtonHeight)
-                break
-            // left bottom
-            default:
-                horizontalFrame = CGRect(x: cornerButtonWidth / 2 - cornerLineWidth, y: bounds.height - cornerButtonHeight / 2 - cornerLineWidth + cornerLineWidth, width: cornerButtonWidth / 2, height: cornerLineWidth)
-                verticalFrame = CGRect(x: cornerButtonWidth / 2 - cornerLineWidth, y: bounds.height - cornerButtonHeight + cornerLineWidth, width: cornerLineWidth, height: cornerButtonHeight / 2)
-                buttonFrame = CGRect(x: 0, y: bounds.height - cornerButtonHeight, width: cornerButtonWidth, height: cornerButtonHeight)
-                break
-            }
-            
-            corner[0].frame = horizontalFrame
-            corner[1].frame = verticalFrame
-            cornerButtons[i].frame = buttonFrame
-        }
-        
-        // 中间的横竖线
-        let rowSpacing = (bounds.height - cornerButtonHeight - outerLineWidth * 2 - innerLineWidth * CGFloat(horizontalLines.count)) / CGFloat(horizontalLines.count + 1)
-        let columnSpacing = (bounds.width - cornerButtonWidth - outerLineWidth * 2 - innerLineWidth * CGFloat(verticalLines.count)) / CGFloat(verticalLines.count + 1)
-
-        for (i, line) in horizontalLines.enumerated() {
-
-            let offset = rowSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
-            
-            line.frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth, y: cornerButtonHeight / 2 + outerLineWidth + offset, width: bounds.width - cornerButtonWidth - outerLineWidth * 2, height: innerLineWidth)
-            
-        }
-        
-        for (i, line) in verticalLines.enumerated() {
-
-            let offset = columnSpacing * CGFloat(i + 1) + innerLineWidth * CGFloat(i)
-            
-            line.frame = CGRect(x: cornerButtonWidth / 2 + outerLineWidth + offset, y: cornerButtonHeight / 2 + outerLineWidth, width: innerLineWidth, height: bounds.height - cornerButtonHeight - outerLineWidth * 2)
-            
-        }
+        super.layoutSubviews()
+        size = frame.size
     }
     
     func getCropRect(frame: CGRect) -> CGRect {

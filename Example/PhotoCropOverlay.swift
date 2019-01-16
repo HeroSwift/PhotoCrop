@@ -27,7 +27,7 @@ class CropArea {
     
 }
 
-public class PhotoCropMaskView: UIView {
+public class PhotoCropOverlay: UIView {
     
     var outerLineWidth: CGFloat = 1
     var outerLineColor: UIColor = .white
@@ -317,7 +317,7 @@ public class PhotoCropMaskView: UIView {
     
 }
 
-extension PhotoCropMaskView {
+extension PhotoCropOverlay {
     
     private func setup() {
         

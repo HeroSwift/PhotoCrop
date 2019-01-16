@@ -28,7 +28,7 @@ public class PhotoCrop: UIView {
         view.backgroundColor = .red
         view.scaleType = .fit
         view.beforeSetContentInset = { contentInset in
-            return self.isCropping ? self.maskedView.cropArea.toEdgeInsets() : contentInset
+            return self.isCropping ? self.overlayView.cropArea.toEdgeInsets() : contentInset
         }
         
         foregroundView.scrollView = view.scrollView
@@ -38,42 +38,49 @@ public class PhotoCrop: UIView {
     }()
     
     // 裁剪器
-    lazy public var maskedView: PhotoCropMaskView = {
+    lazy public var overlayView: PhotoCropOverlay = {
        
-        let view = PhotoCropMaskView()
+        let view = PhotoCropOverlay()
         
         view.onCropAreaChange = { cropArea in
-            let rect = cropArea.toRect(rect: self.bounds)
-            self.foregroundView.frame = rect
-            self.foregroundView.updateImagePosition()
+            self.foregroundView.frame = cropArea.toRect(rect: self.bounds)
         }
         view.onCropAreaResize = { cropArea in
             
-            let oldRect = self.maskedView.cropArea.toRect(rect: self.bounds)
+            // 小值
+            let oldRect = self.overlayView.cropArea.toRect(rect: self.bounds)
+            // 大值
             let newRect = cropArea.toRect(rect: self.bounds)
             
-            let scale = (newRect.width * newRect.height) / (oldRect.width * oldRect.height)
+            // 谁更大就用谁作为缩放系数
+            let widthScale = newRect.width / oldRect.width
+            let heightScale = newRect.height / oldRect.height
+            let scale = max(widthScale, heightScale)
             
             UIView.animate(withDuration: 0.5, animations: {
-                print("\(cropArea.toEdgeInsets()) \(self.maskedView.cropArea.toEdgeInsets())")
+                
+                self.foregroundView.save()
+                
                 self.cropArea = cropArea
-                let scrollView = self.photoView.scrollView
-                scrollView.zoomScale = scrollView.zoomScale * scale
+                self.photoView.scrollView.zoomScale *= scale
+                
+                self.foregroundView.restore()
+                
             })
         }
         
         return view
     }()
     
-    lazy var foregroundView: PhotoCropImageView = {
+    lazy var foregroundView: PhotoCropForeground = {
 
-        return PhotoCropImageView()
+        return PhotoCropForeground()
         
     }()
     
     var cropArea = CropArea.zero {
         didSet {
-            maskedView.cropArea = cropArea
+            overlayView.cropArea = cropArea
             foregroundView.frame = cropArea.toRect(rect: bounds)
         }
     }
@@ -89,10 +96,10 @@ public class PhotoCrop: UIView {
             
             if isCropping {
                 
-                rotateView.addSubview(maskedView)
+                rotateView.addSubview(overlayView)
                 rotateView.addSubview(foregroundView)
                 
-                maskedView.alpha = 0
+                overlayView.alpha = 0
                 
                 photoView.scaleType = .fill
                 
@@ -104,9 +111,9 @@ public class PhotoCrop: UIView {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     
                     UIView.animate(withDuration: 0.5, animations: {
-                        self.cropArea = self.maskedView.normalizeCropArea()
+                        self.cropArea = self.overlayView.normalizeCropArea()
                         self.photoView.updateZoomScale()
-                        self.maskedView.alpha = 1
+                        self.overlayView.alpha = 1
                     })
                     
                 }
@@ -121,9 +128,9 @@ public class PhotoCrop: UIView {
                 UIView.animate(withDuration: 0.5, animations: {
                     self.photoView.updateZoomScale()
                     self.cropArea = self.getCropAreaByContentInset(contentInset: self.photoView.getContentInset())
-                    self.maskedView.alpha = 0
+                    self.overlayView.alpha = 0
                 }, completion: { success in
-                    self.maskedView.removeFromSuperview()
+                    self.overlayView.removeFromSuperview()
                 })
                 
             }
@@ -151,7 +158,7 @@ public class PhotoCrop: UIView {
         
         rotateView.frame = bounds
         photoView.frame = bounds
-        maskedView.frame = bounds
+        overlayView.frame = bounds
         
         // 这句很重要
         // 根据当前的旋转角度设置 frame
@@ -210,10 +217,10 @@ extension PhotoCrop {
     
     // 让 CropArea 完全包裹住图片，但又不超出屏幕
     private func getCropAreaByContentInset(contentInset: UIEdgeInsets) -> CropArea {
-        let left = max(contentInset.left, maskedView.cornerLineWidth)
-        let top = max(contentInset.top, maskedView.cornerLineWidth)
-        let right = max(contentInset.right, maskedView.cornerLineWidth)
-        let bottom = max(contentInset.bottom, maskedView.cornerLineWidth)
+        let left = max(contentInset.left, overlayView.cornerLineWidth)
+        let top = max(contentInset.top, overlayView.cornerLineWidth)
+        let right = max(contentInset.right, overlayView.cornerLineWidth)
+        let bottom = max(contentInset.bottom, overlayView.cornerLineWidth)
         return CropArea(top: top, left: left, bottom: bottom, right: right)
     }
     

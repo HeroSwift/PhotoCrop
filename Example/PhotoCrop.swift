@@ -6,7 +6,6 @@ public class PhotoCrop: UIView {
     var image: UIImage! {
         didSet {
             photoView.imageView.image = image
-            updateCropAreaByImageView()
         }
     }
     
@@ -24,14 +23,26 @@ public class PhotoCrop: UIView {
     lazy var photoView: PhotoView = {
        
         let view = PhotoView()
+        
         view.backgroundColor = .red
+        view.scaleType = .fit
+        view.beforeSetContentInset = { contentInset in
+            return self.isCropping ? self.cropView.cropArea.toEdgeInsets() : contentInset
+        }
 
         return view
         
     }()
     
     // 裁剪器
-    let cropView = PhotoCropOverlay()
+    lazy var cropView: PhotoCropOverlay = {
+       
+        let view = PhotoCropOverlay()
+        view.onResizeCropArea = { cropArea in
+            self.updateCropAreaByImageView(cropArea: cropArea)
+        }
+        return view
+    }()
     
     // 旋转角度
     var angle = 0.0
@@ -39,17 +50,46 @@ public class PhotoCrop: UIView {
     // 是否正在动画中
     var isAnimating = false
     
-    private var currentRect: CGRect {
-        return CGRect(
-            origin: .zero,
-            size: angle.truncatingRemainder(dividingBy: Double.pi) == 0
-                ? frame.size
-                : CGSize(width: frame.size.height, height: frame.size.width)
-        )
+    var isCropping = false {
+        didSet {
+            
+            if isCropping {
+                
+                rotateView.addSubview(cropView)
+                cropView.alpha = 0
+                
+                // 先把 crop area 调整成和当前图片一样大
+                cropView.cropArea = getCropAreaByContentInset(contentInset: photoView.scrollView.contentInset)
+                
+                // 等一下(为了触发动画)，调整成符合比例的裁剪框
+                let cropArea = cropView.normalizeCropArea()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.photoView.scaleType = .fill
+                    self.updateCropAreaByImageView(cropArea: cropArea)
+                    
+                    UIView.animate(withDuration: 0.5, animations: {
+                        self.cropView.alpha = 1
+                    })
+                    
+                }
+                
+            }
+            else {
+                
+                photoView.scaleType = .fit
+                updateCropAreaByImageView(cropArea: getCropAreaByContentInset(contentInset: photoView.getContentInset()))
+                
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.cropView.alpha = 0
+                }, completion: { success in
+                    self.cropView.removeFromSuperview()
+                })
+                
+            }
+            
+        }
     }
-    
-    
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -61,16 +101,12 @@ public class PhotoCrop: UIView {
     }
     
     private func setup() {
-
-        backgroundColor = .blue
-        
         addSubview(rotateView)
-        
         rotateView.addSubview(photoView)
-        
     }
     
     public override func layoutSubviews() {
+        super.layoutSubviews()
         
         rotateView.frame = bounds
         photoView.frame = bounds
@@ -107,40 +143,18 @@ public class PhotoCrop: UIView {
         
     }
     
-    public func showCropOverlay(animationDuration: TimeInterval = 0.3, options: UIView.AnimationOptions = .curveEaseInOut) {
+    private func updateCropAreaByImageView(cropArea: CropArea) {
         
-        
-        rotateView.addSubview(cropView)
-        
-        
-        let animations: () -> Void = {
-            
-        }
-        
-        let completion: (Bool) -> Void = { finished in
-            
-        }
-        
-        animate(animationDuration: animationDuration, options: options, animations: animations, completion: completion)
-        
+
+        UIView.animate(withDuration: 2, animations: {
+            self.cropView.cropArea = cropArea
+            // 通过 UIScrollView 的 contentInset 设置滚动窗口的尺寸
+            self.photoView.updateZoomScale()
+        })
+
     }
     
-    public func hideCropOverlay() {
-        
-        cropView.removeFromSuperview()
-        updateCropAreaByImageView()
-        
-    }
     
-    private func updateCropAreaByImageView() {
-        let frame = photoView.imageView.frame
-        cropView.cropArea = CropArea(top: frame.origin.y, left: frame.origin.x, bottom: frame.origin.y + frame.height, right: frame.origin.x + frame.width)
-    }
-    
-    private func center() {
-        
-        
-    }
     
     private func animate(animationDuration: TimeInterval = 0.5, options: UIView.AnimationOptions = .curveEaseInOut, animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
         
@@ -162,5 +176,17 @@ public class PhotoCrop: UIView {
     
 }
 
-
+extension PhotoCrop {
+    
+    // 让 CropArea 完全包裹住图片，但又不超出屏幕
+    private func getCropAreaByContentInset(contentInset: UIEdgeInsets) -> CropArea {
+        let left = max(contentInset.left, cropView.cornerLineWidth)
+        let top = max(contentInset.top, cropView.cornerLineWidth)
+        let right = max(contentInset.right, cropView.cornerLineWidth)
+        let bottom = max(contentInset.bottom, cropView.cornerLineWidth)
+        return CropArea(top: top, left: left, bottom: bottom, right: right)
+    }
+    
+    
+}
 

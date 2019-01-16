@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         showButton.translatesAutoresizingMaskIntoConstraints = false
         showButton.setTitle("show", for: .normal)
         showButton.onClick = {
-            self.photoCrop.showCropOverlay()
+            self.photoCrop.isCropping = true
         }
         view.addSubview(showButton)
         
@@ -39,7 +39,7 @@ class ViewController: UIViewController {
         hideButton.translatesAutoresizingMaskIntoConstraints = false
         hideButton.setTitle("hide", for: .normal)
         hideButton.onClick = {
-            self.photoCrop.hideCropOverlay()
+            self.photoCrop.isCropping = false
         }
         view.addSubview(hideButton)
         

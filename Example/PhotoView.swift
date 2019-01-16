@@ -10,7 +10,7 @@ import UIKit
 // 这样双击放大不会触发 layoutSubviews
 public class PhotoView: UIView {
     
-    private lazy var scrollView: UIScrollView = {
+    public lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
         if #available(iOS 11.0, *) {
             view.contentInsetAdjustmentBehavior = .never
@@ -31,14 +31,30 @@ public class PhotoView: UIView {
         scrollView.addSubview(view)
         return view
     }()
-
-    public var scaleType = ScaleType.fillWidth
+    
+    public override var frame: CGRect {
+        didSet {
+            guard frame.width != oldValue.width || frame.height != oldValue.height else {
+                return
+            }
+            scrollView.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.height)
+            reset()
+        }
+    }
+    
+    public var scaleType = ScaleType.fillWidth {
+        didSet {
+            
+        }
+    }
     
     public var onTap: (() -> Void)?
     public var onLongPress: (() -> Void)?
     public var onScaleChange: ((CGFloat) -> Void)?
     public var onDragStart: (() -> Void)?
     public var onDragEnd: (() -> Void)?
+    
+    public var beforeSetContentInset: ((UIEdgeInsets) -> UIEdgeInsets)?
     
     private var angle: Double = 0
     
@@ -63,6 +79,7 @@ public class PhotoView: UIView {
         scrollView.minimumZoomScale = 1
         scrollView.maximumZoomScale = 1
         scrollView.zoomScale = 1
+        scrollView.contentInset = .zero
         
         if let image = image {
             imageView.frame.size = image.size
@@ -70,8 +87,6 @@ public class PhotoView: UIView {
         
         updateZoomScale()
         updateImagePosition()
-        
-        scrollView.contentOffset = CGPoint(x: 0, y: 0)
         
     }
     
@@ -88,11 +103,35 @@ public class PhotoView: UIView {
         imageView.transform = imageView.transform.rotated(by: CGFloat(offset))
 
     }
+    
+    public func getContentInset() -> UIEdgeInsets {
+        
+        let imageSize = imageView.frame.size
+        guard imageSize.width > 0 && imageSize.height > 0 else {
+            return .zero
+        }
+        
+        let viewSize = bounds.size
+        
+        var insetHorizontal: CGFloat = 0
+        var insetVertical: CGFloat = 0
+        
+        if viewSize.width > imageSize.width {
+            insetHorizontal = (viewSize.width - imageSize.width) / 2
+        }
+        if viewSize.height > imageSize.height {
+            insetVertical = (viewSize.height - imageSize.height) / 2
+        }
+        
+        let contentInset = UIEdgeInsets(top: insetVertical, left: insetHorizontal, bottom: insetVertical, right: insetHorizontal)
+        return beforeSetContentInset?(contentInset) ?? contentInset
+        
+    }
+    
+    public func setContentInset(contentInset: UIEdgeInsets) {
 
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        scrollView.frame = bounds
-        reset()
+        scrollView.contentInset = contentInset
+        
     }
     
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -146,15 +185,17 @@ extension PhotoView {
         
     }
     
-    private func updateZoomScale() {
+    public func updateZoomScale() {
         
         guard let image = imageView.image else {
             return
         }
 
-        let viewSize = bounds.size
-        let imageSize = image.size
+        let contentInset = getContentInset()
+        let viewWidth = bounds.size.width - contentInset.left - contentInset.right
+        let viewHeight = bounds.size.height - contentInset.top - contentInset.bottom
         
+        let imageSize = image.size
         var imageWidth = imageSize.width
         var imageHeight = imageSize.height
         
@@ -163,8 +204,8 @@ extension PhotoView {
             imageHeight = imageSize.width
         }
         
-        let widthScale = viewSize.width / imageWidth
-        let heightScale = viewSize.height / imageHeight
+        let widthScale = viewWidth / imageWidth
+        let heightScale = viewHeight / imageHeight
         let scale: CGFloat
         
         if scaleType == .fillWidth {
@@ -172,6 +213,9 @@ extension PhotoView {
         }
         else if scaleType == .fillHeight {
             scale = heightScale
+        }
+        else if scaleType == .fill {
+            scale = max(widthScale, heightScale)
         }
         else {
             scale = min(widthScale, heightScale)
@@ -185,18 +229,8 @@ extension PhotoView {
     
     private func updateImagePosition() {
         
-        let imageSize = imageView.frame.size
-        guard imageSize.width > 0 && imageSize.height > 0 else {
-            return
-        }
-        
-        let viewSize = bounds.size
-        
-        let x = max(viewSize.width, imageSize.width) / 2
-        let y = max(viewSize.height, imageSize.height) / 2
-        
-        imageView.center = CGPoint(x: x, y: y)
-        
+        setContentInset(contentInset: getContentInset())
+
     }
     
     private func getZoomRect(point: CGPoint, zoomScale: CGFloat) -> CGRect {
@@ -226,7 +260,7 @@ extension PhotoView {
         
         let scale = scrollView.zoomScale < scrollView.maximumZoomScale ? scrollView.maximumZoomScale : scrollView.minimumZoomScale
         let point = gesture.location(in: imageView)
-        
+
         scrollView.zoom(to: getZoomRect(point: point, zoomScale: scale), animated: true)
         
     }
@@ -246,7 +280,7 @@ extension PhotoView {
 extension PhotoView {
     
     public enum ScaleType {
-        case fit, fillWidth, fillHeight
+        case fit, fill, fillWidth, fillHeight
     }
     
 }

@@ -3,21 +3,26 @@ import UIKit
 
 class CropArea {
     
+    static let zero = CropArea(top: 0, left: 0, bottom: 0, right: 0)
+    
     var top: CGFloat
-    var bottom: CGFloat
-    
     var left: CGFloat
+    var bottom: CGFloat
     var right: CGFloat
-    
-    lazy var rect: CGRect = {
-        return CGRect(x: left, y: top, width: right - left, height: bottom - top)
-    }()
     
     init(top: CGFloat, left: CGFloat, bottom: CGFloat, right: CGFloat) {
         self.top = top
         self.left = left
         self.bottom = bottom
         self.right = right
+    }
+    
+    func toRect(width: CGFloat, height: CGFloat) -> CGRect {
+        return CGRect(x: left, y: top, width: width - right - left, height: height - bottom - top)
+    }
+    
+    func toEdgeInsets() -> UIEdgeInsets {
+        return UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
     }
     
 }
@@ -53,18 +58,27 @@ public class PhotoCropOverlay: UIView {
     // 裁剪的最小尺寸
     var minWidth: CGFloat = 100
     var minHeight: CGFloat = 100
-    
-    // 是否可改变尺寸
-    var resizable = true
-    
+
     // 当改变尺寸时，是否保持比例
-    var ratio: CGFloat = 16.0 / 9.0
+    var ratio: CGFloat = 1
     
-    var cropArea = CropArea(top: 0, left: 0, bottom: 0, right: 0) {
+    public override var frame: CGRect {
+        didSet {
+            size = frame.size
+        }
+    }
+    
+    var cropArea = CropArea.zero {
         didSet {
             updateCropArea()
         }
     }
+    
+    var onResizeCropArea: ((CropArea) -> Void)!
+    
+    lazy var maxCropArea: CropArea = {
+        return CropArea(top: cornerButtonHeight / 2, left: cornerButtonWidth / 2, bottom: cornerButtonHeight / 2, right: cornerButtonWidth / 2)
+    }()
     
     private var resizeCropAreaTimer: Timer?
     
@@ -84,11 +98,11 @@ public class PhotoCropOverlay: UIView {
             
         }
     }
-    
+
     private lazy var blueEffectView: UIVisualEffectView = {
         
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        view.alpha = 0.6
+        view.alpha = 0.3
         
         translucencyView.addSubview(view)
 
@@ -127,57 +141,10 @@ public class PhotoCropOverlay: UIView {
         super.init(coder: aDecoder)
         setup()
     }
-    
-    private func setup() {
-        
-        backgroundColor = .clear
-
-        size = frame.size
-        
-        outerLines = [createLine(color: outerLineColor), createLine(color: outerLineColor), createLine(color: outerLineColor), createLine(color: outerLineColor)]
-        horizontalLines = [createLine(color: innerLineColor), createLine(color: innerLineColor)]
-        verticalLines = [createLine(color: innerLineColor), createLine(color: innerLineColor)]
-        
-        topLeftCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
-        topRightCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
-        bottomLeftCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
-        bottomRightCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
-        
-        cornerButtons = [createButton(), createButton(), createButton(), createButton()]
-
-    }
-
-    private func createLine(color: UIColor) -> UIView {
-        let line = UIView()
-        line.backgroundColor = color
-        addSubview(line)
-        return line
-    }
-    
-    private func createHorizontalCornerLine(color: UIColor) -> UIView {
-        let line = createLine(color: color)
-        line.frame = CGRect(x: 0, y: 0, width: cornerButtonWidth / 2, height: cornerLineWidth)
-        return line
-    }
-    
-    private func createVerticalCornerLine(color: UIColor) -> UIView {
-        let line = createLine(color: color)
-        line.frame = CGRect(x: 0, y: 0, width: cornerLineWidth, height: cornerButtonHeight / 2)
-        return line
-    }
-    
-    private func createButton() -> UIButton {
-        let button = UIButton()
-        button.backgroundColor = .clear
-        button.frame = CGRect(x: 0, y: 0, width: cornerButtonWidth, height: cornerButtonHeight)
-        button.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(resize)))
-        addSubview(button)
-        return button
-    }
 
     @objc func resize(gestureRecognizer: UIPanGestureRecognizer) {
         
-        guard resizable, let button = gestureRecognizer.view as? UIButton else {
+        guard let button = gestureRecognizer.view as? UIButton else {
             return
         }
         
@@ -191,6 +158,9 @@ public class PhotoCropOverlay: UIView {
         
         removeResizeCropAreaTimer()
         
+        let viewWidth = size.width
+        let viewHeight = size.height
+        
         // 位移量
         let translation = gestureRecognizer.translation(in: self)
         let transX = translation.x
@@ -200,23 +170,23 @@ public class PhotoCropOverlay: UIView {
         var left = cropArea.left
         var top = cropArea.top
         
-        var right = cropArea.right
-        var bottom = cropArea.bottom
+        var right = viewWidth - cropArea.right
+        var bottom = viewHeight - cropArea.bottom
         
-        let minLeft = cornerButtonWidth / 2
-        let minTop = cornerButtonHeight / 2
+        let maxLeft = maxCropArea.left
+        let maxTop = maxCropArea.top
         
-        let maxRight = size.width - minLeft
-        let maxBottom = size.height - minTop
+        let maxRight = viewWidth - maxCropArea.right
+        let maxBottom = viewHeight - maxCropArea.bottom
         
         switch button {
         case cornerButtons[0]:
-            left = min(right - minWidth, max(minLeft, left + transX))
+            left = min(right - minWidth, max(maxLeft, left + transX))
             if ratio > 0 {
                 top = bottom - (right - left) / ratio
             }
             else {
-                top = min(bottom - minHeight, max(minTop, top + transY))
+                top = min(bottom - minHeight, max(maxTop, top + transY))
             }
             break
         case cornerButtons[1]:
@@ -225,7 +195,7 @@ public class PhotoCropOverlay: UIView {
                 top = bottom - (right - left) / ratio
             }
             else {
-                top = min(bottom - minHeight, max(minTop, top + transY))
+                top = min(bottom - minHeight, max(maxTop, top + transY))
             }
             break
         case cornerButtons[2]:
@@ -238,7 +208,7 @@ public class PhotoCropOverlay: UIView {
             }
             break
         default:
-            left = min(right - minWidth, max(minLeft, left + transX))
+            left = min(right - minWidth, max(maxLeft, left + transX))
             if ratio > 0 {
                 bottom = top + (right - left) / ratio
             }
@@ -248,9 +218,20 @@ public class PhotoCropOverlay: UIView {
             break
         }
         
-        cropArea = CropArea(top: top, left: left, bottom: bottom, right: right)
+        cropArea = CropArea(top: top, left: left, bottom: viewHeight - bottom, right: viewWidth - right)
 
         gestureRecognizer.setTranslation(.zero, in: self)
+        
+    }
+    
+    func normalizeCropArea() -> CropArea {
+        
+        let width = size.width - cornerButtonWidth
+        let height = width / ratio
+        let top = (size.height - height) / 2
+        let left = cornerButtonWidth / 2
+        
+        return CropArea(top: top, left: left, bottom: top, right: left)
         
     }
     
@@ -258,14 +239,7 @@ public class PhotoCropOverlay: UIView {
         
         removeResizeCropAreaTimer()
         
-        let width = size.width - cornerButtonWidth
-        let height = width / ratio
-        let top = (size.height - height) / 2
-        let left = (size.width - width) / 2
-        
-        UIView.animate(withDuration: 0.5, animations: {
-            self.cropArea = CropArea(top: top, left: left, bottom: top + height, right: left + width)
-        })
+        onResizeCropArea(normalizeCropArea())
         
     }
     
@@ -273,13 +247,13 @@ public class PhotoCropOverlay: UIView {
         
         // 利用了 CAShapeLayerFillRule.evenOdd
         let path = UIBezierPath(rect: translucencyView.bounds)
-        path.append(UIBezierPath(rect: cropArea.rect))
+        path.append(UIBezierPath(rect: cropArea.toRect(width: size.width, height: size.height)))
         translucencyLayer.path = path.cgPath
         
         let left = cropArea.left
         let top = cropArea.top
-        let right = cropArea.right
-        let bottom = cropArea.bottom
+        let right = size.width - cropArea.right
+        let bottom = size.height - cropArea.bottom
         
         // 外围四条线
         outerLines[0].frame = CGRect(x: left, y: top - outerLineWidth, width: right - left, height: outerLineWidth)
@@ -321,24 +295,17 @@ public class PhotoCropOverlay: UIView {
     }
     
     private func removeResizeCropAreaTimer() {
-        if let timer = resizeCropAreaTimer {
-            timer.invalidate()
-            resizeCropAreaTimer = nil
-        }
+        resizeCropAreaTimer?.invalidate()
+        resizeCropAreaTimer = nil
     }
 
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        size = frame.size
-    }
-    
     public override func removeFromSuperview() {
         super.removeFromSuperview()
         removeResizeCropAreaTimer()
     }
     
     public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        guard let view = super.hitTest(point, with: event), resizable else {
+        guard let view = super.hitTest(point, with: event) else {
             return nil
         }
         return cornerButtons.contains(view) ? view : nil
@@ -377,6 +344,55 @@ public class PhotoCropOverlay: UIView {
         
         return photo
         
+    }
+    
+}
+
+extension PhotoCropOverlay {
+    
+    private func setup() {
+        
+        backgroundColor = .clear
+        
+        outerLines = [createLine(color: outerLineColor), createLine(color: outerLineColor), createLine(color: outerLineColor), createLine(color: outerLineColor)]
+        horizontalLines = [createLine(color: innerLineColor), createLine(color: innerLineColor)]
+        verticalLines = [createLine(color: innerLineColor), createLine(color: innerLineColor)]
+        
+        topLeftCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
+        topRightCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
+        bottomLeftCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
+        bottomRightCornerLines = [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
+        
+        cornerButtons = [createButton(), createButton(), createButton(), createButton()]
+        
+    }
+    
+    private func createLine(color: UIColor) -> UIView {
+        let line = UIView()
+        line.backgroundColor = color
+        addSubview(line)
+        return line
+    }
+    
+    private func createHorizontalCornerLine(color: UIColor) -> UIView {
+        let line = createLine(color: color)
+        line.frame = CGRect(x: 0, y: 0, width: cornerButtonWidth / 2, height: cornerLineWidth)
+        return line
+    }
+    
+    private func createVerticalCornerLine(color: UIColor) -> UIView {
+        let line = createLine(color: color)
+        line.frame = CGRect(x: 0, y: 0, width: cornerLineWidth, height: cornerButtonHeight / 2)
+        return line
+    }
+    
+    private func createButton() -> UIButton {
+        let button = UIButton()
+        button.backgroundColor = .clear
+        button.frame = CGRect(x: 0, y: 0, width: cornerButtonWidth, height: cornerButtonHeight)
+        button.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(resize)))
+        addSubview(button)
+        return button
     }
     
 }

@@ -13,10 +13,7 @@ public class PhotoCrop: UIView {
     // 旋转容器
     private lazy var rotateView: UIView = {
         
-        let view = UIView()
-        view.backgroundColor = .clear
-        
-        return view
+        return UIView()
         
     }()
     
@@ -24,7 +21,6 @@ public class PhotoCrop: UIView {
     lazy var photoView: PhotoView = {
        
         let view = PhotoView()
-        
         view.backgroundColor = .red
         view.scaleType = .fit
         view.beforeSetContentInset = { contentInset in
@@ -63,18 +59,28 @@ public class PhotoCrop: UIView {
             // 谁更大就用谁作为缩放系数
             let widthScale = newRect.width / oldRect.width
             let heightScale = newRect.height / oldRect.height
-            let scale = max(widthScale, heightScale)
             
-            UIView.animate(withDuration: 0.5, animations: {
-                
-                self.foregroundView.save()
-                
-                self.cropArea = cropArea
-                self.photoView.scrollView.zoomScale *= scale
-                
-                self.foregroundView.restore()
-                
-            })
+            let oldValue = self.photoView.zoomScale
+            let newValue = self.photoView.getZoomScale(scaledBy: max(widthScale, heightScale))
+            
+            if oldValue != newValue {
+                UIView.animate(withDuration: 0.5, animations: {
+                    
+                    self.foregroundView.save()
+
+                    self.cropArea = cropArea
+                    self.photoView.zoomScale = newValue
+                    
+                    self.foregroundView.restore()
+                    
+                })
+            }
+            else {
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.cropArea = cropArea
+                })
+            }
+            
         }
         
         return view
@@ -101,9 +107,6 @@ public class PhotoCrop: UIView {
     
     // 旋转角度
     var angle = 0.0
-    
-    // 是否正在动画中
-    var isAnimating = false
     
     var isCropping = false {
         didSet {
@@ -206,7 +209,6 @@ public class PhotoCrop: UIView {
             }
         }
         
-        animate(animationDuration: animationDuration, options: options, animations: animations, completion: completion)
         
     }
     
@@ -214,26 +216,6 @@ public class PhotoCrop: UIView {
         
         
         
-    }
-
-    
-    
-    private func animate(animationDuration: TimeInterval = 0.5, options: UIView.AnimationOptions = .curveEaseInOut, animations: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) {
-        
-        isAnimating = true
-        
-        let animationCompletion: (Bool) -> Void = { finished in
-            self.isAnimating = false
-            completion?(finished)
-        }
-        
-        if animationDuration > 0 {
-            UIView.animate(withDuration: animationDuration, delay: 0, options: options, animations: animations, completion: animationCompletion)
-        }
-        else {
-            animations()
-            animationCompletion(true)
-        }
     }
     
 }

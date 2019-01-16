@@ -110,9 +110,9 @@
 				9D7DBC472150A33300F9923D /* PhotoCrop.swift */,
 				9D7DBC29214E566D00F9923D /* PhotoCropOverlay.swift */,
 				9DE4494621EF058700F47BEC /* PhotoCropForeground.swift */,
+				9DE4494C21EF7E5500F47BEC /* PhotoCropFinder.swift */,
 				9DE4494821EF77E800F47BEC /* PhotoCropGrid.swift */,
 				9DE4494A21EF790C00F47BEC /* CropArea.swift */,
-				9DE4494C21EF7E5500F47BEC /* PhotoCropFinder.swift */,
 			);
 			path = Example;
 			sourceTree = "<group>";

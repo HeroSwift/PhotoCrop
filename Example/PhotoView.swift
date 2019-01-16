@@ -42,9 +42,14 @@ public class PhotoView: UIView {
         }
     }
     
-    public var scaleType = ScaleType.fillWidth {
-        didSet {
-            
+    public var scaleType = ScaleType.fillWidth
+    
+    public var zoomScale: CGFloat {
+        get {
+            return scrollView.zoomScale
+        }
+        set {
+            scrollView.zoomScale = zoomScale
         }
     }
     
@@ -102,6 +107,22 @@ public class PhotoView: UIView {
 
         imageView.transform = imageView.transform.rotated(by: CGFloat(offset))
 
+    }
+    
+    public func getZoomScale(scaledBy: CGFloat) -> CGFloat {
+        
+        let oldValue = scrollView.zoomScale
+        var newValue = oldValue * scaledBy
+        
+        if newValue > scrollView.maximumZoomScale {
+            newValue = scrollView.maximumZoomScale
+        }
+        else if newValue < scrollView.minimumZoomScale {
+            newValue = scrollView.minimumZoomScale
+        }
+        
+        return newValue
+        
     }
     
     public func getContentInset() -> UIEdgeInsets {

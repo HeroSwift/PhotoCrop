@@ -1,7 +1,17 @@
 
 import UIKit
 
+// 没法在 Overlay 上实现打孔 + 动画
+// 因此只好新建一个 View，用 clipsToBounds + imageView 的位移来实现
+// 这个 view 需要跟 UIScrollView 紧密绑定，当 UIScrollView 滑动时，也要移动 imageView
+// 从而实现视觉上的合二为一
 class PhotoCropForeground: UIView {
+    
+    public override var frame: CGRect {
+        didSet {
+            updateImagePosition()
+        }
+    }
     
     var scrollView: UIScrollView! {
         didSet {
@@ -17,20 +27,20 @@ class PhotoCropForeground: UIView {
             
             scrollView.addObserver(self, forKeyPath: "contentSize", options: [.new, .old], context: nil)
             scrollView.addObserver(self, forKeyPath: "contentOffset", options: [.new, .old], context: nil)
-            
+
             updateImagePosition()
             updateImageSize()
             
         }
     }
     
-    public override var frame: CGRect {
+    var image: UIImage? {
         didSet {
-            updateImagePosition()
+            imageView.image = image
         }
     }
-    
-    lazy var imageView: UIImageView = {
+
+    private lazy var imageView: UIImageView = {
     
         let view = UIImageView()
         addSubview(view)
@@ -44,12 +54,17 @@ class PhotoCropForeground: UIView {
     private var relativeX: CGFloat = 0
     private var relativeY: CGFloat = 0
     
+    // 记录图片的当前位置
     func save() {
-        let frame = imageView.frame
-        relativeX = frame.origin.x / frame.width
-        relativeY = frame.origin.y / frame.height
+        
+        let imageFrame = imageView.frame
+        
+        relativeX = imageFrame.origin.x / imageFrame.width
+        relativeY = imageFrame.origin.y / imageFrame.height
+        
     }
     
+    // 当 UIScrollView 发生改变后，再把记录的相对位置还原回去
     func restore() {
         
         var imageFrame = imageView.frame
@@ -72,17 +87,19 @@ class PhotoCropForeground: UIView {
         }
         
         let contentOffset = scrollView.contentOffset
-        print("position: \(contentOffset)")
+
         // contentOffset 是反向的，比如往右下方拖拽，contentOffset 的 x 和 y 都是负数
         // 并且，x 和 y 的绝对值是到 UIScrollView 左上角的距离
         
-        imageView.frame.origin = CGPoint(x: -contentOffset.x - frame.origin.x, y: -contentOffset.y - frame.origin.y)
+        imageView.frame.origin = CGPoint(
+            x: -contentOffset.x - frame.origin.x,
+            y: -contentOffset.y - frame.origin.y
+        )
         
     }
     
     func updateImageSize() {
         
-        print("size: \(scrollView.contentSize)")
         imageView.frame.size = scrollView.contentSize
         
     }
@@ -103,8 +120,10 @@ class PhotoCropForeground: UIView {
             break
         default: ()
         }
+        
     }
     
+    // 无视各种交互
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         return false
     }

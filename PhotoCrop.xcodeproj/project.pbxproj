@@ -17,6 +17,9 @@
 		9D960803216DFE2E006684D6 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D960802216DFE2E006684D6 /* SimpleButton.swift */; };
 		9DE4494521EDC24300F47BEC /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494421EDC24200F47BEC /* PhotoView.swift */; };
 		9DE4494721EF058700F47BEC /* PhotoCropForeground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494621EF058700F47BEC /* PhotoCropForeground.swift */; };
+		9DE4494921EF77E800F47BEC /* PhotoCropGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494821EF77E800F47BEC /* PhotoCropGrid.swift */; };
+		9DE4494B21EF790C00F47BEC /* CropArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494A21EF790C00F47BEC /* CropArea.swift */; };
+		9DE4494D21EF7E5500F47BEC /* PhotoCropFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494C21EF7E5500F47BEC /* PhotoCropFinder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +47,9 @@
 		9D960802216DFE2E006684D6 /* SimpleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 		9DE4494421EDC24200F47BEC /* PhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
 		9DE4494621EF058700F47BEC /* PhotoCropForeground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropForeground.swift; sourceTree = "<group>"; };
+		9DE4494821EF77E800F47BEC /* PhotoCropGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropGrid.swift; sourceTree = "<group>"; };
+		9DE4494A21EF790C00F47BEC /* CropArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropArea.swift; sourceTree = "<group>"; };
+		9DE4494C21EF7E5500F47BEC /* PhotoCropFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropFinder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +110,9 @@
 				9D7DBC472150A33300F9923D /* PhotoCrop.swift */,
 				9D7DBC29214E566D00F9923D /* PhotoCropOverlay.swift */,
 				9DE4494621EF058700F47BEC /* PhotoCropForeground.swift */,
+				9DE4494821EF77E800F47BEC /* PhotoCropGrid.swift */,
+				9DE4494A21EF790C00F47BEC /* CropArea.swift */,
+				9DE4494C21EF7E5500F47BEC /* PhotoCropFinder.swift */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -229,9 +238,12 @@
 			files = (
 				9DE4494721EF058700F47BEC /* PhotoCropForeground.swift in Sources */,
 				9D7DBC482150A33300F9923D /* PhotoCrop.swift in Sources */,
+				9DE4494D21EF7E5500F47BEC /* PhotoCropFinder.swift in Sources */,
+				9DE4494921EF77E800F47BEC /* PhotoCropGrid.swift in Sources */,
 				9DE4494521EDC24300F47BEC /* PhotoView.swift in Sources */,
 				9D7DBC1C214E530D00F9923D /* ViewController.swift in Sources */,
 				9D7DBC1A214E530D00F9923D /* AppDelegate.swift in Sources */,
+				9DE4494B21EF790C00F47BEC /* CropArea.swift in Sources */,
 				9D7DBC2D214F3F5E00F9923D /* PhotoCropOverlay.swift in Sources */,
 				9D960803216DFE2E006684D6 /* SimpleButton.swift in Sources */,
 			);

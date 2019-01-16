@@ -48,13 +48,18 @@ public class PhotoCrop: UIView {
             self.foregroundView.updateImagePosition()
         }
         view.onCropAreaResize = { cropArea in
-
-            UIView.animate(withDuration: 0.5, animations: {
-                self.cropArea = cropArea
-                // 通过 UIScrollView 的 contentInset 设置滚动窗口的尺寸
-                self.photoView.updateZoomScale()
-            })
             
+            let oldRect = self.maskedView.cropArea.toRect(rect: self.bounds)
+            let newRect = cropArea.toRect(rect: self.bounds)
+            
+            let scale = (newRect.width * newRect.height) / (oldRect.width * oldRect.height)
+            
+            UIView.animate(withDuration: 0.5, animations: {
+                print("\(cropArea.toEdgeInsets()) \(self.maskedView.cropArea.toEdgeInsets())")
+                self.cropArea = cropArea
+                let scrollView = self.photoView.scrollView
+                scrollView.zoomScale = scrollView.zoomScale * scale
+            })
         }
         
         return view

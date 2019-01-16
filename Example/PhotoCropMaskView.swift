@@ -17,8 +17,8 @@ class CropArea {
         self.right = right
     }
     
-    func toRect(width: CGFloat, height: CGFloat) -> CGRect {
-        return CGRect(x: left, y: top, width: width - right - left, height: height - bottom - top)
+    func toRect(rect: CGRect) -> CGRect {
+        return CGRect(x: rect.origin.x + left, y: rect.origin.y + top, width: rect.width - left - right, height: rect.height - top - bottom)
     }
     
     func toEdgeInsets() -> UIEdgeInsets {
@@ -27,7 +27,7 @@ class CropArea {
     
 }
 
-public class PhotoCropOverlay: UIView {
+public class PhotoCropMaskView: UIView {
     
     var outerLineWidth: CGFloat = 1
     var outerLineColor: UIColor = .white
@@ -62,6 +62,9 @@ public class PhotoCropOverlay: UIView {
     // 当改变尺寸时，是否保持比例
     var ratio: CGFloat = 1
     
+    var onCropAreaChange: ((CropArea) -> Void)!
+    var onCropAreaResize: ((CropArea) -> Void)!
+    
     public override var frame: CGRect {
         didSet {
             size = frame.size
@@ -71,10 +74,9 @@ public class PhotoCropOverlay: UIView {
     var cropArea = CropArea.zero {
         didSet {
             updateCropArea()
+            onCropAreaChange(cropArea)
         }
     }
-    
-    var onResizeCropArea: ((CropArea) -> Void)!
     
     lazy var maxCropArea: CropArea = {
         return CropArea(top: cornerButtonHeight / 2, left: cornerButtonWidth / 2, bottom: cornerButtonHeight / 2, right: cornerButtonWidth / 2)
@@ -88,12 +90,9 @@ public class PhotoCropOverlay: UIView {
             guard size.width != oldValue.width || size.height != oldValue.height else {
                 return
             }
-            
-            let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-            blueEffectView.frame = frame
-            translucencyView.frame = frame
-            translucencyLayer.frame = frame
-            
+
+            blueEffectView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+
             resizeCropArea()
             
         }
@@ -104,30 +103,8 @@ public class PhotoCropOverlay: UIView {
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         view.alpha = 0.3
         
-        translucencyView.addSubview(view)
-
-        return view
-        
-    }()
-    
-    private lazy var translucencyLayer: CAShapeLayer = {
-        
-        // https://jayeshkawli.ghost.io/making-a-hole-in-uiview-with-calayer/
-        let layer = CAShapeLayer()
-        layer.fillRule = .evenOdd
-        
-        return layer
-        
-    }()
-    
-    private lazy var translucencyView: UIView = {
-    
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.6)
         insertSubview(view, at: 0)
-        
-        view.layer.mask = translucencyLayer
-        
+
         return view
         
     }()
@@ -236,19 +213,11 @@ public class PhotoCropOverlay: UIView {
     }
     
     @objc private func resizeCropArea() {
-        
         removeResizeCropAreaTimer()
-        
-        onResizeCropArea(normalizeCropArea())
-        
+        onCropAreaResize(normalizeCropArea())
     }
     
     private func updateCropArea() {
-        
-        // 利用了 CAShapeLayerFillRule.evenOdd
-        let path = UIBezierPath(rect: translucencyView.bounds)
-        path.append(UIBezierPath(rect: cropArea.toRect(width: size.width, height: size.height)))
-        translucencyLayer.path = path.cgPath
         
         let left = cropArea.left
         let top = cropArea.top
@@ -348,7 +317,7 @@ public class PhotoCropOverlay: UIView {
     
 }
 
-extension PhotoCropOverlay {
+extension PhotoCropMaskView {
     
     private func setup() {
         

@@ -5,7 +5,7 @@ public class PhotoCropFinder: UIView {
     
     var configuration: PhotoCropConfiguration!
     
-    var onCropAreaChange: ((PhotoCropArea) -> Void)!
+    var onCropAreaChange: (() -> Void)!
     var onCropAreaResize: (() -> Void)!
     
     public override var frame: CGRect {
@@ -17,7 +17,7 @@ public class PhotoCropFinder: UIView {
     var cropArea = PhotoCropArea.zero {
         didSet {
             update()
-            onCropAreaChange(cropArea)
+            onCropAreaChange()
         }
     }
     
@@ -102,11 +102,11 @@ public class PhotoCropFinder: UIView {
             let cropWidth = size.width - configuration.finderCornerButtonSize - 2 * configuration.finderCornerLineWidth
             let cropHeight = cropWidth / configuration.cropRatio
             
-            let top = (size.height - cropHeight) / 2
-            let left = configuration.finderCornerButtonSize / 2 + configuration.finderCornerLineWidth
+            let vertical = (size.height - cropHeight) / 2
+            let horizontal = configuration.finderCornerButtonSize / 2 + configuration.finderCornerLineWidth
             
-            normalizedCropArea = PhotoCropArea(top: top, left: left, bottom: top, right: left)
-        
+            normalizedCropArea = PhotoCropArea(top: vertical, left: horizontal, bottom: vertical, right: horizontal)
+
             // 重新计算裁剪区域
             resizeCropArea()
             
@@ -133,8 +133,7 @@ public class PhotoCropFinder: UIView {
         let viewHeight = size.height
         
         // 位移量
-        let translation = gestureRecognizer.translation(in: self)
-        let transX = translation.x
+        let offsetX = gestureRecognizer.translation(in: self).x
         
         // 裁剪区域
         var left = cropArea.left
@@ -148,19 +147,19 @@ public class PhotoCropFinder: UIView {
         
         switch button {
         case topLeftButton:
-            left = min(right - minWidth, max(maxLeft, left + transX))
+            left = min(right - minWidth, max(maxLeft, left + offsetX))
             top = bottom - (right - left) / configuration.cropRatio
             break
         case topRightButton:
-            right = min(maxRight, max(left + minWidth, right + transX))
+            right = min(maxRight, max(left + minWidth, right + offsetX))
             top = bottom - (right - left) / configuration.cropRatio
             break
         case bottomRightButton:
-            right = min(maxRight, max(left + minWidth, right + transX))
+            right = min(maxRight, max(left + minWidth, right + offsetX))
             bottom = top + (right - left) / configuration.cropRatio
             break
         default:
-            left = min(right - minWidth, max(maxLeft, left + transX))
+            left = min(right - minWidth, max(maxLeft, left + offsetX))
             bottom = top + (right - left) / configuration.cropRatio
             break
         }

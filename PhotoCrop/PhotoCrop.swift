@@ -49,8 +49,8 @@ public class PhotoCrop: UIView {
         
         view.configuration = configuration
 
-        view.onCropAreaChange = { cropArea in
-            let rect = cropArea.toRect(rect: self.bounds)
+        view.onCropAreaChange = {
+            let rect = view.cropArea.toRect(rect: self.bounds)
             self.foregroundView.frame = rect
             self.gridView.frame = rect
         }

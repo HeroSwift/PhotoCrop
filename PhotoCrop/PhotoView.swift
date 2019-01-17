@@ -49,7 +49,7 @@ public class PhotoView: UIView {
             return scrollView.zoomScale
         }
         set {
-            scrollView.zoomScale = zoomScale
+            scrollView.zoomScale = newValue
         }
     }
     

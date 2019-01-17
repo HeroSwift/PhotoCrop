@@ -3,7 +3,7 @@ import UIKit
 
 public class PhotoCrop: UIView {
     
-    var image: UIImage! {
+    public var image: UIImage! {
         didSet {
             photoView.imageView.image = image
             foregroundView.image = image
@@ -18,7 +18,7 @@ public class PhotoCrop: UIView {
     }()
     
     // 图片容器，可缩放
-    lazy var photoView: PhotoView = {
+    private lazy var photoView: PhotoView = {
        
         let view = PhotoView()
         view.backgroundColor = .red
@@ -35,6 +35,9 @@ public class PhotoCrop: UIView {
     
     private lazy var overlayView: PhotoCropOverlay = {
         
+        let view = PhotoCropOverlay()
+        view.blurView.alpha = configuration.overlayAlpha
+        
         return PhotoCropOverlay()
         
     }()
@@ -43,6 +46,17 @@ public class PhotoCrop: UIView {
     private lazy var finderView: PhotoCropFinder = {
        
         let view = PhotoCropFinder()
+        
+        view.borderLineWidth = configuration.finderBorderLineWidth
+        view.borderLineColor = configuration.finderBorderLineColor
+        
+        view.cornerLineWidth = configuration.finderCornerLineWidth
+        view.cornerLineColor = configuration.finderCornerLineColor
+        
+        view.cornerButtonWidth = configuration.finderCornerButtonWidth
+        view.cornerButtonHeight = configuration.finderCornerButtonHeight
+        
+        view.cropRatio = configuration.cropRatio
         
         view.onCropAreaChange = { cropArea in
             let rect = cropArea.toRect(rect: self.bounds)
@@ -93,7 +107,7 @@ public class PhotoCrop: UIView {
         let view = PhotoCropForeground()
         
         view.onScaleFactorChange = {
-            self.finderView.updateMinSize(scaleFactor: view.scaleFactor)
+            self.updateFinderMinSize()
         }
         
         return view
@@ -102,11 +116,16 @@ public class PhotoCrop: UIView {
     
     private lazy var gridView: PhotoCropGrid = {
         
-        return PhotoCropGrid()
+        let view = PhotoCropGrid()
+        
+        view.lineWidth = configuration.gridLineWidth
+        view.lineColor = configuration.gridLineColor
+        
+        return view
         
     }()
     
-    var cropArea = CropArea.zero {
+    private var cropArea = CropArea.zero {
         didSet {
             finderView.cropArea = cropArea
             foregroundView.frame = cropArea.toRect(rect: bounds)
@@ -116,8 +135,12 @@ public class PhotoCrop: UIView {
     // 旋转角度
     var angle = 0.0
     
-    var isCropping = false {
+    public var isCropping = false {
         didSet {
+            
+            guard isCropping != oldValue else {
+                return
+            }
             
             if isCropping {
                 
@@ -172,23 +195,22 @@ public class PhotoCrop: UIView {
             
         }
     }
+    
+    private var configuration: PhotoCropConfiguration!
 
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
+    public convenience init(configuration: PhotoCropConfiguration) {
+        self.init()
+        self.configuration = configuration
         setup()
     }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        setup()
-    }
-    
+
     private func setup() {
         addSubview(rotateView)
         rotateView.addSubview(photoView)
     }
     
     public override func layoutSubviews() {
+        
         super.layoutSubviews()
         
         rotateView.frame = bounds
@@ -196,11 +218,7 @@ public class PhotoCrop: UIView {
         overlayView.frame = bounds
         finderView.frame = bounds
         
-        finderView.updateMinSize(scaleFactor: foregroundView.scaleFactor)
-        
-        // 这句很重要
-        // 根据当前的旋转角度设置 frame
-//        photoView.frame = currentRect
+        updateFinderMinSize()
 
     }
 
@@ -241,5 +259,12 @@ extension PhotoCrop {
         return CropArea(top: top, left: left, bottom: bottom, right: right)
     }
     
+    private func updateFinderMinSize() {
+        finderView.updateMinSize(
+            scaleFactor: foregroundView.scaleFactor,
+            minWidth: configuration.finderMinWidth,
+            minHeight: configuration.finderMinHeight
+        )
+    }
 }
 

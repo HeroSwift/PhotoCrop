@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import PhotoCrop
 
 class ViewController: UIViewController {
 
-    let photoCrop = PhotoCrop()
+    let photoCrop = PhotoCrop(configuration: PhotoCropConfiguration())
     
     override func viewDidLoad() {
         super.viewDidLoad()

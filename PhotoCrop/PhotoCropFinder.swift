@@ -3,14 +3,40 @@ import UIKit
 
 public class PhotoCropFinder: UIView {
     
-    var borderLineWidth: CGFloat = 1
-    var borderLineColor: UIColor = .white
+    var borderLineWidth: CGFloat = 0
+    var borderLineColor: UIColor = .clear
     
-    var cornerLineWidth: CGFloat = 3
-    var cornerLineColor: UIColor = .white
+    var cornerLineWidth: CGFloat = 0
+    var cornerLineColor: UIColor = .clear
     
-    var cornerButtonWidth: CGFloat = 36
-    var cornerButtonHeight: CGFloat = 36
+    var cornerButtonWidth: CGFloat = 0
+    var cornerButtonHeight: CGFloat = 0
+    
+    var cropRatio: CGFloat = 1
+    
+    // 裁剪的最小尺寸
+    var minWidth: CGFloat = 0
+    var minHeight: CGFloat = 0
+
+    var onCropAreaChange: ((CropArea) -> Void)!
+    var onCropAreaResize: (() -> Void)!
+    
+    public override var frame: CGRect {
+        didSet {
+            size = frame.size
+        }
+    }
+    
+    var cropArea = CropArea.zero {
+        didSet {
+            updateCropArea()
+            onCropAreaChange(cropArea)
+        }
+    }
+    
+    lazy var maxCropArea: CropArea = {
+        return CropArea(top: cornerButtonHeight / 2, left: cornerButtonWidth / 2, bottom: cornerButtonHeight / 2, right: cornerButtonWidth / 2)
+    }()
     
     private lazy var borderLines: [UIView] = {
         return [createLine(color: borderLineColor), createLine(color: borderLineColor), createLine(color: borderLineColor), createLine(color: borderLineColor)]
@@ -32,34 +58,7 @@ public class PhotoCropFinder: UIView {
     private lazy var cornerButtons: [UIView] = {
         return [createButton(), createButton(), createButton(), createButton()]
     }()
-    
-    // 裁剪的最小尺寸
-    var minWidth: CGFloat = 100
-    var minHeight: CGFloat = 100
-    
-    // 当改变尺寸时，是否保持比例
-    var ratio: CGFloat = 1
-    
-    var onCropAreaChange: ((CropArea) -> Void)!
-    var onCropAreaResize: (() -> Void)!
-    
-    public override var frame: CGRect {
-        didSet {
-            size = frame.size
-        }
-    }
-    
-    var cropArea = CropArea.zero {
-        didSet {
-            updateCropArea()
-            onCropAreaChange(cropArea)
-        }
-    }
-    
-    lazy var maxCropArea: CropArea = {
-        return CropArea(top: cornerButtonHeight / 2, left: cornerButtonWidth / 2, bottom: cornerButtonHeight / 2, right: cornerButtonWidth / 2)
-    }()
-    
+
     private var resizeCropAreaTimer: Timer?
     
     private var size = CGSize.zero {
@@ -110,19 +109,19 @@ public class PhotoCropFinder: UIView {
         switch button {
         case cornerButtons[0]:
             left = min(right - minWidth, max(maxLeft, left + transX))
-            top = bottom - (right - left) / ratio
+            top = bottom - (right - left) / cropRatio
             break
         case cornerButtons[1]:
             right = min(maxRight, max(left + minWidth, right + transX))
-            top = bottom - (right - left) / ratio
+            top = bottom - (right - left) / cropRatio
             break
         case cornerButtons[2]:
             right = min(maxRight, max(left + minWidth, right + transX))
-            bottom = top + (right - left) / ratio
+            bottom = top + (right - left) / cropRatio
             break
         default:
             left = min(right - minWidth, max(maxLeft, left + transX))
-            bottom = top + (right - left) / ratio
+            bottom = top + (right - left) / cropRatio
             break
         }
         
@@ -132,19 +131,19 @@ public class PhotoCropFinder: UIView {
         
     }
     
-    func updateMinSize(scaleFactor: CGFloat) {
+    func updateMinSize(scaleFactor: CGFloat, minWidth: CGFloat, minHeight: CGFloat) {
         
         let rect = normalizeCropArea().toRect(rect: self.bounds)
         
-        minWidth = rect.width / scaleFactor
-        minHeight = rect.height / scaleFactor
+        self.minWidth = max(rect.width / scaleFactor, minWidth)
+        self.minHeight = max(rect.height / scaleFactor, minHeight)
 
     }
     
     func normalizeCropArea() -> CropArea {
         
         let width = size.width - cornerButtonWidth
-        let height = width / ratio
+        let height = width / cropRatio
         let top = (size.height - height) / 2
         let left = cornerButtonWidth / 2
         

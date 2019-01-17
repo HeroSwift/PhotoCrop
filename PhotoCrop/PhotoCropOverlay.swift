@@ -12,11 +12,10 @@ class PhotoCropOverlay: UIView {
         }
     }
 
-    private lazy var blueEffectView: UIVisualEffectView = {
+    lazy var blurView: UIVisualEffectView = {
         
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-        view.alpha = 0.8
-        
+
         insertSubview(view, at: 0)
 
         return view
@@ -30,7 +29,7 @@ class PhotoCropOverlay: UIView {
     
     private func update() {
         
-        blueEffectView.frame = bounds
+        blurView.frame = bounds
         
     }
 

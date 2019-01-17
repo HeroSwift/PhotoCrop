@@ -13,6 +13,17 @@ class PhotoCropForeground: UIView {
         }
     }
     
+    var scaleFactor: CGFloat = 0 {
+        didSet {
+            guard scaleFactor != oldValue else {
+                return
+            }
+            onScaleFactorChange()
+        }
+    }
+    
+    var onScaleFactorChange: (() -> Void)!
+    
     var scrollView: UIScrollView! {
         didSet {
             
@@ -102,6 +113,8 @@ class PhotoCropForeground: UIView {
         
         imageView.frame.size = scrollView.contentSize
         
+        scaleFactor = scrollView.maximumZoomScale / scrollView.zoomScale
+
     }
     
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {

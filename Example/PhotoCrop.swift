@@ -49,11 +49,13 @@ public class PhotoCrop: UIView {
             self.foregroundView.frame = rect
             self.gridView.frame = rect
         }
-        view.onCropAreaResize = { cropArea in
+        view.onCropAreaResize = {
             
             // 小值
             let oldRect = self.finderView.cropArea.toRect(rect: self.bounds)
+            
             // 大值
+            let cropArea = self.finderView.normalizeCropArea()
             let newRect = cropArea.toRect(rect: self.bounds)
             
             // 谁更大就用谁作为缩放系数
@@ -61,7 +63,7 @@ public class PhotoCrop: UIView {
             let heightScale = newRect.height / oldRect.height
             
             let oldValue = self.photoView.zoomScale
-            let newValue = self.photoView.getZoomScale(scaledBy: max(widthScale, heightScale))
+            let newValue = oldValue * max(widthScale, heightScale)
             
             if oldValue != newValue {
                 UIView.animate(withDuration: 0.5, animations: {
@@ -88,7 +90,13 @@ public class PhotoCrop: UIView {
     
     private lazy var foregroundView: PhotoCropForeground = {
 
-        return PhotoCropForeground()
+        let view = PhotoCropForeground()
+        
+        view.onScaleFactorChange = {
+            self.finderView.updateMinSize(scaleFactor: view.scaleFactor)
+        }
+        
+        return view
         
     }()
     
@@ -187,6 +195,8 @@ public class PhotoCrop: UIView {
         photoView.frame = bounds
         overlayView.frame = bounds
         finderView.frame = bounds
+        
+        finderView.updateMinSize(scaleFactor: foregroundView.scaleFactor)
         
         // 这句很重要
         // 根据当前的旋转角度设置 frame

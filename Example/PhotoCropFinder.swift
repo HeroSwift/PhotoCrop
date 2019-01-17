@@ -41,7 +41,7 @@ public class PhotoCropFinder: UIView {
     var ratio: CGFloat = 1
     
     var onCropAreaChange: ((CropArea) -> Void)!
-    var onCropAreaResize: ((CropArea) -> Void)!
+    var onCropAreaResize: (() -> Void)!
     
     public override var frame: CGRect {
         didSet {
@@ -156,6 +156,15 @@ public class PhotoCropFinder: UIView {
         
     }
     
+    func updateMinSize(scaleFactor: CGFloat) {
+        
+        let rect = normalizeCropArea().toRect(rect: self.bounds)
+        
+        minWidth = rect.width / scaleFactor
+        minHeight = rect.height / scaleFactor
+
+    }
+    
     func normalizeCropArea() -> CropArea {
         
         let width = size.width - cornerButtonWidth
@@ -169,7 +178,7 @@ public class PhotoCropFinder: UIView {
     
     @objc private func resizeCropArea() {
         removeResizeCropAreaTimer()
-        onCropAreaResize(normalizeCropArea())
+        onCropAreaResize()
     }
     
     private func updateCropArea() {

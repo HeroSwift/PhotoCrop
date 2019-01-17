@@ -249,27 +249,30 @@ extension PhotoCropFinder {
         let bottom = size.height - cropArea.bottom
         
         let halfButtonSize = configuration.finderCornerButtonSize / 2
+        let finderBorderWidth = configuration.finderBorderWidth
+        let finderCornerLineWidth = configuration.finderCornerLineWidth
+        let finderCornerLineSize = configuration.finderCornerLineSize
         
-        topBorder.frame = CGRect(x: left, y: top - configuration.finderBorderWidth, width: right - left, height: configuration.finderBorderWidth)
-        rightBorder.frame = CGRect(x: right, y: top, width: configuration.finderBorderWidth, height: bottom - top)
-        bottomBorder.frame = CGRect(x: left, y: bottom, width: right - left, height: configuration.finderBorderWidth)
-        leftBorder.frame = CGRect(x: left - configuration.finderBorderWidth, y: top, width: configuration.finderBorderWidth, height: bottom - top)
+        topBorder.frame = CGRect(x: left, y: top - finderBorderWidth, width: right - left, height: finderBorderWidth)
+        rightBorder.frame = CGRect(x: right, y: top, width: finderBorderWidth, height: bottom - top)
+        bottomBorder.frame = CGRect(x: left, y: bottom, width: right - left, height: finderBorderWidth)
+        leftBorder.frame = CGRect(x: left - finderBorderWidth, y: top, width: finderBorderWidth, height: bottom - top)
 
-        topLeftButton.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth - halfButtonSize, y: top - configuration.finderCornerLineWidth - halfButtonSize)
-        topLeftHorizontalLine.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth, y: top - configuration.finderCornerLineWidth)
-        topLeftVerticalLine.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth, y: top - configuration.finderCornerLineWidth)
+        topLeftButton.frame.origin = CGPoint(x: left - finderCornerLineWidth - halfButtonSize, y: top - finderCornerLineWidth - halfButtonSize)
+        topLeftHorizontalLine.frame.origin = CGPoint(x: left - finderCornerLineWidth, y: top - finderCornerLineWidth)
+        topLeftVerticalLine.frame.origin = CGPoint(x: left - finderCornerLineWidth, y: top - finderCornerLineWidth)
         
-        topRightButton.frame.origin = CGPoint(x: right + configuration.finderCornerLineWidth - halfButtonSize, y: top - configuration.finderCornerLineWidth - halfButtonSize)
-        topRightHorizontalLine.frame.origin = CGPoint(x: right + configuration.finderCornerLineWidth - configuration.finderCornerLineSize, y: top - configuration.finderCornerLineWidth)
-        topRightVerticalLine.frame.origin = CGPoint(x: right, y: top - configuration.finderCornerLineWidth)
+        topRightButton.frame.origin = CGPoint(x: right + finderCornerLineWidth - halfButtonSize, y: top - finderCornerLineWidth - halfButtonSize)
+        topRightHorizontalLine.frame.origin = CGPoint(x: right + finderCornerLineWidth - finderCornerLineSize, y: top - finderCornerLineWidth)
+        topRightVerticalLine.frame.origin = CGPoint(x: right, y: top - finderCornerLineWidth)
         
-        bottomRightButton.frame.origin = CGPoint(x: right + configuration.finderCornerLineWidth - halfButtonSize, y: bottom + configuration.finderCornerLineWidth - halfButtonSize)
-        bottomRightHorizontalLine.frame.origin = CGPoint(x: right + configuration.finderCornerLineWidth - configuration.finderCornerLineSize, y: bottom)
-        bottomRightVerticalLine.frame.origin = CGPoint(x: right, y: bottom + configuration.finderCornerLineWidth - configuration.finderCornerLineSize)
+        bottomRightButton.frame.origin = CGPoint(x: right + finderCornerLineWidth - halfButtonSize, y: bottom + finderCornerLineWidth - halfButtonSize)
+        bottomRightHorizontalLine.frame.origin = CGPoint(x: right + finderCornerLineWidth - finderCornerLineSize, y: bottom)
+        bottomRightVerticalLine.frame.origin = CGPoint(x: right, y: bottom + finderCornerLineWidth - finderCornerLineSize)
         
-        bottomLeftButton.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth - halfButtonSize, y: bottom + configuration.finderCornerLineWidth - halfButtonSize)
-        bottomLeftHorizontalLine.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth, y: bottom)
-        bottomLeftVerticalLine.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth, y: bottom + configuration.finderCornerLineWidth - configuration.finderCornerLineSize)
+        bottomLeftButton.frame.origin = CGPoint(x: left - finderCornerLineWidth - halfButtonSize, y: bottom + finderCornerLineWidth - halfButtonSize)
+        bottomLeftHorizontalLine.frame.origin = CGPoint(x: left - finderCornerLineWidth, y: bottom)
+        bottomLeftVerticalLine.frame.origin = CGPoint(x: left - finderCornerLineWidth, y: bottom + finderCornerLineWidth - finderCornerLineSize)
         
     }
     

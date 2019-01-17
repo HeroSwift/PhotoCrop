@@ -93,9 +93,9 @@
 		9D7DBC0A214E52FD00F9923D /* PhotoCrop */ = {
 			isa = PBXGroup;
 			children = (
+				9D7DBC0C214E52FD00F9923D /* Info.plist */,
 				9DFE527821F025C900E27DD9 /* view */,
 				9DFE527721F025BC00E27DD9 /* model */,
-				9D7DBC0C214E52FD00F9923D /* Info.plist */,
 				9DE4494421EDC24200F47BEC /* PhotoView.swift */,
 				9D960802216DFE2E006684D6 /* SimpleButton.swift */,
 				9D7DBC472150A33300F9923D /* PhotoCrop.swift */,

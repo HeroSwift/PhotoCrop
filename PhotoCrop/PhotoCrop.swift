@@ -47,17 +47,8 @@ public class PhotoCrop: UIView {
        
         let view = PhotoCropFinder()
         
-        view.borderLineWidth = configuration.finderBorderLineWidth
-        view.borderLineColor = configuration.finderBorderLineColor
-        
-        view.cornerLineWidth = configuration.finderCornerLineWidth
-        view.cornerLineColor = configuration.finderCornerLineColor
-        
-        view.cornerButtonWidth = configuration.finderCornerButtonWidth
-        view.cornerButtonHeight = configuration.finderCornerButtonHeight
-        
-        view.cropRatio = configuration.cropRatio
-        
+        view.configuration = configuration
+
         view.onCropAreaChange = { cropArea in
             let rect = cropArea.toRect(rect: self.bounds)
             self.foregroundView.frame = rect
@@ -69,7 +60,7 @@ public class PhotoCrop: UIView {
             let oldRect = self.finderView.cropArea.toRect(rect: self.bounds)
             
             // 大值
-            let cropArea = self.finderView.normalizeCropArea()
+            let cropArea = self.finderView.normalizedCropArea
             let newRect = cropArea.toRect(rect: self.bounds)
             
             // 谁更大就用谁作为缩放系数
@@ -168,7 +159,7 @@ public class PhotoCrop: UIView {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     
                     UIView.animate(withDuration: 0.5, animations: {
-                        self.cropArea = self.finderView.normalizeCropArea()
+                        self.cropArea = self.finderView.normalizedCropArea
                         self.photoView.updateZoomScale()
                         self.overlayView.alpha = 1
                         self.finderView.alpha = 1
@@ -292,10 +283,10 @@ extension PhotoCrop {
     
     // 让 CropArea 完全包裹住图片，但又不超出屏幕
     private func getCropAreaByContentInset(contentInset: UIEdgeInsets) -> PhotoCropArea {
-        let left = max(contentInset.left, finderView.cornerLineWidth)
-        let top = max(contentInset.top, finderView.cornerLineWidth)
-        let right = max(contentInset.right, finderView.cornerLineWidth)
-        let bottom = max(contentInset.bottom, finderView.cornerLineWidth)
+        let left = max(contentInset.left, configuration.finderCornerLineWidth)
+        let top = max(contentInset.top, configuration.finderCornerLineWidth)
+        let right = max(contentInset.right, configuration.finderCornerLineWidth)
+        let bottom = max(contentInset.bottom, configuration.finderCornerLineWidth)
         return PhotoCropArea(top: top, left: left, bottom: bottom, right: right)
     }
     

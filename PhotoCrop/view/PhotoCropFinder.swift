@@ -3,21 +3,8 @@ import UIKit
 
 public class PhotoCropFinder: UIView {
     
-    var borderLineWidth: CGFloat = 0
-    var borderLineColor: UIColor = .clear
+    var configuration: PhotoCropConfiguration!
     
-    var cornerLineWidth: CGFloat = 0
-    var cornerLineColor: UIColor = .clear
-    
-    var cornerButtonWidth: CGFloat = 0
-    var cornerButtonHeight: CGFloat = 0
-    
-    var cropRatio: CGFloat = 1
-    
-    // 裁剪的最小尺寸
-    var minWidth: CGFloat = 0
-    var minHeight: CGFloat = 0
-
     var onCropAreaChange: ((PhotoCropArea) -> Void)!
     var onCropAreaResize: (() -> Void)!
     
@@ -29,36 +16,80 @@ public class PhotoCropFinder: UIView {
     
     var cropArea = PhotoCropArea.zero {
         didSet {
-            updateCropArea()
+            update()
             onCropAreaChange(cropArea)
         }
     }
     
-    lazy var maxCropArea: PhotoCropArea = {
-        return PhotoCropArea(top: cornerButtonHeight / 2, left: cornerButtonWidth / 2, bottom: cornerButtonHeight / 2, right: cornerButtonWidth / 2)
+    var normalizedCropArea = PhotoCropArea.zero
+    
+    private var minWidth: CGFloat = 0
+    private var minHeight: CGFloat = 0
+    
+    private lazy var topBorder: UIView = {
+        return createLine(color: configuration.finderBorderColor)
     }()
     
-    private lazy var borderLines: [UIView] = {
-        return [createLine(color: borderLineColor), createLine(color: borderLineColor), createLine(color: borderLineColor), createLine(color: borderLineColor)]
+    private lazy var rightBorder: UIView = {
+        return createLine(color: configuration.finderBorderColor)
     }()
     
-    private lazy var topLeftCornerLines: [UIView] = {
-        return [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
-    }()
-    private lazy var topRightCornerLines: [UIView] = {
-        return [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
-    }()
-    private lazy var bottomLeftCornerLines: [UIView] = {
-        return [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
-    }()
-    private lazy var bottomRightCornerLines: [UIView] = {
-        return [createHorizontalCornerLine(color: cornerLineColor), createVerticalCornerLine(color: cornerLineColor)]
+    private lazy var bottomBorder: UIView = {
+        return createLine(color: configuration.finderBorderColor)
     }()
     
-    private lazy var cornerButtons: [UIView] = {
-        return [createButton(), createButton(), createButton(), createButton()]
+    private lazy var leftBorder: UIView = {
+        return createLine(color: configuration.finderBorderColor)
+    }()
+    
+    private lazy var topLeftButton: UIView = {
+        return createButton()
+    }()
+    
+    private lazy var topRightButton: UIView = {
+        return createButton()
+    }()
+    
+    private lazy var bottomLeftButton: UIView = {
+        return createButton()
+    }()
+    
+    private lazy var bottomRightButton: UIView = {
+        return createButton()
     }()
 
+    private lazy var topLeftHorizontalLine: UIView = {
+        return createHorizontalCornerLine(color: configuration.finderCornerLineColor)
+    }()
+    
+    private lazy var topLeftVerticalLine: UIView = {
+        return createVerticalCornerLine(color: configuration.finderCornerLineColor)
+    }()
+    
+    private lazy var topRightHorizontalLine: UIView = {
+        return createHorizontalCornerLine(color: configuration.finderCornerLineColor)
+    }()
+    
+    private lazy var topRightVerticalLine: UIView = {
+        return createVerticalCornerLine(color: configuration.finderCornerLineColor)
+    }()
+    
+    private lazy var bottomLeftHorizontalLine: UIView = {
+        return createHorizontalCornerLine(color: configuration.finderCornerLineColor)
+    }()
+    
+    private lazy var bottomLeftVerticalLine: UIView = {
+        return createVerticalCornerLine(color: configuration.finderCornerLineColor)
+    }()
+    
+    private lazy var bottomRightHorizontalLine: UIView = {
+        return createHorizontalCornerLine(color: configuration.finderCornerLineColor)
+    }()
+    
+    private lazy var bottomRightVerticalLine: UIView = {
+        return createVerticalCornerLine(color: configuration.finderCornerLineColor)
+    }()
+    
     private var resizeCropAreaTimer: Timer?
     
     private var size = CGSize.zero {
@@ -68,12 +99,21 @@ public class PhotoCropFinder: UIView {
                 return
             }
             
+            let cropWidth = size.width - configuration.finderCornerButtonSize - 2 * configuration.finderCornerLineWidth
+            let cropHeight = cropWidth / configuration.cropRatio
+            
+            let top = (size.height - cropHeight) / 2
+            let left = configuration.finderCornerButtonSize / 2 + configuration.finderCornerLineWidth
+            
+            normalizedCropArea = PhotoCropArea(top: top, left: left, bottom: top, right: left)
+        
+            // 重新计算裁剪区域
             resizeCropArea()
             
         }
     }
     
-    @objc func resize(gestureRecognizer: UIPanGestureRecognizer) {
+    @objc private func resize(gestureRecognizer: UIPanGestureRecognizer) {
         
         guard let button = gestureRecognizer.view as? UIButton else {
             return
@@ -103,25 +143,25 @@ public class PhotoCropFinder: UIView {
         var right = viewWidth - cropArea.right
         var bottom = viewHeight - cropArea.bottom
         
-        let maxLeft = maxCropArea.left
-        let maxRight = viewWidth - maxCropArea.right
+        let maxLeft = normalizedCropArea.left
+        let maxRight = viewWidth - normalizedCropArea.right
         
         switch button {
-        case cornerButtons[0]:
+        case topLeftButton:
             left = min(right - minWidth, max(maxLeft, left + transX))
-            top = bottom - (right - left) / cropRatio
+            top = bottom - (right - left) / configuration.cropRatio
             break
-        case cornerButtons[1]:
+        case topRightButton:
             right = min(maxRight, max(left + minWidth, right + transX))
-            top = bottom - (right - left) / cropRatio
+            top = bottom - (right - left) / configuration.cropRatio
             break
-        case cornerButtons[2]:
+        case bottomRightButton:
             right = min(maxRight, max(left + minWidth, right + transX))
-            bottom = top + (right - left) / cropRatio
+            bottom = top + (right - left) / configuration.cropRatio
             break
         default:
             left = min(right - minWidth, max(maxLeft, left + transX))
-            bottom = top + (right - left) / cropRatio
+            bottom = top + (right - left) / configuration.cropRatio
             break
         }
         
@@ -133,61 +173,18 @@ public class PhotoCropFinder: UIView {
     
     func updateMinSize(scaleFactor: CGFloat, minWidth: CGFloat, minHeight: CGFloat) {
         
-        let rect = normalizeCropArea().toRect(rect: self.bounds)
+        let rect = normalizedCropArea.toRect(rect: self.bounds)
         
         self.minWidth = max(rect.width / scaleFactor, minWidth)
         self.minHeight = max(rect.height / scaleFactor, minHeight)
 
     }
     
-    func normalizeCropArea() -> PhotoCropArea {
-        
-        let width = size.width - cornerButtonWidth
-        let height = width / cropRatio
-        let top = (size.height - height) / 2
-        let left = cornerButtonWidth / 2
-        
-        return PhotoCropArea(top: top, left: left, bottom: top, right: left)
-        
-    }
-    
     @objc private func resizeCropArea() {
         removeResizeCropAreaTimer()
         onCropAreaResize()
     }
-    
-    private func updateCropArea() {
-        
-        let left = cropArea.left
-        let top = cropArea.top
-        let right = size.width - cropArea.right
-        let bottom = size.height - cropArea.bottom
-        
-        // 外围四条线
-        borderLines[0].frame = CGRect(x: left, y: top - borderLineWidth, width: right - left, height: borderLineWidth)
-        borderLines[1].frame = CGRect(x: right, y: top, width: borderLineWidth, height: bottom - top)
-        borderLines[2].frame = CGRect(x: left, y: bottom, width: right - left, height: borderLineWidth)
-        borderLines[3].frame = CGRect(x: left - borderLineWidth, y: top, width: borderLineWidth, height: bottom - top)
-        
-        // 四个角
-        cornerButtons[0].frame.origin = CGPoint(x: left - cornerButtonWidth / 2, y: top - cornerButtonHeight / 2)
-        topLeftCornerLines[0].frame.origin = CGPoint(x: left - cornerLineWidth, y: top - cornerLineWidth)
-        topLeftCornerLines[1].frame.origin = CGPoint(x: left - cornerLineWidth, y: top - cornerLineWidth)
-        
-        cornerButtons[1].frame.origin = CGPoint(x: right - cornerButtonWidth / 2, y: top - cornerButtonHeight / 2)
-        topRightCornerLines[0].frame.origin = CGPoint(x: right - cornerButtonWidth / 2, y: top - cornerLineWidth)
-        topRightCornerLines[1].frame.origin = CGPoint(x: right, y: top - cornerLineWidth)
-        
-        cornerButtons[2].frame.origin = CGPoint(x: right + cornerLineWidth - cornerButtonWidth / 2, y: bottom - cornerButtonHeight / 2)
-        bottomRightCornerLines[0].frame.origin = CGPoint(x: right + cornerLineWidth - cornerButtonWidth / 2, y: bottom)
-        bottomRightCornerLines[1].frame.origin = CGPoint(x: right, y: bottom + cornerLineWidth - cornerButtonHeight / 2)
-        
-        cornerButtons[3].frame.origin = CGPoint(x: left - cornerButtonWidth / 2, y: bottom - cornerButtonHeight / 2)
-        bottomLeftCornerLines[0].frame.origin = CGPoint(x: left - cornerLineWidth, y: bottom)
-        bottomLeftCornerLines[1].frame.origin = CGPoint(x: left - cornerLineWidth, y: bottom - cornerButtonHeight / 2)
-        
-    }
-    
+
     private func removeResizeCropAreaTimer() {
         resizeCropAreaTimer?.invalidate()
         resizeCropAreaTimer = nil
@@ -202,7 +199,15 @@ public class PhotoCropFinder: UIView {
         guard let view = super.hitTest(point, with: event) else {
             return nil
         }
-        return cornerButtons.contains(view) ? view : nil
+        if topLeftButton === view
+            || topRightButton === view
+            || bottomLeftButton === view
+            || bottomRightButton === view
+        {
+            return view
+        }
+        
+        return nil
     }
     
 }
@@ -218,23 +223,55 @@ extension PhotoCropFinder {
     
     private func createHorizontalCornerLine(color: UIColor) -> UIView {
         let line = createLine(color: color)
-        line.frame = CGRect(x: 0, y: 0, width: cornerButtonWidth / 2, height: cornerLineWidth)
+        line.frame = CGRect(x: 0, y: 0, width: configuration.finderCornerLineSize, height: configuration.finderCornerLineWidth)
         return line
     }
     
     private func createVerticalCornerLine(color: UIColor) -> UIView {
         let line = createLine(color: color)
-        line.frame = CGRect(x: 0, y: 0, width: cornerLineWidth, height: cornerButtonHeight / 2)
+        line.frame = CGRect(x: 0, y: 0, width: configuration.finderCornerLineWidth, height: configuration.finderCornerLineSize)
         return line
     }
     
     private func createButton() -> UIButton {
         let button = UIButton()
-        button.backgroundColor = .clear
-        button.frame = CGRect(x: 0, y: 0, width: cornerButtonWidth, height: cornerButtonHeight)
+        button.backgroundColor = UIColor.blue.withAlphaComponent(0.8)
+        button.frame = CGRect(x: 0, y: 0, width: configuration.finderCornerButtonSize, height: configuration.finderCornerButtonSize)
         button.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(resize)))
         addSubview(button)
         return button
+    }
+    
+    private func update() {
+        
+        let left = cropArea.left
+        let top = cropArea.top
+        let right = size.width - cropArea.right
+        let bottom = size.height - cropArea.bottom
+        
+        let halfButtonSize = configuration.finderCornerButtonSize / 2
+        
+        topBorder.frame = CGRect(x: left, y: top - configuration.finderBorderWidth, width: right - left, height: configuration.finderBorderWidth)
+        rightBorder.frame = CGRect(x: right, y: top, width: configuration.finderBorderWidth, height: bottom - top)
+        bottomBorder.frame = CGRect(x: left, y: bottom, width: right - left, height: configuration.finderBorderWidth)
+        leftBorder.frame = CGRect(x: left - configuration.finderBorderWidth, y: top, width: configuration.finderBorderWidth, height: bottom - top)
+
+        topLeftButton.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth - halfButtonSize, y: top - configuration.finderCornerLineWidth - halfButtonSize)
+        topLeftHorizontalLine.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth, y: top - configuration.finderCornerLineWidth)
+        topLeftVerticalLine.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth, y: top - configuration.finderCornerLineWidth)
+        
+        topRightButton.frame.origin = CGPoint(x: right + configuration.finderCornerLineWidth - halfButtonSize, y: top - configuration.finderCornerLineWidth - halfButtonSize)
+        topRightHorizontalLine.frame.origin = CGPoint(x: right + configuration.finderCornerLineWidth - configuration.finderCornerLineSize, y: top - configuration.finderCornerLineWidth)
+        topRightVerticalLine.frame.origin = CGPoint(x: right, y: top - configuration.finderCornerLineWidth)
+        
+        bottomRightButton.frame.origin = CGPoint(x: right + configuration.finderCornerLineWidth - halfButtonSize, y: bottom + configuration.finderCornerLineWidth - halfButtonSize)
+        bottomRightHorizontalLine.frame.origin = CGPoint(x: right + configuration.finderCornerLineWidth - configuration.finderCornerLineSize, y: bottom)
+        bottomRightVerticalLine.frame.origin = CGPoint(x: right, y: bottom + configuration.finderCornerLineWidth - configuration.finderCornerLineSize)
+        
+        bottomLeftButton.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth - halfButtonSize, y: bottom + configuration.finderCornerLineWidth - halfButtonSize)
+        bottomLeftHorizontalLine.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth, y: bottom)
+        bottomLeftVerticalLine.frame.origin = CGPoint(x: left - configuration.finderCornerLineWidth, y: bottom + configuration.finderCornerLineWidth - configuration.finderCornerLineSize)
+        
     }
     
 }

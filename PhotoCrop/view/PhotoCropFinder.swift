@@ -205,41 +205,6 @@ public class PhotoCropFinder: UIView {
         return cornerButtons.contains(view) ? view : nil
     }
     
-    func cropPhoto(photo: UIImage, rect: CGRect) -> UIImage {
-        
-        var transform: CGAffineTransform
-        
-        switch photo.imageOrientation {
-        case .left:
-            transform = CGAffineTransform(rotationAngle: radians(90)).translatedBy(x: 0, y: -photo.size.height)
-        case .right:
-            transform = CGAffineTransform(rotationAngle: radians(-90)).translatedBy(x: -photo.size.width, y: 0)
-        case .down:
-            transform = CGAffineTransform(rotationAngle: radians(-180)).translatedBy(x: -photo.size.width, y: -photo.size.height)
-        default:
-            transform = CGAffineTransform.identity
-        }
-        
-        transform = transform.scaledBy(x: photo.scale, y: photo.scale)
-        
-        if let croped = photo.cgImage?.cropping(to: rect.applying(transform)) {
-            var cropedPhoto = UIImage(cgImage: croped, scale: photo.scale, orientation: photo.imageOrientation)
-            if cropedPhoto.imageOrientation == .up {
-                return cropedPhoto
-            }
-            
-            UIGraphicsBeginImageContextWithOptions(cropedPhoto.size, false, cropedPhoto.scale)
-            cropedPhoto.draw(in: CGRect(origin: .zero, size: cropedPhoto.size))
-            cropedPhoto = UIGraphicsGetImageFromCurrentImageContext() ?? cropedPhoto
-            UIGraphicsEndImageContext()
-            
-            return cropedPhoto
-        }
-        
-        return photo
-        
-    }
-    
 }
 
 extension PhotoCropFinder {
@@ -272,9 +237,5 @@ extension PhotoCropFinder {
         return button
     }
     
-}
-
-internal func radians(_ degrees: CGFloat) -> CGFloat {
-    return degrees / 180 * .pi
 }
 

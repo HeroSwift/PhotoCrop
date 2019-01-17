@@ -44,12 +44,30 @@ public class PhotoView: UIView {
     
     public var scaleType = ScaleType.fillWidth
     
-    public var zoomScale: CGFloat {
+    public var scale: CGFloat {
         get {
             return scrollView.zoomScale
         }
         set {
             scrollView.zoomScale = newValue
+        }
+    }
+    
+    public var minScale: CGFloat {
+        get {
+            return scrollView.minimumZoomScale
+        }
+        set {
+            scrollView.minimumZoomScale = newValue
+        }
+    }
+    
+    public var maxScale: CGFloat {
+        get {
+            return scrollView.maximumZoomScale
+        }
+        set {
+            scrollView.maximumZoomScale = newValue
         }
     }
     
@@ -73,9 +91,10 @@ public class PhotoView: UIView {
     
     public func reset(image: UIImage? = nil) {
         
-        scrollView.minimumZoomScale = 1
-        scrollView.maximumZoomScale = 1
-        scrollView.zoomScale = 1
+        minScale = 1
+        maxScale = 1
+        scale = 1
+        
         scrollView.contentInset = .zero
         
         if let image = image {
@@ -84,22 +103,6 @@ public class PhotoView: UIView {
         
         updateZoomScale()
         updateImagePosition()
-        
-    }
-
-    public func getZoomScale(scaledBy: CGFloat) -> CGFloat {
-        
-        let oldValue = scrollView.zoomScale
-        var newValue = oldValue * scaledBy
-        
-        if newValue > scrollView.maximumZoomScale {
-            newValue = scrollView.maximumZoomScale
-        }
-        else if newValue < scrollView.minimumZoomScale {
-            newValue = scrollView.minimumZoomScale
-        }
-        
-        return newValue
         
     }
     
@@ -157,7 +160,7 @@ extension PhotoView: UIScrollViewDelegate {
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         updateImagePosition()
-        onScaleChange?(scrollView.zoomScale / scrollView.minimumZoomScale)
+        onScaleChange?(scale / minScale)
     }
     
 }
@@ -200,24 +203,24 @@ extension PhotoView {
         
         let widthScale = viewWidth / imageWidth
         let heightScale = viewHeight / imageHeight
-        let scale: CGFloat
-        
+
+        let zoomScale: CGFloat
         if scaleType == .fillWidth {
-            scale = widthScale
+            zoomScale = widthScale
         }
         else if scaleType == .fillHeight {
-            scale = heightScale
+            zoomScale = heightScale
         }
         else if scaleType == .fill {
-            scale = max(widthScale, heightScale)
+            zoomScale = max(widthScale, heightScale)
         }
         else {
-            scale = min(widthScale, heightScale)
+            zoomScale = min(widthScale, heightScale)
         }
 
-        scrollView.maximumZoomScale = 3 * scale < 1 ? 1 : (3 * scale)
-        scrollView.minimumZoomScale = scale
-        scrollView.zoomScale = scale
+        maxScale = 3 * zoomScale < 1 ? 1 : (3 * zoomScale)
+        minScale = zoomScale
+        scale = zoomScale
         
     }
     
@@ -252,10 +255,10 @@ extension PhotoView {
     
     @objc private func onDoubleTapGesture(_ gesture: UITapGestureRecognizer) {
         
-        let scale = scrollView.zoomScale < scrollView.maximumZoomScale ? scrollView.maximumZoomScale : scrollView.minimumZoomScale
+        let zoomScale = scale < maxScale ? maxScale : minScale
         let point = gesture.location(in: imageView)
 
-        scrollView.zoom(to: getZoomRect(point: point, zoomScale: scale), animated: true)
+        scrollView.zoom(to: getZoomRect(point: point, zoomScale: zoomScale), animated: true)
         
     }
     

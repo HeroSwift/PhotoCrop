@@ -76,7 +76,7 @@ public class PhotoCrop: UIView {
             let widthScale = newRect.width / oldRect.width
             let heightScale = newRect.height / oldRect.height
             
-            let oldValue = self.photoView.zoomScale
+            let oldValue = self.photoView.scale
             let newValue = oldValue * max(widthScale, heightScale)
             
             if oldValue != newValue {
@@ -85,7 +85,7 @@ public class PhotoCrop: UIView {
                     self.foregroundView.save()
 
                     self.cropArea = cropArea
-                    self.photoView.zoomScale = newValue
+                    self.photoView.scale = newValue
                     
                     self.foregroundView.restore()
                     

@@ -61,14 +61,6 @@ public class PhotoView: UIView {
     
     public var beforeSetContentInset: ((UIEdgeInsets) -> UIEdgeInsets)?
     
-    private var angle: Double = 0
-    
-    private var isReversed: Bool {
-        get {
-            return angle.truncatingRemainder(dividingBy: Double.pi) != 0
-        }
-    }
-
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -94,21 +86,7 @@ public class PhotoView: UIView {
         updateImagePosition()
         
     }
-    
-    public func rotate() {
-        
-        let offset = Double.pi / 2
 
-        angle += offset
-        
-        if angle.truncatingRemainder(dividingBy: 2 * Double.pi) == 0 {
-            angle = 0
-        }
-
-        imageView.transform = imageView.transform.rotated(by: CGFloat(offset))
-
-    }
-    
     public func getZoomScale(scaledBy: CGFloat) -> CGFloat {
         
         let oldValue = scrollView.zoomScale
@@ -217,13 +195,8 @@ extension PhotoView {
         let viewHeight = bounds.size.height - contentInset.top - contentInset.bottom
         
         let imageSize = image.size
-        var imageWidth = imageSize.width
-        var imageHeight = imageSize.height
-        
-        if isReversed {
-            imageWidth = imageSize.height
-            imageHeight = imageSize.width
-        }
+        let imageWidth = imageSize.width
+        let imageHeight = imageSize.height
         
         let widthScale = viewWidth / imageWidth
         let heightScale = viewHeight / imageHeight

@@ -125,15 +125,20 @@ public class PhotoCrop: UIView {
         
     }()
     
-    private var cropArea = CropArea.zero {
+    private var cropArea = PhotoCropArea.zero {
         didSet {
             finderView.cropArea = cropArea
             foregroundView.frame = cropArea.toRect(rect: bounds)
         }
     }
     
-    // 旋转角度
-    var angle = 0.0
+    private var angle: Double = 0
+    
+    private var isReversed: Bool {
+        get {
+            return angle.truncatingRemainder(dividingBy: Double.pi) != 0
+        }
+    }
     
     public var isCropping = false {
         didSet {
@@ -222,21 +227,17 @@ public class PhotoCrop: UIView {
 
     }
 
-    public func rotate(animationDuration: TimeInterval = 0.5, options: UIView.AnimationOptions = .curveEaseInOut) {
+    public func rotate() {
         
-        angle += Double.pi / 2
+        let offset = Double.pi / 2
         
-        let animations: () -> Void = {
-            self.rotateView.transform = CGAffineTransform(rotationAngle: CGFloat(self.angle))
-            self.layoutSubviews()
+        angle += offset
+        
+        if angle.truncatingRemainder(dividingBy: 2 * Double.pi) == 0 {
+            angle = 0
         }
         
-        let completion: (Bool) -> Void = { finished in
-            if self.angle == 2 * Double.pi {
-                self.angle = 0
-            }
-        }
-        
+        rotateView.transform = rotateView.transform.rotated(by: CGFloat(offset))
         
     }
     
@@ -251,12 +252,12 @@ public class PhotoCrop: UIView {
 extension PhotoCrop {
     
     // 让 CropArea 完全包裹住图片，但又不超出屏幕
-    private func getCropAreaByContentInset(contentInset: UIEdgeInsets) -> CropArea {
+    private func getCropAreaByContentInset(contentInset: UIEdgeInsets) -> PhotoCropArea {
         let left = max(contentInset.left, finderView.cornerLineWidth)
         let top = max(contentInset.top, finderView.cornerLineWidth)
         let right = max(contentInset.right, finderView.cornerLineWidth)
         let bottom = max(contentInset.bottom, finderView.cornerLineWidth)
-        return CropArea(top: top, left: left, bottom: bottom, right: right)
+        return PhotoCropArea(top: top, left: left, bottom: bottom, right: right)
     }
     
     private func updateFinderMinSize() {

@@ -18,7 +18,7 @@ public class PhotoCropFinder: UIView {
     var minWidth: CGFloat = 0
     var minHeight: CGFloat = 0
 
-    var onCropAreaChange: ((CropArea) -> Void)!
+    var onCropAreaChange: ((PhotoCropArea) -> Void)!
     var onCropAreaResize: (() -> Void)!
     
     public override var frame: CGRect {
@@ -27,15 +27,15 @@ public class PhotoCropFinder: UIView {
         }
     }
     
-    var cropArea = CropArea.zero {
+    var cropArea = PhotoCropArea.zero {
         didSet {
             updateCropArea()
             onCropAreaChange(cropArea)
         }
     }
     
-    lazy var maxCropArea: CropArea = {
-        return CropArea(top: cornerButtonHeight / 2, left: cornerButtonWidth / 2, bottom: cornerButtonHeight / 2, right: cornerButtonWidth / 2)
+    lazy var maxCropArea: PhotoCropArea = {
+        return PhotoCropArea(top: cornerButtonHeight / 2, left: cornerButtonWidth / 2, bottom: cornerButtonHeight / 2, right: cornerButtonWidth / 2)
     }()
     
     private lazy var borderLines: [UIView] = {
@@ -125,7 +125,7 @@ public class PhotoCropFinder: UIView {
             break
         }
         
-        cropArea = CropArea(top: top, left: left, bottom: viewHeight - bottom, right: viewWidth - right)
+        cropArea = PhotoCropArea(top: top, left: left, bottom: viewHeight - bottom, right: viewWidth - right)
         
         gestureRecognizer.setTranslation(.zero, in: self)
         
@@ -140,14 +140,14 @@ public class PhotoCropFinder: UIView {
 
     }
     
-    func normalizeCropArea() -> CropArea {
+    func normalizeCropArea() -> PhotoCropArea {
         
         let width = size.width - cornerButtonWidth
         let height = width / cropRatio
         let top = (size.height - height) / 2
         let left = cornerButtonWidth / 2
         
-        return CropArea(top: top, left: left, bottom: top, right: left)
+        return PhotoCropArea(top: top, left: left, bottom: top, right: left)
         
     }
     

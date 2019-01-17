@@ -1,9 +1,9 @@
 
 import UIKit
 
-class CropArea {
+class PhotoCropArea {
     
-    static let zero = CropArea(top: 0, left: 0, bottom: 0, right: 0)
+    static let zero = PhotoCropArea(top: 0, left: 0, bottom: 0, right: 0)
     
     let top: CGFloat
     let left: CGFloat

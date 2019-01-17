@@ -51,7 +51,6 @@ extension PhotoCropGrid {
         let width = bounds.width
         let height = bounds.height
         
-        // 中间的横竖线
         let rowSpacing = height / CGFloat(horizontalLines.count + 1)
         let columnSpacing = width / CGFloat(verticalLines.count + 1)
         

@@ -96,7 +96,6 @@ public class PhotoCropFinder: UIView {
         // 位移量
         let translation = gestureRecognizer.translation(in: self)
         let transX = translation.x
-        let transY = translation.y
         
         // 裁剪区域
         var left = cropArea.left
@@ -106,47 +105,24 @@ public class PhotoCropFinder: UIView {
         var bottom = viewHeight - cropArea.bottom
         
         let maxLeft = maxCropArea.left
-        let maxTop = maxCropArea.top
-        
         let maxRight = viewWidth - maxCropArea.right
-        let maxBottom = viewHeight - maxCropArea.bottom
         
         switch button {
         case cornerButtons[0]:
             left = min(right - minWidth, max(maxLeft, left + transX))
-            if ratio > 0 {
-                top = bottom - (right - left) / ratio
-            }
-            else {
-                top = min(bottom - minHeight, max(maxTop, top + transY))
-            }
+            top = bottom - (right - left) / ratio
             break
         case cornerButtons[1]:
             right = min(maxRight, max(left + minWidth, right + transX))
-            if ratio > 0 {
-                top = bottom - (right - left) / ratio
-            }
-            else {
-                top = min(bottom - minHeight, max(maxTop, top + transY))
-            }
+            top = bottom - (right - left) / ratio
             break
         case cornerButtons[2]:
             right = min(maxRight, max(left + minWidth, right + transX))
-            if ratio > 0 {
-                bottom = top + (right - left) / ratio
-            }
-            else {
-                bottom = min(maxBottom, max(top + minHeight, bottom + transY))
-            }
+            bottom = top + (right - left) / ratio
             break
         default:
             left = min(right - minWidth, max(maxLeft, left + transX))
-            if ratio > 0 {
-                bottom = top + (right - left) / ratio
-            }
-            else {
-                bottom = min(maxBottom, max(top + minHeight, bottom + transY))
-            }
+            bottom = top + (right - left) / ratio
             break
         }
         

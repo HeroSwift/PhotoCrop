@@ -172,7 +172,7 @@ public class PhotoCropFinder: UIView {
     
     func updateMinSize(scaleFactor: CGFloat, minWidth: CGFloat, minHeight: CGFloat) {
         
-        let rect = normalizedCropArea.toRect(rect: self.bounds)
+        let rect = normalizedCropArea.toRect(width: bounds.width, height: bounds.height)
         
         self.minWidth = max(rect.width / scaleFactor, minWidth)
         self.minHeight = max(rect.height / scaleFactor, minHeight)

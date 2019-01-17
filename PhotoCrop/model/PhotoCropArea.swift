@@ -17,8 +17,8 @@ class PhotoCropArea {
         self.right = right
     }
     
-    func toRect(rect: CGRect) -> CGRect {
-        return CGRect(x: rect.origin.x + left, y: rect.origin.y + top, width: rect.width - left - right, height: rect.height - top - bottom)
+    func toRect(width: CGFloat, height: CGFloat) -> CGRect {
+        return CGRect(x: left, y: top, width: width - left - right, height: height - top - bottom)
     }
     
     func toEdgeInsets() -> UIEdgeInsets {

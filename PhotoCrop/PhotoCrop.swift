@@ -50,18 +50,21 @@ public class PhotoCrop: UIView {
         view.configuration = configuration
 
         view.onCropAreaChange = {
-            let rect = view.cropArea.toRect(rect: self.bounds)
+            let rect = view.cropArea.toRect(width: self.bounds.width, height: self.bounds.height)
             self.foregroundView.frame = rect
             self.gridView.frame = rect
         }
         view.onCropAreaResize = {
             
+            let width = self.bounds.width
+            let height = self.bounds.height
+            
             // 小值
-            let oldRect = self.finderView.cropArea.toRect(rect: self.bounds)
+            let oldRect = self.finderView.cropArea.toRect(width: width, height: height)
             
             // 大值
             let cropArea = self.finderView.normalizedCropArea
-            let newRect = cropArea.toRect(rect: self.bounds)
+            let newRect = cropArea.toRect(width: width, height: height)
             
             // 谁更大就用谁作为缩放系数
             let widthScale = newRect.width / oldRect.width
@@ -119,7 +122,7 @@ public class PhotoCrop: UIView {
     private var cropArea = PhotoCropArea.zero {
         didSet {
             finderView.cropArea = cropArea
-            foregroundView.frame = cropArea.toRect(rect: bounds)
+            foregroundView.frame = cropArea.toRect(width: bounds.width, height: bounds.height)
         }
     }
     

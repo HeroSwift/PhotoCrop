@@ -12,10 +12,10 @@
 		9D7DBC1F214E530D00F9923D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D7DBC1D214E530D00F9923D /* Main.storyboard */; };
 		9D7DBC21214E530E00F9923D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D7DBC20214E530E00F9923D /* Assets.xcassets */; };
 		9D7DBC24214E530E00F9923D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D7DBC22214E530E00F9923D /* LaunchScreen.storyboard */; };
-		9DFE527921F026A500E27DD9 /* PhotoCropOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DBC29214E566D00F9923D /* PhotoCropOverlay.swift */; };
-		9DFE527A21F026A500E27DD9 /* PhotoCropForeground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494621EF058700F47BEC /* PhotoCropForeground.swift */; };
-		9DFE527B21F026A500E27DD9 /* PhotoCropFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494C21EF7E5500F47BEC /* PhotoCropFinder.swift */; };
-		9DFE527C21F026A500E27DD9 /* PhotoCropGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494821EF77E800F47BEC /* PhotoCropGrid.swift */; };
+		9DFE527921F026A500E27DD9 /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DBC29214E566D00F9923D /* OverlayView.swift */; };
+		9DFE527A21F026A500E27DD9 /* ForegroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494621EF058700F47BEC /* ForegroundView.swift */; };
+		9DFE527B21F026A500E27DD9 /* FinderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494C21EF7E5500F47BEC /* FinderView.swift */; };
+		9DFE527C21F026A500E27DD9 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494821EF77E800F47BEC /* GridView.swift */; };
 		9DFE527D21F026A500E27DD9 /* PhotoCropArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494A21EF790C00F47BEC /* PhotoCropArea.swift */; };
 		9DFE527E21F026A500E27DD9 /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494421EDC24200F47BEC /* PhotoView.swift */; };
 		9DFE527F21F026A500E27DD9 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D960802216DFE2E006684D6 /* SimpleButton.swift */; };
@@ -43,14 +43,14 @@
 		9D7DBC20214E530E00F9923D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9D7DBC23214E530E00F9923D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9D7DBC25214E530E00F9923D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9D7DBC29214E566D00F9923D /* PhotoCropOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropOverlay.swift; sourceTree = "<group>"; };
+		9D7DBC29214E566D00F9923D /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
 		9D7DBC472150A33300F9923D /* PhotoCrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCrop.swift; sourceTree = "<group>"; };
 		9D960802216DFE2E006684D6 /* SimpleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 		9DE4494421EDC24200F47BEC /* PhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
-		9DE4494621EF058700F47BEC /* PhotoCropForeground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropForeground.swift; sourceTree = "<group>"; };
-		9DE4494821EF77E800F47BEC /* PhotoCropGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropGrid.swift; sourceTree = "<group>"; };
+		9DE4494621EF058700F47BEC /* ForegroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForegroundView.swift; sourceTree = "<group>"; };
+		9DE4494821EF77E800F47BEC /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		9DE4494A21EF790C00F47BEC /* PhotoCropArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropArea.swift; sourceTree = "<group>"; };
-		9DE4494C21EF7E5500F47BEC /* PhotoCropFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropFinder.swift; sourceTree = "<group>"; };
+		9DE4494C21EF7E5500F47BEC /* FinderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderView.swift; sourceTree = "<group>"; };
 		9DFE527521F0202300E27DD9 /* PhotoCropConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -128,10 +128,10 @@
 		9DFE527821F025C900E27DD9 /* view */ = {
 			isa = PBXGroup;
 			children = (
-				9D7DBC29214E566D00F9923D /* PhotoCropOverlay.swift */,
-				9DE4494621EF058700F47BEC /* PhotoCropForeground.swift */,
-				9DE4494C21EF7E5500F47BEC /* PhotoCropFinder.swift */,
-				9DE4494821EF77E800F47BEC /* PhotoCropGrid.swift */,
+				9D7DBC29214E566D00F9923D /* OverlayView.swift */,
+				9DE4494621EF058700F47BEC /* ForegroundView.swift */,
+				9DE4494C21EF7E5500F47BEC /* FinderView.swift */,
+				9DE4494821EF77E800F47BEC /* GridView.swift */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -248,10 +248,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9DFE527921F026A500E27DD9 /* PhotoCropOverlay.swift in Sources */,
-				9DFE527A21F026A500E27DD9 /* PhotoCropForeground.swift in Sources */,
-				9DFE527B21F026A500E27DD9 /* PhotoCropFinder.swift in Sources */,
-				9DFE527C21F026A500E27DD9 /* PhotoCropGrid.swift in Sources */,
+				9DFE527921F026A500E27DD9 /* OverlayView.swift in Sources */,
+				9DFE527A21F026A500E27DD9 /* ForegroundView.swift in Sources */,
+				9DFE527B21F026A500E27DD9 /* FinderView.swift in Sources */,
+				9DFE527C21F026A500E27DD9 /* GridView.swift in Sources */,
 				9DFE527D21F026A500E27DD9 /* PhotoCropArea.swift in Sources */,
 				9DFE527E21F026A500E27DD9 /* PhotoView.swift in Sources */,
 				9DFE527F21F026A500E27DD9 /* SimpleButton.swift in Sources */,

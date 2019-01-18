@@ -1,7 +1,7 @@
 
 import UIKit
 
-class PhotoCropOverlay: UIView {
+class OverlayView: UIView {
 
     override var frame: CGRect {
         didSet {

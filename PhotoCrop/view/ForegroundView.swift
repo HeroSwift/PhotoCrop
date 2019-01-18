@@ -5,7 +5,7 @@ import UIKit
 // 因此只好新建一个 View，用 clipsToBounds + imageView 的位移来实现
 // 这个 view 需要跟 UIScrollView 紧密绑定，当 UIScrollView 滑动时，也要移动 imageView
 // 从而实现视觉上的合二为一
-class PhotoCropForeground: UIView {
+class ForegroundView: UIView {
     
     public override var frame: CGRect {
         didSet {

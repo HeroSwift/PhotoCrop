@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class PhotoCropFinder: UIView {
+public class FinderView: UIView {
     
     var configuration: PhotoCropConfiguration!
     
@@ -14,14 +14,14 @@ public class PhotoCropFinder: UIView {
         }
     }
     
-    var cropArea = PhotoCropArea.zero {
+    var cropArea = CropArea.zero {
         didSet {
             update()
             onCropAreaChange()
         }
     }
     
-    var normalizedCropArea = PhotoCropArea.zero
+    var normalizedCropArea = CropArea.zero
     
     private var minWidth: CGFloat = 0
     private var minHeight: CGFloat = 0
@@ -105,7 +105,7 @@ public class PhotoCropFinder: UIView {
             let vertical = (size.height - cropHeight) / 2
             let horizontal = configuration.finderCornerButtonSize / 2 + configuration.finderCornerLineWidth
             
-            normalizedCropArea = PhotoCropArea(top: vertical, left: horizontal, bottom: vertical, right: horizontal)
+            normalizedCropArea = CropArea(top: vertical, left: horizontal, bottom: vertical, right: horizontal)
 
             // 重新计算裁剪区域
             resizeCropArea()
@@ -164,7 +164,7 @@ public class PhotoCropFinder: UIView {
             break
         }
         
-        cropArea = PhotoCropArea(top: top, left: left, bottom: viewHeight - bottom, right: viewWidth - right)
+        cropArea = CropArea(top: top, left: left, bottom: viewHeight - bottom, right: viewWidth - right)
         
         gestureRecognizer.setTranslation(.zero, in: self)
         
@@ -211,7 +211,7 @@ public class PhotoCropFinder: UIView {
     
 }
 
-extension PhotoCropFinder {
+extension FinderView {
 
     private func createLine(color: UIColor) -> UIView {
         let line = UIView()

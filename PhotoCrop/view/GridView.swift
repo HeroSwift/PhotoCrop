@@ -1,24 +1,16 @@
-//
-//  PhotoCropGrid.swift
-//  Example
-//
-//  Created by zhujl on 2019/1/16.
-//  Copyright © 2019年 finstao. All rights reserved.
-//
 
 import UIKit
 
-class PhotoCropGrid: UIView {
+class GridView: UIView {
     
-    var lineColor = UIColor.white.withAlphaComponent(0.5)
-    var lineWidth = 1 / UIScreen.main.scale
+    var configuration: PhotoCropConfiguration!
     
     lazy var horizontalLines: [UIView] = {
-        return [createLine(color: lineColor), createLine(color: lineColor)]
+        return [createLine(color: configuration.gridLineColor), createLine(color: configuration.gridLineColor)]
     }()
     
     lazy var verticalLines: [UIView] = {
-        return [createLine(color: lineColor), createLine(color: lineColor)]
+        return [createLine(color: configuration.gridLineColor), createLine(color: configuration.gridLineColor)]
     }()
     
     override var frame: CGRect {
@@ -37,7 +29,7 @@ class PhotoCropGrid: UIView {
     
 }
 
-extension PhotoCropGrid {
+extension GridView {
     
     private func createLine(color: UIColor) -> UIView {
         let line = UIView()
@@ -51,6 +43,7 @@ extension PhotoCropGrid {
         let width = bounds.width
         let height = bounds.height
         
+        let lineWidth = configuration.gridLineWidth
         let rowSpacing = height / CGFloat(horizontalLines.count + 1)
         let columnSpacing = width / CGFloat(verticalLines.count + 1)
         

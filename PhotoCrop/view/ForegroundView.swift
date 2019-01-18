@@ -16,17 +16,6 @@ class ForegroundView: UIView {
         }
     }
     
-    var scaleFactor: CGFloat = 0 {
-        didSet {
-            guard scaleFactor != oldValue else {
-                return
-            }
-            onScaleFactorChange()
-        }
-    }
-    
-    var onScaleFactorChange: (() -> Void)!
-    
     var photoView: PhotoView! {
         didSet {
             
@@ -107,8 +96,6 @@ class ForegroundView: UIView {
     func updateImageSize() {
         
         imageView.frame.size = photoView.imageFrame.size
-        
-        scaleFactor = photoView.maxScale / photoView.scale
 
     }
     

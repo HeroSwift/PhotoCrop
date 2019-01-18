@@ -103,7 +103,7 @@ public class PhotoView: UIView {
     
     public var onTap: (() -> Void)?
     public var onLongPress: (() -> Void)?
-    public var onScaleChange: ((CGFloat) -> Void)?
+    public var onScaleChange: (() -> Void)?
     public var onDragStart: (() -> Void)?
     public var onDragEnd: (() -> Void)?
     
@@ -184,6 +184,7 @@ public class PhotoView: UIView {
             
         case "contentSize":
             onImageSizeChange?()
+            onScaleChange?()
             break
             
         case "contentOffset":
@@ -213,7 +214,6 @@ extension PhotoView: UIScrollViewDelegate {
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         updateImagePosition()
-        onScaleChange?(scale / minScale)
     }
     
 }

@@ -19,6 +19,9 @@ public class PhotoCrop: UIView {
         view.beforeSetContentInset = { contentInset in
             return self.isCropping ? self.finderView.cropArea.toEdgeInsets() : contentInset
         }
+        view.onScaleChange = {
+            self.updateFinderMinSize()
+        }
         
         foregroundView.photoView = view
         
@@ -99,10 +102,6 @@ public class PhotoCrop: UIView {
         
         view.isHidden = true
 
-        view.onScaleFactorChange = {
-            self.updateFinderMinSize()
-        }
-        
         return view
         
     }()
@@ -296,7 +295,7 @@ extension PhotoCrop {
     
     private func updateFinderMinSize() {
         finderView.updateMinSize(
-            scaleFactor: foregroundView.scaleFactor,
+            scaleFactor: photoView.maxScale / photoView.scale,
             minWidth: configuration.finderMinWidth,
             minHeight: configuration.finderMinHeight
         )

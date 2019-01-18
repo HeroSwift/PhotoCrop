@@ -101,6 +101,8 @@ public class PhotoView: UIView {
         }
     }
     
+    public var contentInset: UIEdgeInsets?
+    
     public var onReset: (() -> Void)?
     
     public var onTap: (() -> Void)?
@@ -111,8 +113,6 @@ public class PhotoView: UIView {
     
     public var onImageOriginChange: (() -> Void)?
     public var onImageSizeChange: (() -> Void)?
-    
-    public var beforeSetContentInset: ((UIEdgeInsets) -> UIEdgeInsets)?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -143,7 +143,11 @@ public class PhotoView: UIView {
         
     }
     
-    public func getContentInset() -> UIEdgeInsets {
+    private func getContentInset() -> UIEdgeInsets {
+        
+        guard contentInset == nil else {
+            return contentInset!
+        }
         
         let imageSize = imageView.frame.size
         guard imageSize.width > 0 && imageSize.height > 0 else {
@@ -162,17 +166,10 @@ public class PhotoView: UIView {
             insetVertical = (viewSize.height - imageSize.height) / 2
         }
         
-        let contentInset = UIEdgeInsets(top: insetVertical, left: insetHorizontal, bottom: insetVertical, right: insetHorizontal)
-        return beforeSetContentInset?(contentInset) ?? contentInset
+        return UIEdgeInsets(top: insetVertical, left: insetHorizontal, bottom: insetVertical, right: insetHorizontal)
         
     }
-    
-    public func setContentInset(contentInset: UIEdgeInsets) {
 
-        scrollView.contentInset = contentInset
-        
-    }
-    
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         guard let keyPath = keyPath else {
@@ -283,7 +280,7 @@ extension PhotoView {
     
     private func updateImagePosition() {
         
-        setContentInset(contentInset: getContentInset())
+        scrollView.contentInset = getContentInset()
 
     }
     

@@ -16,9 +16,6 @@ public class PhotoCrop: UIView {
         let view = PhotoView()
         view.backgroundColor = .red
         view.scaleType = .fit
-        view.beforeSetContentInset = { contentInset in
-            return self.isCropping ? self.finderView.cropArea.toEdgeInsets() : contentInset
-        }
         view.onScaleChange = {
             self.updateFinderMinSize()
         }
@@ -119,6 +116,9 @@ public class PhotoCrop: UIView {
     
     private var cropArea = CropArea.zero {
         didSet {
+            if isCropping {
+                photoView.contentInset = cropArea.toEdgeInsets()
+            }
             finderView.cropArea = cropArea
             foregroundView.frame = cropArea.toRect(width: bounds.width, height: bounds.height)
         }
@@ -174,6 +174,7 @@ public class PhotoCrop: UIView {
 
                 foregroundView.isHidden = true
                 
+                photoView.contentInset = nil
                 photoView.scaleType = .fit
                 
                 // 从选定的裁剪区域到图片区域的动画

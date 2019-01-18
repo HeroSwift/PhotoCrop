@@ -59,35 +59,35 @@ public class FinderView: UIView {
     }()
 
     private lazy var topLeftHorizontalLine: UIView = {
-        return createHorizontalCornerLine(color: configuration.finderCornerLineColor)
+        return createHorizontalCornerLine()
     }()
     
     private lazy var topLeftVerticalLine: UIView = {
-        return createVerticalCornerLine(color: configuration.finderCornerLineColor)
+        return createVerticalCornerLine()
     }()
     
     private lazy var topRightHorizontalLine: UIView = {
-        return createHorizontalCornerLine(color: configuration.finderCornerLineColor)
+        return createHorizontalCornerLine()
     }()
     
     private lazy var topRightVerticalLine: UIView = {
-        return createVerticalCornerLine(color: configuration.finderCornerLineColor)
+        return createVerticalCornerLine()
     }()
     
     private lazy var bottomLeftHorizontalLine: UIView = {
-        return createHorizontalCornerLine(color: configuration.finderCornerLineColor)
+        return createHorizontalCornerLine()
     }()
     
     private lazy var bottomLeftVerticalLine: UIView = {
-        return createVerticalCornerLine(color: configuration.finderCornerLineColor)
+        return createVerticalCornerLine()
     }()
     
     private lazy var bottomRightHorizontalLine: UIView = {
-        return createHorizontalCornerLine(color: configuration.finderCornerLineColor)
+        return createHorizontalCornerLine()
     }()
     
     private lazy var bottomRightVerticalLine: UIView = {
-        return createVerticalCornerLine(color: configuration.finderCornerLineColor)
+        return createVerticalCornerLine()
     }()
     
     private var resizeCropAreaTimer: Timer?
@@ -104,6 +104,15 @@ public class FinderView: UIView {
             
             if cropHeight > size.height {
                 cropHeight = size.height - configuration.finderCornerButtonSize - 2 * configuration.finderCornerLineWidth
+                cropWidth = cropHeight * configuration.cropRatio
+            }
+            
+            if configuration.finderMaxWidth > 0 && cropWidth > configuration.finderMaxWidth {
+                cropWidth = configuration.finderMaxWidth
+                cropHeight = cropWidth / configuration.cropRatio
+            }
+            if configuration.finderMaxHeight > 0 && cropHeight > configuration.finderMaxHeight {
+                cropHeight = configuration.finderMaxHeight
                 cropWidth = cropHeight * configuration.cropRatio
             }
             
@@ -127,7 +136,7 @@ public class FinderView: UIView {
         let state = gestureRecognizer.state
         guard state == .began || state == .changed else {
             if state == .ended {
-                resizeCropAreaTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(resizeCropArea), userInfo: nil, repeats: false)
+                resizeCropAreaTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(resizeCropArea), userInfo: nil, repeats: false)
             }
             return
         }
@@ -224,21 +233,20 @@ extension FinderView {
         return line
     }
     
-    private func createHorizontalCornerLine(color: UIColor) -> UIView {
-        let line = createLine(color: color)
+    private func createHorizontalCornerLine() -> UIView {
+        let line = createLine(color: configuration.finderCornerLineColor)
         line.frame = CGRect(x: 0, y: 0, width: configuration.finderCornerLineSize, height: configuration.finderCornerLineWidth)
         return line
     }
     
-    private func createVerticalCornerLine(color: UIColor) -> UIView {
-        let line = createLine(color: color)
+    private func createVerticalCornerLine() -> UIView {
+        let line = createLine(color: configuration.finderCornerLineColor)
         line.frame = CGRect(x: 0, y: 0, width: configuration.finderCornerLineWidth, height: configuration.finderCornerLineSize)
         return line
     }
     
     private func createButton() -> UIButton {
         let button = UIButton()
-        button.backgroundColor = UIColor.blue.withAlphaComponent(0.8)
         button.frame = CGRect(x: 0, y: 0, width: configuration.finderCornerButtonSize, height: configuration.finderCornerButtonSize)
         button.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(resize)))
         addSubview(button)

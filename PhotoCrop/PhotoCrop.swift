@@ -52,37 +52,7 @@ public class PhotoCrop: UIView {
             self.gridView.frame = rect
         }
         view.onCropAreaResize = {
-            
-            let width = self.bounds.width
-            let height = self.bounds.height
-            
-            // 小值
-            let oldRect = self.finderView.cropArea.toRect(width: width, height: height)
-            
-            // 大值
-            let cropArea = self.finderView.normalizedCropArea
-            let newRect = cropArea.toRect(width: width, height: height)
-            
-            // 谁更大就用谁作为缩放系数
-            let widthScale = newRect.width / oldRect.width
-            let heightScale = newRect.height / oldRect.height
-            
-            let oldValue = self.photoView.scale
-            let newValue = oldValue * max(widthScale, heightScale)
-            
-            if oldValue != newValue {
-                UIView.animate(withDuration: 0.5, animations: {
-                    
-                    self.foregroundView.save()
-                    
-                    self.cropArea = cropArea
-                    self.photoView.scale = newValue
-                    
-                    self.foregroundView.restore()
-                    
-                })
-            }
-            
+            self.updateCropArea(by: self.finderView.normalizedCropArea)
         }
         
         return view
@@ -111,9 +81,6 @@ public class PhotoCrop: UIView {
     
     private var cropArea = CropArea.zero {
         didSet {
-            if isCropping {
-                photoView.contentInset = cropArea.toEdgeInsets()
-            }
             finderView.cropArea = cropArea
             foregroundView.frame = cropArea.toRect(width: bounds.width, height: bounds.height)
         }
@@ -155,8 +122,10 @@ public class PhotoCrop: UIView {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     
                     UIView.animate(withDuration: 0.5, animations: {
-                        self.cropArea = self.finderView.normalizedCropArea
-                        self.photoView.updateZoomScale()
+                        let cropArea = self.finderView.normalizedCropArea
+                        self.cropArea = cropArea
+                        self.photoView.contentInset = cropArea.toEdgeInsets()
+                        self.photoView.reset()
                         self.overlayView.alpha = 1
                         self.finderView.alpha = 1
                         self.gridView.alpha = 1
@@ -168,13 +137,13 @@ public class PhotoCrop: UIView {
             else {
 
                 foregroundView.isHidden = true
-                
-                photoView.contentInset = nil
+
                 photoView.scaleType = .fit
+                photoView.contentInset = nil
                 
                 // 从选定的裁剪区域到图片区域的动画
                 UIView.animate(withDuration: 0.5, animations: {
-                    self.photoView.updateZoomScale()
+                    self.photoView.reset()
                     self.cropArea = self.getCropAreaByPhotoView()
                     self.overlayView.alpha = 0
                     self.finderView.alpha = 0
@@ -275,21 +244,6 @@ public class PhotoCrop: UIView {
 
 extension PhotoCrop {
 
-    private func getCropAreaByPhotoView() -> CropArea {
-        
-        let imageOrigin = photoView.imageOrigin
-        let imageSize = photoView.imageSize
-        
-        let left = max(imageOrigin.x, configuration.finderCornerLineWidth)
-        let top = max(imageOrigin.y, configuration.finderCornerLineWidth)
-        
-        let right = max(photoView.frame.width - (imageOrigin.x + imageSize.width), configuration.finderCornerLineWidth)
-        let bottom = max(photoView.frame.height - (imageOrigin.y + imageSize.height), configuration.finderCornerLineWidth)
-        
-        return CropArea(top: top, left: left, bottom: bottom, right: right)
-        
-    }
-    
     private func updateFinderMinSize() {
         finderView.updateMinSize(
             scaleFactor: photoView.maxScale / photoView.scale,
@@ -297,5 +251,52 @@ extension PhotoCrop {
             minHeight: configuration.finderMinHeight
         )
     }
+    
+    // CropArea 完全覆盖 PhotoView
+    private func getCropAreaByPhotoView() -> CropArea {
+        
+        let imageOrigin = photoView.imageOrigin
+        let imageSize = photoView.imageSize
+        
+        let left = max(imageOrigin.x, 0)
+        let top = max(imageOrigin.y, 0)
+        
+        let right = max(photoView.frame.width - (imageOrigin.x + imageSize.width), 0)
+        let bottom = max(photoView.frame.height - (imageOrigin.y + imageSize.height), 0)
+        
+        return CropArea(top: top, left: left, bottom: bottom, right: right)
+        
+    }
+    
+    private func updateCropArea(by cropArea: CropArea) {
+        
+        let width = bounds.width
+        let height = bounds.height
+
+        let oldRect = finderView.cropArea.toRect(width: width, height: height)
+        let newRect = cropArea.toRect(width: width, height: height)
+        
+        // 谁更大就用谁作为缩放系数
+        let widthScale = newRect.width / oldRect.width
+        let heightScale = newRect.height / oldRect.height
+        let scale = max(widthScale, heightScale)
+        
+        guard scale != 1 else {
+            return
+        }
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            
+            self.foregroundView.save()
+            
+            self.cropArea = cropArea
+            self.photoView.scale *= scale
+
+            self.foregroundView.restore()
+            
+        })
+        
+    }
+    
 }
 

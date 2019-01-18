@@ -100,9 +100,7 @@ public class PhotoView: UIView {
             return imageView.frame.size
         }
     }
-    
-    public var contentInset: UIEdgeInsets?
-    
+
     public var onReset: (() -> Void)?
     
     public var onTap: (() -> Void)?
@@ -113,6 +111,8 @@ public class PhotoView: UIView {
     
     public var onImageOriginChange: (() -> Void)?
     public var onImageSizeChange: (() -> Void)?
+    
+    public var contentInset: UIEdgeInsets?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -125,24 +125,24 @@ public class PhotoView: UIView {
     }
     
     public func reset(image: UIImage? = nil) {
-        
-        minScale = 1
-        maxScale = 1
-        scale = 1
-        
-        scrollView.contentInset = .zero
-        
+
         if let image = image {
+            
+            minScale = 1
+            maxScale = 1
+            scale = 1
+            
             imageView.frame.size = image.size
+            
         }
         
         updateZoomScale()
-        updateImagePosition()
+        updateImageOrigin()
         
         onReset?()
         
     }
-    
+
     private func getContentInset() -> UIEdgeInsets {
         
         guard contentInset == nil else {
@@ -214,7 +214,7 @@ extension PhotoView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateImagePosition()
+        updateImageOrigin()
     }
     
 }
@@ -241,7 +241,7 @@ extension PhotoView {
         
     }
     
-    public func updateZoomScale() {
+    private func updateZoomScale() {
         
         guard let image = imageView.image else {
             return
@@ -278,7 +278,7 @@ extension PhotoView {
         
     }
     
-    private func updateImagePosition() {
+    private func updateImageOrigin() {
         
         scrollView.contentInset = getContentInset()
 
@@ -309,7 +309,8 @@ extension PhotoView {
     
     @objc private func onDoubleTapGesture(_ gesture: UITapGestureRecognizer) {
         
-        let zoomScale = scale < maxScale ? maxScale : minScale
+        // 距离谁比较远就去谁
+        let zoomScale = (scale - minScale > maxScale - scale) ? minScale : maxScale
         let point = gesture.location(in: imageView)
 
         scrollView.zoom(to: getZoomRect(point: point, zoomScale: zoomScale), animated: true)

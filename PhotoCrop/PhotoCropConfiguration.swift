@@ -12,8 +12,11 @@ open class PhotoCropConfiguration {
     
     public var finderCornerButtonSize: CGFloat = 44
     
-    public var finderMinWidth: CGFloat = 100
-    public var finderMinHeight: CGFloat = 100
+    public var finderMinWidth: CGFloat = 60
+    public var finderMinHeight: CGFloat = 60
+    
+    public var finderMaxWidth: CGFloat = 280
+    public var finderMaxHeight: CGFloat = 280
     
     public var gridLineColor = UIColor.white.withAlphaComponent(0.5)
     public var gridLineWidth = 1 / UIScreen.main.scale

@@ -74,17 +74,12 @@ public class PhotoCrop: UIView {
                 UIView.animate(withDuration: 0.5, animations: {
                     
                     self.foregroundView.save()
-
+                    
                     self.cropArea = cropArea
                     self.photoView.scale = newValue
                     
                     self.foregroundView.restore()
                     
-                })
-            }
-            else {
-                UIView.animate(withDuration: 0.5, animations: {
-                    self.cropArea = cropArea
                 })
             }
             
@@ -214,8 +209,6 @@ public class PhotoCrop: UIView {
         photoView.frame = bounds
         overlayView.frame = bounds
         finderView.frame = bounds
-        
-        updateFinderMinSize()
 
     }
 

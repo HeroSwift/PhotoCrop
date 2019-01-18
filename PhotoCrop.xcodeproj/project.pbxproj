@@ -16,7 +16,7 @@
 		9DFE527A21F026A500E27DD9 /* ForegroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494621EF058700F47BEC /* ForegroundView.swift */; };
 		9DFE527B21F026A500E27DD9 /* FinderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494C21EF7E5500F47BEC /* FinderView.swift */; };
 		9DFE527C21F026A500E27DD9 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494821EF77E800F47BEC /* GridView.swift */; };
-		9DFE527D21F026A500E27DD9 /* PhotoCropArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494A21EF790C00F47BEC /* PhotoCropArea.swift */; };
+		9DFE527D21F026A500E27DD9 /* CropArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494A21EF790C00F47BEC /* CropArea.swift */; };
 		9DFE527E21F026A500E27DD9 /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494421EDC24200F47BEC /* PhotoView.swift */; };
 		9DFE527F21F026A500E27DD9 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D960802216DFE2E006684D6 /* SimpleButton.swift */; };
 		9DFE528021F026A500E27DD9 /* PhotoCrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DBC472150A33300F9923D /* PhotoCrop.swift */; };
@@ -49,7 +49,7 @@
 		9DE4494421EDC24200F47BEC /* PhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
 		9DE4494621EF058700F47BEC /* ForegroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForegroundView.swift; sourceTree = "<group>"; };
 		9DE4494821EF77E800F47BEC /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
-		9DE4494A21EF790C00F47BEC /* PhotoCropArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropArea.swift; sourceTree = "<group>"; };
+		9DE4494A21EF790C00F47BEC /* CropArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropArea.swift; sourceTree = "<group>"; };
 		9DE4494C21EF7E5500F47BEC /* FinderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderView.swift; sourceTree = "<group>"; };
 		9DFE527521F0202300E27DD9 /* PhotoCropConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,7 +120,7 @@
 		9DFE527721F025BC00E27DD9 /* model */ = {
 			isa = PBXGroup;
 			children = (
-				9DE4494A21EF790C00F47BEC /* PhotoCropArea.swift */,
+				9DE4494A21EF790C00F47BEC /* CropArea.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -252,7 +252,7 @@
 				9DFE527A21F026A500E27DD9 /* ForegroundView.swift in Sources */,
 				9DFE527B21F026A500E27DD9 /* FinderView.swift in Sources */,
 				9DFE527C21F026A500E27DD9 /* GridView.swift in Sources */,
-				9DFE527D21F026A500E27DD9 /* PhotoCropArea.swift in Sources */,
+				9DFE527D21F026A500E27DD9 /* CropArea.swift in Sources */,
 				9DFE527E21F026A500E27DD9 /* PhotoView.swift in Sources */,
 				9DFE527F21F026A500E27DD9 /* SimpleButton.swift in Sources */,
 				9DFE528021F026A500E27DD9 /* PhotoCrop.swift in Sources */,

@@ -95,11 +95,13 @@ public class PhotoView: UIView {
         }
     }
     
-    public var imageFrame: CGRect {
+    public var imageSize: CGSize {
         get {
-            return CGRect(origin: imageOrigin, size: imageView.frame.size)
+            return imageView.frame.size
         }
     }
+    
+    public var onReset: (() -> Void)?
     
     public var onTap: (() -> Void)?
     public var onLongPress: (() -> Void)?
@@ -136,6 +138,8 @@ public class PhotoView: UIView {
         
         updateZoomScale()
         updateImagePosition()
+        
+        onReset?()
         
     }
     

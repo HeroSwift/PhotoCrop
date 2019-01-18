@@ -84,7 +84,7 @@ class ForegroundView: UIView {
 
     func updateImageOrigin() {
 
-        let imageOrigin = photoView.imageFrame.origin
+        let imageOrigin = photoView.imageOrigin
 
         imageView.frame.origin = CGPoint(
             x: imageOrigin.x - frame.origin.x,
@@ -95,7 +95,7 @@ class ForegroundView: UIView {
     
     func updateImageSize() {
         
-        imageView.frame.size = photoView.imageFrame.size
+        imageView.frame.size = photoView.imageSize
 
     }
     

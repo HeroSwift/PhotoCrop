@@ -132,7 +132,9 @@ public class FinderView: UIView {
             return
         }
         
-        removeResizeCropAreaTimer()
+        guard resizeCropAreaTimer == nil else {
+            return
+        }
         
         let viewWidth = size.width
         let viewHeight = size.height

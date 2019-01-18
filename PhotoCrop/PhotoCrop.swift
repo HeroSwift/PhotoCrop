@@ -154,7 +154,7 @@ public class PhotoCrop: UIView {
                 
                 // 初始化裁剪区域，尺寸和当前图片一样大
                 // 这样就会有一个从大到小的动画
-                cropArea = getCropAreaByFrames(containerFrame: photoView.frame, contentFrame: photoView.imageFrame)
+                cropArea = getCropAreaByPhotoView()
                 
                 // 停一下(为了触发动画)，调整成符合比例的裁剪框
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -179,7 +179,7 @@ public class PhotoCrop: UIView {
                 // 从选定的裁剪区域到图片区域的动画
                 UIView.animate(withDuration: 0.5, animations: {
                     self.photoView.updateZoomScale()
-                    self.cropArea = self.getCropAreaByFrames(containerFrame: self.photoView.frame, contentFrame: self.photoView.imageFrame)
+                    self.cropArea = self.getCropAreaByPhotoView()
                     self.overlayView.alpha = 0
                     self.finderView.alpha = 0
                     self.gridView.alpha = 0
@@ -281,13 +281,16 @@ public class PhotoCrop: UIView {
 
 extension PhotoCrop {
 
-    private func getCropAreaByFrames(containerFrame: CGRect, contentFrame: CGRect) -> CropArea {
+    private func getCropAreaByPhotoView() -> CropArea {
         
-        let left = max(contentFrame.origin.x, configuration.finderCornerLineWidth)
-        let top = max(contentFrame.origin.y, configuration.finderCornerLineWidth)
+        let imageOrigin = photoView.imageOrigin
+        let imageSize = photoView.imageSize
         
-        let right = max(containerFrame.width - (contentFrame.origin.x + contentFrame.width), configuration.finderCornerLineWidth)
-        let bottom = max(containerFrame.height - (contentFrame.origin.y + contentFrame.height), configuration.finderCornerLineWidth)
+        let left = max(imageOrigin.x, configuration.finderCornerLineWidth)
+        let top = max(imageOrigin.y, configuration.finderCornerLineWidth)
+        
+        let right = max(photoView.frame.width - (imageOrigin.x + imageSize.width), configuration.finderCornerLineWidth)
+        let bottom = max(photoView.frame.height - (imageOrigin.y + imageSize.height), configuration.finderCornerLineWidth)
         
         return CropArea(top: top, left: left, bottom: bottom, right: right)
         

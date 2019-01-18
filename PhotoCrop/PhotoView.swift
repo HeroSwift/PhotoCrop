@@ -10,8 +10,9 @@ import UIKit
 // 这样双击放大不会触发 layoutSubviews
 public class PhotoView: UIView {
     
-    public lazy var scrollView: UIScrollView = {
+    private lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
+        
         if #available(iOS 11.0, *) {
             view.contentInsetAdjustmentBehavior = .never
         }
@@ -20,6 +21,10 @@ public class PhotoView: UIView {
         view.showsVerticalScrollIndicator = false
         view.showsHorizontalScrollIndicator = false
         view.delegate = self
+        
+        view.addObserver(self, forKeyPath: "contentSize", options: [.new, .old], context: nil)
+        view.addObserver(self, forKeyPath: "contentOffset", options: [.new, .old], context: nil)
+        
         addSubview(view)
         return view
     }()
@@ -71,11 +76,39 @@ public class PhotoView: UIView {
         }
     }
     
+    public var image: UIImage? {
+        get {
+            return imageView.image
+        }
+        set {
+            imageView.image = newValue
+        }
+    }
+    
+    public var imageOrigin: CGPoint {
+        get {
+            let contentOffset = scrollView.contentOffset
+            return CGPoint(x: -contentOffset.x, y: -contentOffset.y)
+        }
+        set {
+            scrollView.contentOffset = CGPoint(x: -newValue.x, y: -newValue.y)
+        }
+    }
+    
+    public var imageFrame: CGRect {
+        get {
+            return CGRect(origin: imageOrigin, size: imageView.frame.size)
+        }
+    }
+    
     public var onTap: (() -> Void)?
     public var onLongPress: (() -> Void)?
     public var onScaleChange: ((CGFloat) -> Void)?
     public var onDragStart: (() -> Void)?
     public var onDragEnd: (() -> Void)?
+    
+    public var onImageOriginChange: (() -> Void)?
+    public var onImageSizeChange: (() -> Void)?
     
     public var beforeSetContentInset: ((UIEdgeInsets) -> UIEdgeInsets)?
     
@@ -137,9 +170,29 @@ public class PhotoView: UIView {
     }
     
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if let image = imageView.image {
-            reset(image: image)
+        
+        guard let keyPath = keyPath else {
+            return
         }
+        
+        switch keyPath {
+        case "image":
+            if let image = imageView.image {
+                reset(image: image)
+            }
+            break
+            
+        case "contentSize":
+            onImageSizeChange?()
+            break
+            
+        case "contentOffset":
+            onImageOriginChange?()
+            break
+        default: ()
+        }
+        
+        
     }
 
 }

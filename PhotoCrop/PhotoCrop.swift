@@ -5,7 +5,7 @@ public class PhotoCrop: UIView {
     
     public var image: UIImage! {
         didSet {
-            photoView.imageView.image = image
+            photoView.image = image
             foregroundView.image = image
         }
     }
@@ -20,7 +20,7 @@ public class PhotoCrop: UIView {
             return self.isCropping ? self.finderView.cropArea.toEdgeInsets() : contentInset
         }
         
-        foregroundView.scrollView = view.scrollView
+        foregroundView.photoView = view
         
         return view
         
@@ -31,8 +31,9 @@ public class PhotoCrop: UIView {
         let view = OverlayView()
         
         view.isHidden = true
+
         view.blurView.alpha = configuration.overlayAlpha
-        
+
         return view
         
     }()
@@ -44,7 +45,7 @@ public class PhotoCrop: UIView {
         
         view.isHidden = true
         view.configuration = configuration
-
+        
         view.onCropAreaChange = {
             let rect = view.cropArea.toRect(width: self.bounds.width, height: self.bounds.height)
             self.foregroundView.frame = rect
@@ -97,6 +98,7 @@ public class PhotoCrop: UIView {
         let view = ForegroundView()
         
         view.isHidden = true
+
         view.onScaleFactorChange = {
             self.updateFinderMinSize()
         }
@@ -111,7 +113,7 @@ public class PhotoCrop: UIView {
         
         view.isHidden = true
         view.configuration = configuration
-        
+
         return view
         
     }()
@@ -137,9 +139,9 @@ public class PhotoCrop: UIView {
             guard isCropping != oldValue else {
                 return
             }
-            
+
             if isCropping {
-                
+
                 overlayView.isHidden = false
                 finderView.isHidden = false
                 foregroundView.isHidden = false
@@ -153,7 +155,7 @@ public class PhotoCrop: UIView {
                 
                 // 初始化裁剪区域，尺寸和当前图片一样大
                 // 这样就会有一个从大到小的动画
-                cropArea = getCropAreaByContentInset(contentInset: photoView.scrollView.contentInset)
+                cropArea = getCropAreaByFrames(containerFrame: photoView.frame, contentFrame: photoView.imageFrame)
                 
                 // 停一下(为了触发动画)，调整成符合比例的裁剪框
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -170,14 +172,15 @@ public class PhotoCrop: UIView {
                 
             }
             else {
-                
+
                 foregroundView.isHidden = true
                 
                 photoView.scaleType = .fit
                 
+                // 从选定的裁剪区域到图片区域的动画
                 UIView.animate(withDuration: 0.5, animations: {
                     self.photoView.updateZoomScale()
-                    self.cropArea = self.getCropAreaByContentInset(contentInset: self.photoView.getContentInset())
+                    self.cropArea = self.getCropAreaByFrames(containerFrame: self.photoView.frame, contentFrame: self.photoView.imageFrame)
                     self.overlayView.alpha = 0
                     self.finderView.alpha = 0
                     self.gridView.alpha = 0
@@ -198,6 +201,10 @@ public class PhotoCrop: UIView {
         self.init()
         self.configuration = configuration
         addSubview(photoView)
+        addSubview(overlayView)
+        addSubview(finderView)
+        addSubview(foregroundView)
+        addSubview(gridView)
     }
 
     public override func layoutSubviews() {
@@ -274,14 +281,17 @@ public class PhotoCrop: UIView {
 }
 
 extension PhotoCrop {
-    
-    // 让 CropArea 完全包裹住图片，但又不超出屏幕
-    private func getCropAreaByContentInset(contentInset: UIEdgeInsets) -> CropArea {
-        let left = max(contentInset.left, configuration.finderCornerLineWidth)
-        let top = max(contentInset.top, configuration.finderCornerLineWidth)
-        let right = max(contentInset.right, configuration.finderCornerLineWidth)
-        let bottom = max(contentInset.bottom, configuration.finderCornerLineWidth)
+
+    private func getCropAreaByFrames(containerFrame: CGRect, contentFrame: CGRect) -> CropArea {
+        
+        let left = max(contentFrame.origin.x, configuration.finderCornerLineWidth)
+        let top = max(contentFrame.origin.y, configuration.finderCornerLineWidth)
+        
+        let right = max(containerFrame.width - (contentFrame.origin.x + contentFrame.width), configuration.finderCornerLineWidth)
+        let bottom = max(containerFrame.height - (contentFrame.origin.y + contentFrame.height), configuration.finderCornerLineWidth)
+        
         return CropArea(top: top, left: left, bottom: bottom, right: right)
+        
     }
     
     private func updateFinderMinSize() {

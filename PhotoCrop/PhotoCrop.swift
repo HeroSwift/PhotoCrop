@@ -10,13 +10,6 @@ public class PhotoCrop: UIView {
         }
     }
     
-    // 旋转容器
-    private lazy var rotateView: UIView = {
-        
-        return UIView()
-        
-    }()
-    
     // 图片容器，可缩放
     private lazy var photoView: PhotoView = {
        
@@ -36,6 +29,8 @@ public class PhotoCrop: UIView {
     private lazy var overlayView: OverlayView = {
         
         let view = OverlayView()
+        
+        view.isHidden = true
         view.blurView.alpha = configuration.overlayAlpha
         
         return view
@@ -47,6 +42,7 @@ public class PhotoCrop: UIView {
        
         let view = FinderView()
         
+        view.isHidden = true
         view.configuration = configuration
 
         view.onCropAreaChange = {
@@ -100,6 +96,7 @@ public class PhotoCrop: UIView {
 
         let view = ForegroundView()
         
+        view.isHidden = true
         view.onScaleFactorChange = {
             self.updateFinderMinSize()
         }
@@ -112,6 +109,7 @@ public class PhotoCrop: UIView {
         
         let view = GridView()
         
+        view.isHidden = true
         view.configuration = configuration
         
         return view
@@ -142,10 +140,10 @@ public class PhotoCrop: UIView {
             
             if isCropping {
                 
-                rotateView.addSubview(overlayView)
-                rotateView.addSubview(finderView)
-                rotateView.addSubview(foregroundView)
-                rotateView.addSubview(gridView)
+                overlayView.isHidden = false
+                finderView.isHidden = false
+                foregroundView.isHidden = false
+                gridView.isHidden = false
                 
                 overlayView.alpha = 0
                 finderView.alpha = 0
@@ -153,7 +151,7 @@ public class PhotoCrop: UIView {
                 
                 photoView.scaleType = .fill
                 
-                // 初始化裁剪区域，和当前图片一样大
+                // 初始化裁剪区域，尺寸和当前图片一样大
                 // 这样就会有一个从大到小的动画
                 cropArea = getCropAreaByContentInset(contentInset: photoView.scrollView.contentInset)
                 
@@ -173,7 +171,7 @@ public class PhotoCrop: UIView {
             }
             else {
                 
-                foregroundView.removeFromSuperview()
+                foregroundView.isHidden = true
                 
                 photoView.scaleType = .fit
                 
@@ -184,9 +182,9 @@ public class PhotoCrop: UIView {
                     self.finderView.alpha = 0
                     self.gridView.alpha = 0
                 }, completion: { success in
-                    self.overlayView.removeFromSuperview()
-                    self.finderView.removeFromSuperview()
-                    self.gridView.removeFromSuperview()
+                    self.overlayView.isHidden = true
+                    self.finderView.isHidden = true
+                    self.gridView.isHidden = true
                 })
                 
             }
@@ -199,19 +197,13 @@ public class PhotoCrop: UIView {
     public convenience init(configuration: PhotoCropConfiguration) {
         self.init()
         self.configuration = configuration
-        setup()
+        addSubview(photoView)
     }
 
-    private func setup() {
-        addSubview(rotateView)
-        rotateView.addSubview(photoView)
-    }
-    
     public override func layoutSubviews() {
         
         super.layoutSubviews()
         
-        rotateView.frame = bounds
         photoView.frame = bounds
         overlayView.frame = bounds
         finderView.frame = bounds
@@ -230,16 +222,16 @@ public class PhotoCrop: UIView {
             angle = 0
         }
 
-        let transform = rotateView.transform.rotated(by: CGFloat(offset))
+        let transform = self.transform.rotated(by: CGFloat(offset))
         
         UIView.animate(withDuration: 1, animations: {
-            self.rotateView.transform = transform
+            self.transform = transform
         })
         
     }
     
     public func reset() {
-        rotateView.transform = CGAffineTransform.identity
+        transform = CGAffineTransform.identity
     }
     
     public func crop() -> UIImage {

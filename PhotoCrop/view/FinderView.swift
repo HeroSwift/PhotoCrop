@@ -186,17 +186,14 @@ public class FinderView: UIView {
     
     @objc private func resizeCropArea() {
         removeResizeCropAreaTimer()
-        onCropAreaResize()
+        if !isHidden {
+            onCropAreaResize()
+        }
     }
 
     private func removeResizeCropAreaTimer() {
         resizeCropAreaTimer?.invalidate()
         resizeCropAreaTimer = nil
-    }
-    
-    public override func removeFromSuperview() {
-        super.removeFromSuperview()
-        removeResizeCropAreaTimer()
     }
     
     public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {

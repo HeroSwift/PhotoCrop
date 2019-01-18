@@ -99,11 +99,16 @@ public class FinderView: UIView {
                 return
             }
             
-            let cropWidth = size.width - configuration.finderCornerButtonSize - 2 * configuration.finderCornerLineWidth
-            let cropHeight = cropWidth / configuration.cropRatio
+            var cropWidth = size.width - configuration.finderCornerButtonSize - 2 * configuration.finderCornerLineWidth
+            var cropHeight = cropWidth / configuration.cropRatio
+            
+            if cropHeight > size.height {
+                cropHeight = size.height - configuration.finderCornerButtonSize - 2 * configuration.finderCornerLineWidth
+                cropWidth = cropHeight * configuration.cropRatio
+            }
             
             let vertical = (size.height - cropHeight) / 2
-            let horizontal = configuration.finderCornerButtonSize / 2 + configuration.finderCornerLineWidth
+            let horizontal = (size.width - cropWidth) / 2
             
             normalizedCropArea = CropArea(top: vertical, left: horizontal, bottom: vertical, right: horizontal)
 

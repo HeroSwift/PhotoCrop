@@ -122,7 +122,12 @@ public class FinderView: UIView {
             normalizedCropArea = CropArea(top: vertical, left: horizontal, bottom: vertical, right: horizontal)
 
             // 重新计算裁剪区域
-            resizeCropArea()
+            if oldValue.width > 0 && oldValue.height > 0 {
+                resizeCropArea()
+            }
+            else {
+                update()
+            }
             
         }
     }

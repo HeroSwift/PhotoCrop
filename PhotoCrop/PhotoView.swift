@@ -97,11 +97,9 @@ public class PhotoView: UIView {
     public var onTap: (() -> Void)?
     public var onLongPress: (() -> Void)?
     public var onScaleChange: (() -> Void)?
+    public var onPositionChange: (() -> Void)?
     public var onDragStart: (() -> Void)?
     public var onDragEnd: (() -> Void)?
-    
-    public var onImageOriginChange: (() -> Void)?
-    public var onImageSizeChange: (() -> Void)?
     
     public var contentInset: UIEdgeInsets?
     
@@ -128,7 +126,7 @@ public class PhotoView: UIView {
         }
         
         updateZoomScale()
-        updateImageOrigin()
+        updateImagePosition()
         
         onReset?()
         
@@ -175,12 +173,11 @@ public class PhotoView: UIView {
             break
             
         case "contentSize":
-            onImageSizeChange?()
             onScaleChange?()
             break
             
         case "contentOffset":
-            onImageOriginChange?()
+            onPositionChange?()
             break
         default: ()
         }
@@ -205,7 +202,7 @@ extension PhotoView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateImageOrigin()
+        updateImagePosition()
     }
     
 }
@@ -269,7 +266,7 @@ extension PhotoView {
         
     }
     
-    private func updateImageOrigin() {
+    private func updateImagePosition() {
         
         scrollView.contentInset = getContentInset()
 

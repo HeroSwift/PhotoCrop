@@ -18,21 +18,8 @@ class ForegroundView: UIView {
     
     var photoView: PhotoView! {
         didSet {
-            
-            guard photoView !== oldValue else {
-                return
-            }
-            
-            photoView.onImageOriginChange = {
-                self.updateImageOrigin()
-            }
-            photoView.onImageSizeChange = {
-                self.updateImageSize()
-            }
-
-            updateImageOrigin()
             updateImageSize()
-            
+            updateImageOrigin()
         }
     }
     

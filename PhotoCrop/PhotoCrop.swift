@@ -5,8 +5,8 @@ public class PhotoCrop: UIView {
     
     public var image: UIImage! {
         didSet {
-            photoView.image = image
-            foregroundView.image = image
+            photoView.imageView.image = image
+            foregroundView.imageView.image = image
         }
     }
     
@@ -82,7 +82,6 @@ public class PhotoCrop: UIView {
     private var cropArea = CropArea.zero {
         didSet {
             finderView.cropArea = cropArea
-            foregroundView.frame = cropArea.toRect(width: bounds.width, height: bounds.height)
         }
     }
     

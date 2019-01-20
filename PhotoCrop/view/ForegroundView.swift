@@ -36,13 +36,7 @@ class ForegroundView: UIView {
         }
     }
     
-    var image: UIImage? {
-        didSet {
-            imageView.image = image
-        }
-    }
-
-    private lazy var imageView: UIImageView = {
+    lazy var imageView: UIImageView = {
     
         let view = UIImageView()
         addSubview(view)

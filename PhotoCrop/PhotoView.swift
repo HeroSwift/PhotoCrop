@@ -76,15 +76,6 @@ public class PhotoView: UIView {
         }
     }
     
-    public var image: UIImage? {
-        get {
-            return imageView.image
-        }
-        set {
-            imageView.image = newValue
-        }
-    }
-    
     public var imageOrigin: CGPoint {
         get {
             let contentOffset = scrollView.contentOffset

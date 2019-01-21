@@ -20,7 +20,7 @@ public class PhotoCrop: UIView {
             self.updateFinderMinSize()
             self.foregroundView.updateImageSize()
         }
-        view.onPositionChange = {
+        view.onOriginChange = {
             self.foregroundView.updateImageOrigin()
         }
         
@@ -287,7 +287,7 @@ extension PhotoCrop {
         guard scale != 1 else {
             return
         }
-        
+
         UIView.animate(withDuration: 0.5, animations: {
             
             self.foregroundView.save()

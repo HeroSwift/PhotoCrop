@@ -97,7 +97,7 @@ public class PhotoView: UIView {
     public var onTap: (() -> Void)?
     public var onLongPress: (() -> Void)?
     public var onScaleChange: (() -> Void)?
-    public var onPositionChange: (() -> Void)?
+    public var onOriginChange: (() -> Void)?
     public var onDragStart: (() -> Void)?
     public var onDragEnd: (() -> Void)?
     
@@ -126,7 +126,7 @@ public class PhotoView: UIView {
         }
         
         updateZoomScale()
-        updateImagePosition()
+        updateImageOrigin()
         
         onReset?()
         
@@ -177,7 +177,7 @@ public class PhotoView: UIView {
             break
             
         case "contentOffset":
-            onPositionChange?()
+            onOriginChange?()
             break
         default: ()
         }
@@ -202,7 +202,7 @@ extension PhotoView: UIScrollViewDelegate {
     }
     
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateImagePosition()
+        updateImageOrigin()
     }
     
 }
@@ -266,7 +266,7 @@ extension PhotoView {
         
     }
     
-    private func updateImagePosition() {
+    private func updateImageOrigin() {
         
         scrollView.contentInset = getContentInset()
 
@@ -274,7 +274,7 @@ extension PhotoView {
     
     private func getZoomRect(point: CGPoint, zoomScale: CGFloat) -> CGRect {
         
-        // 传入的 zoomPoint 是相对于图片的实际尺寸计算的
+        // 传入的 point 是相对于图片的实际尺寸计算的
 
         let x = point.x
         let y = point.y

@@ -8,6 +8,9 @@ public class FinderView: UIView {
     var onCropAreaChange: (() -> Void)!
     var onCropAreaResize: (() -> Void)!
     
+    var onInteractionStart: (() -> Void)!
+    var onInteractionEnd: (() -> Void)!
+    
     public override var frame: CGRect {
         didSet {
             size = frame.size
@@ -92,6 +95,22 @@ public class FinderView: UIView {
     
     private var resizeCropAreaTimer: Timer?
     
+    private var interactionTimer: Timer?
+    
+    private var isInteractive = false {
+        didSet {
+            guard isInteractive != oldValue else {
+                return
+            }
+            if isInteractive {
+                onInteractionStart()
+            }
+            else {
+                onInteractionEnd()
+            }
+        }
+    }
+    
     private var size = CGSize.zero {
         didSet {
             
@@ -137,16 +156,9 @@ public class FinderView: UIView {
         guard let button = gestureRecognizer.view as? UIButton else {
             return
         }
-        
+
         let state = gestureRecognizer.state
-        guard state == .began || state == .changed else {
-            if state == .ended {
-                resizeCropAreaTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(resizeCropArea), userInfo: nil, repeats: false)
-            }
-            return
-        }
-        
-        guard resizeCropAreaTimer == nil else {
+        guard (state == .began && resizeCropAreaTimer == nil) || state == .changed else {
             return
         }
         
@@ -187,6 +199,9 @@ public class FinderView: UIView {
         
         cropArea = CropArea(top: top, left: left, bottom: viewHeight - bottom, right: viewWidth - right)
         
+        addResizeCropAreaTimer()
+        addInteractionTimer()
+        
         gestureRecognizer.setTranslation(.zero, in: self)
         
     }
@@ -206,10 +221,31 @@ public class FinderView: UIView {
             onCropAreaResize()
         }
     }
-
+    
+    @objc private func stopInteraction() {
+        removeInteractionTimer()
+        isInteractive = false
+    }
+    
+    private func addResizeCropAreaTimer() {
+        removeResizeCropAreaTimer()
+        resizeCropAreaTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(resizeCropArea), userInfo: nil, repeats: false)
+    }
+    
     private func removeResizeCropAreaTimer() {
         resizeCropAreaTimer?.invalidate()
         resizeCropAreaTimer = nil
+    }
+    
+    private func addInteractionTimer() {
+        removeInteractionTimer()
+        interactionTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(stopInteraction), userInfo: nil, repeats: false)
+        isInteractive = true
+    }
+    
+    private func removeInteractionTimer() {
+        interactionTimer?.invalidate()
+        interactionTimer = nil
     }
     
     public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -223,7 +259,7 @@ public class FinderView: UIView {
         {
             return view
         }
-        
+        addInteractionTimer()
         return nil
     }
     

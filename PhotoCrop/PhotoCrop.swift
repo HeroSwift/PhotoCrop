@@ -40,7 +40,7 @@ public class PhotoCrop: UIView {
         
         view.isHidden = true
 
-        view.blurView.alpha = configuration.overlayAlpha
+        view.blurView.alpha = configuration.overlayBlurAlpha
 
         return view
         
@@ -62,6 +62,12 @@ public class PhotoCrop: UIView {
         view.onCropAreaResize = {
             self.updateCropArea(by: self.finderView.normalizedCropArea)
         }
+        view.onInteractionStart = {
+            self.updateInteractionState(overlayAlpha: self.configuration.overlayAlphaInteractive, gridAlpha: 1)
+        }
+        view.onInteractionEnd = {
+            self.updateInteractionState(overlayAlpha: self.configuration.overlayAlphaNormal, gridAlpha: 0)
+        }
         
         return view
     }()
@@ -80,7 +86,9 @@ public class PhotoCrop: UIView {
         
         let view = GridView()
         
+        view.alpha = 0
         view.isHidden = true
+
         view.configuration = configuration
 
         return view
@@ -117,8 +125,7 @@ public class PhotoCrop: UIView {
                 
                 overlayView.alpha = 0
                 finderView.alpha = 0
-                gridView.alpha = 0
-                
+
                 photoView.scaleType = .fill
                 
                 // 初始化裁剪区域，尺寸和当前图片一样大
@@ -135,7 +142,6 @@ public class PhotoCrop: UIView {
                         self.photoView.reset()
                         self.overlayView.alpha = 1
                         self.finderView.alpha = 1
-                        self.gridView.alpha = 1
                     })
                     
                 }
@@ -292,7 +298,7 @@ extension PhotoCrop {
             return
         }
 
-        UIView.animate(withDuration: 0.5, animations: {
+        UIView.animate(withDuration: 0.3, animations: {
             
             self.foregroundView.save()
             
@@ -302,6 +308,15 @@ extension PhotoCrop {
             self.foregroundView.restore()
             
         })
+        
+    }
+    
+    private func updateInteractionState(overlayAlpha: CGFloat, gridAlpha: CGFloat) {
+        
+        UIView.animate(withDuration: 0.5) {
+            self.overlayView.alpha = overlayAlpha
+            self.gridView.alpha = gridAlpha
+        }
         
     }
     

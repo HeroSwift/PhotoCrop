@@ -222,7 +222,7 @@ public class FinderView: UIView {
         }
     }
     
-    @objc private func stopInteraction() {
+    @objc func stopInteraction() {
         removeInteractionTimer()
         isInteractive = false
     }

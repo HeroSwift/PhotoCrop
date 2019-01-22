@@ -14,8 +14,10 @@ public class PhotoCrop: UIView {
     private lazy var photoView: PhotoView = {
        
         let view = PhotoView()
-        view.backgroundColor = .red
+        
         view.scaleType = .fit
+        view.backgroundColor = configuration.backgroundColor
+        
         view.onScaleChange = {
             self.updateFinderMinSize()
             self.finderView.addInteractionTimer()
@@ -112,6 +114,8 @@ public class PhotoCrop: UIView {
                 return
             }
 
+            finderView.stopInteraction()
+            
             if isCropping {
 
                 overlayView.isHidden = false
@@ -136,7 +140,7 @@ public class PhotoCrop: UIView {
                         self.finderView.cropArea = cropArea
                         self.photoView.contentInset = cropArea.toEdgeInsets()
                         self.photoView.reset()
-                        self.overlayView.alpha = 1
+                        self.overlayView.alpha = self.configuration.overlayAlphaNormal
                         self.finderView.alpha = 1
                     })
                     

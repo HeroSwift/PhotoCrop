@@ -3,12 +3,14 @@ import UIKit
 
 open class PhotoCropConfiguration {
     
+    public var backgroundColor = UIColor.black
+    
     public var finderBorderWidth: CGFloat = 1
-    public var finderBorderColor: UIColor = .white
+    public var finderBorderColor = UIColor.white
     
     public var finderCornerLineWidth: CGFloat = 3
     public var finderCornerLineSize: CGFloat = 22
-    public var finderCornerLineColor: UIColor = .white
+    public var finderCornerLineColor = UIColor.white
     
     public var finderCornerButtonSize: CGFloat = 60
     

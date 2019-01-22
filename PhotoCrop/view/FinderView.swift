@@ -99,7 +99,7 @@ public class FinderView: UIView {
     
     private var isInteractive = false {
         didSet {
-            guard isInteractive != oldValue else {
+            guard isInteractive != oldValue, !isHidden else {
                 return
             }
             if isInteractive {

@@ -95,12 +95,6 @@ public class PhotoCrop: UIView {
         
     }()
     
-    private var cropArea = CropArea.zero {
-        didSet {
-            finderView.cropArea = cropArea
-        }
-    }
-    
     private var angle: Double = 0
     
     private var isReversed: Bool {
@@ -130,14 +124,14 @@ public class PhotoCrop: UIView {
                 
                 // 初始化裁剪区域，尺寸和当前图片一样大
                 // 这样就会有一个从大到小的动画
-                cropArea = getCropAreaByPhotoView()
+                finderView.cropArea = getCropAreaByPhotoView()
                 
                 // 停一下(为了触发动画)，调整成符合比例的裁剪框
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     
                     UIView.animate(withDuration: 0.5, animations: {
                         let cropArea = self.finderView.normalizedCropArea
-                        self.cropArea = cropArea
+                        self.finderView.cropArea = cropArea
                         self.photoView.contentInset = cropArea.toEdgeInsets()
                         self.photoView.reset()
                         self.overlayView.alpha = 1
@@ -157,7 +151,7 @@ public class PhotoCrop: UIView {
                 // 从选定的裁剪区域到图片区域的动画
                 UIView.animate(withDuration: 0.5, animations: {
                     self.photoView.reset()
-                    self.cropArea = self.getCropAreaByPhotoView()
+                    self.finderView.cropArea = self.getCropAreaByPhotoView()
                     self.overlayView.alpha = 0
                     self.finderView.alpha = 0
                     self.gridView.alpha = 0
@@ -302,7 +296,7 @@ extension PhotoCrop {
             
             self.foregroundView.save()
             
-            self.cropArea = cropArea
+            self.finderView.cropArea = cropArea
             self.photoView.scale *= scale
 
             self.foregroundView.restore()

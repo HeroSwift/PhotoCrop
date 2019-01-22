@@ -18,9 +18,11 @@ public class PhotoCrop: UIView {
         view.scaleType = .fit
         view.onScaleChange = {
             self.updateFinderMinSize()
+            self.finderView.addInteractionTimer()
             self.foregroundView.updateImageSize()
         }
         view.onOriginChange = {
+            self.finderView.addInteractionTimer()
             self.foregroundView.updateImageOrigin()
         }
         view.onReset = {

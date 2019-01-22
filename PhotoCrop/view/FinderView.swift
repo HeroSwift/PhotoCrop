@@ -237,7 +237,7 @@ public class FinderView: UIView {
         resizeCropAreaTimer = nil
     }
     
-    private func addInteractionTimer() {
+    func addInteractionTimer() {
         removeInteractionTimer()
         interactionTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(stopInteraction), userInfo: nil, repeats: false)
         isInteractive = true
@@ -259,7 +259,6 @@ public class FinderView: UIView {
         {
             return view
         }
-        addInteractionTimer()
         return nil
     }
     

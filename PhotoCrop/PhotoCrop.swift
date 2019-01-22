@@ -23,6 +23,10 @@ public class PhotoCrop: UIView {
         view.onOriginChange = {
             self.foregroundView.updateImageOrigin()
         }
+        view.onReset = {
+            self.foregroundView.updateImageSize()
+            self.foregroundView.updateImageOrigin()
+        }
         
         foregroundView.photoView = view
         

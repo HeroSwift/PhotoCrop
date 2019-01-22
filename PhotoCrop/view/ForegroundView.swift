@@ -16,12 +16,7 @@ class ForegroundView: UIView {
         }
     }
     
-    var photoView: PhotoView! {
-        didSet {
-            updateImageSize()
-            updateImageOrigin()
-        }
-    }
+    var photoView: PhotoView!
     
     lazy var imageView: UIImageView = {
     

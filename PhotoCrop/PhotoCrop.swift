@@ -149,8 +149,6 @@ public class PhotoCrop: UIView {
             }
             else {
 
-                foregroundView.isHidden = true
-
                 photoView.scaleType = .fit
                 photoView.contentInset = nil
                 
@@ -165,6 +163,7 @@ public class PhotoCrop: UIView {
                     self.overlayView.isHidden = true
                     self.finderView.isHidden = true
                     self.gridView.isHidden = true
+                    self.foregroundView.isHidden = true
                 })
                 
             }

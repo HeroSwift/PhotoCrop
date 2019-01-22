@@ -18,9 +18,9 @@
 		9DFE527C21F026A500E27DD9 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494821EF77E800F47BEC /* GridView.swift */; };
 		9DFE527D21F026A500E27DD9 /* CropArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494A21EF790C00F47BEC /* CropArea.swift */; };
 		9DFE527E21F026A500E27DD9 /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE4494421EDC24200F47BEC /* PhotoView.swift */; };
-		9DFE527F21F026A500E27DD9 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D960802216DFE2E006684D6 /* SimpleButton.swift */; };
 		9DFE528021F026A500E27DD9 /* PhotoCrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DBC472150A33300F9923D /* PhotoCrop.swift */; };
 		9DFE528121F026A500E27DD9 /* PhotoCropConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE527521F0202300E27DD9 /* PhotoCropConfiguration.swift */; };
+		9DFE534721F714BF00E27DD9 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE534521F714BF00E27DD9 /* SimpleButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,13 +45,13 @@
 		9D7DBC25214E530E00F9923D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D7DBC29214E566D00F9923D /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
 		9D7DBC472150A33300F9923D /* PhotoCrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCrop.swift; sourceTree = "<group>"; };
-		9D960802216DFE2E006684D6 /* SimpleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 		9DE4494421EDC24200F47BEC /* PhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
 		9DE4494621EF058700F47BEC /* ForegroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForegroundView.swift; sourceTree = "<group>"; };
 		9DE4494821EF77E800F47BEC /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		9DE4494A21EF790C00F47BEC /* CropArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropArea.swift; sourceTree = "<group>"; };
 		9DE4494C21EF7E5500F47BEC /* FinderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderView.swift; sourceTree = "<group>"; };
 		9DFE527521F0202300E27DD9 /* PhotoCropConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropConfiguration.swift; sourceTree = "<group>"; };
+		9DFE534521F714BF00E27DD9 /* SimpleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,10 +94,10 @@
 			isa = PBXGroup;
 			children = (
 				9D7DBC0C214E52FD00F9923D /* Info.plist */,
+				9DFE534421F714BF00E27DD9 /* SimpleButton */,
 				9DFE527821F025C900E27DD9 /* view */,
 				9DFE527721F025BC00E27DD9 /* model */,
 				9DE4494421EDC24200F47BEC /* PhotoView.swift */,
-				9D960802216DFE2E006684D6 /* SimpleButton.swift */,
 				9D7DBC472150A33300F9923D /* PhotoCrop.swift */,
 				9DFE527521F0202300E27DD9 /* PhotoCropConfiguration.swift */,
 			);
@@ -134,6 +134,14 @@
 				9DE4494821EF77E800F47BEC /* GridView.swift */,
 			);
 			path = view;
+			sourceTree = "<group>";
+		};
+		9DFE534421F714BF00E27DD9 /* SimpleButton */ = {
+			isa = PBXGroup;
+			children = (
+				9DFE534521F714BF00E27DD9 /* SimpleButton.swift */,
+			);
+			path = SimpleButton;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -254,9 +262,9 @@
 				9DFE527C21F026A500E27DD9 /* GridView.swift in Sources */,
 				9DFE527D21F026A500E27DD9 /* CropArea.swift in Sources */,
 				9DFE527E21F026A500E27DD9 /* PhotoView.swift in Sources */,
-				9DFE527F21F026A500E27DD9 /* SimpleButton.swift in Sources */,
 				9DFE528021F026A500E27DD9 /* PhotoCrop.swift in Sources */,
 				9DFE528121F026A500E27DD9 /* PhotoCropConfiguration.swift in Sources */,
+				9DFE534721F714BF00E27DD9 /* SimpleButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,7 +447,8 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.finstao.PhotoCrop;
+				MACH_O_TYPE = staticlib;
+				PRODUCT_BUNDLE_IDENTIFIER = com.finstao.dev;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -468,7 +477,8 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.finstao.PhotoCrop;
+				MACH_O_TYPE = staticlib;
+				PRODUCT_BUNDLE_IDENTIFIER = com.finstao.dev;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;

@@ -39,11 +39,26 @@ public class PhotoView: UIView {
     
     public override var frame: CGRect {
         didSet {
-            guard frame.width != oldValue.width || frame.height != oldValue.height else {
+            size = frame.size
+        }
+    }
+    
+    private var size = CGSize.zero {
+        didSet {
+            
+            let oldWidth = oldValue.width
+            let oldHeight = oldValue.height
+            
+            let newWidth = size.width
+            let newHeight = size.height
+            
+            guard newWidth != oldWidth || newHeight != oldHeight else {
                 return
             }
-            scrollView.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.height)
+            scrollView.frame = CGRect(x: 0, y: 0, width: newWidth, height: newHeight)
+            
             reset()
+            
         }
     }
     
@@ -157,6 +172,11 @@ public class PhotoView: UIView {
         
         return UIEdgeInsets(top: insetVertical, left: insetHorizontal, bottom: insetVertical, right: insetHorizontal)
         
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        size = frame.size
     }
 
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {

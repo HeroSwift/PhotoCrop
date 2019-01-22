@@ -7,7 +7,9 @@ import UIKit
 // 从而实现视觉上的合二为一
 class ForegroundView: UIView {
     
-    public override var frame: CGRect {
+    var photoView: PhotoView!
+    
+    override var frame: CGRect {
         didSet {
             guard photoView != nil else {
                 return
@@ -15,8 +17,6 @@ class ForegroundView: UIView {
             updateImageOrigin()
         }
     }
-    
-    var photoView: PhotoView!
     
     lazy var imageView: UIImageView = {
     

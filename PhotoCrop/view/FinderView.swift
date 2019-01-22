@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class FinderView: UIView {
+class FinderView: UIView {
     
     var configuration: PhotoCropConfiguration!
     
@@ -11,7 +11,7 @@ public class FinderView: UIView {
     var onInteractionStart: (() -> Void)!
     var onInteractionEnd: (() -> Void)!
     
-    public override var frame: CGRect {
+    override var frame: CGRect {
         didSet {
             size = frame.size
         }
@@ -248,7 +248,7 @@ public class FinderView: UIView {
         interactionTimer = nil
     }
     
-    public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         guard let view = super.hitTest(point, with: event) else {
             return nil
         }

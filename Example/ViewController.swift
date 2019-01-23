@@ -11,29 +11,13 @@ import PhotoCrop
 
 class ViewController: UIViewController {
 
-    lazy var imageView: UIImageView = {
-        
-        let imageView = UIImageView()
-        
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
-        
-        view.addConstraints([
-            NSLayoutConstraint(item: imageView, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 30),
-            NSLayoutConstraint(item: imageView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -30),
-            NSLayoutConstraint(item: imageView, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: imageView, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1, constant: 0),
-        ])
-        
-        return imageView
-        
-    }()
-    
     let photoCrop = PhotoCrop(configuration: PhotoCropConfiguration())
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        
         
         photoCrop.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(photoCrop)
@@ -48,19 +32,19 @@ class ViewController: UIViewController {
         }
         view.addSubview(button)
         
-        let showButton = SimpleButton()
-        showButton.translatesAutoresizingMaskIntoConstraints = false
-        showButton.setTitle("show", for: .normal)
-        showButton.onClick = {
-            self.photoCrop.isCropping = true
+        let toggleButton = SimpleButton()
+        toggleButton.translatesAutoresizingMaskIntoConstraints = false
+        toggleButton.setTitle("Toggle", for: .normal)
+        toggleButton.onClick = {
+            self.photoCrop.isCropping = !self.photoCrop.isCropping
         }
-        view.addSubview(showButton)
+        view.addSubview(toggleButton)
         
         let hideButton = SimpleButton()
         hideButton.translatesAutoresizingMaskIntoConstraints = false
-        hideButton.setTitle("hide", for: .normal)
+        hideButton.setTitle("Rotate", for: .normal)
         hideButton.onClick = {
-            self.photoCrop.isCropping = false
+            self.photoCrop.reset()
         }
         view.addSubview(hideButton)
         
@@ -70,15 +54,15 @@ class ViewController: UIViewController {
             NSLayoutConstraint(item: photoCrop, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1, constant: 0),
             NSLayoutConstraint(item: photoCrop, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1, constant: 0),
             NSLayoutConstraint(item: button, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: showButton, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: showButton, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: toggleButton, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: toggleButton, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0),
             NSLayoutConstraint(item: hideButton, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: 0),
             NSLayoutConstraint(item: hideButton, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1, constant: 0),
         ])
         
         
         
-        view.backgroundColor = .gray
+        view.backgroundColor = .black
 
     }
     

@@ -23,7 +23,7 @@ open class PhotoCropConfiguration {
     public var gridLineColor = UIColor.white.withAlphaComponent(0.5)
     public var gridLineWidth = 1 / UIScreen.main.scale
     
-    public var overlayBlurAlpha: CGFloat = 0.8
+    public var overlayBlurAlpha: CGFloat = 1
     public var overlayAlphaNormal: CGFloat = 1
     public var overlayAlphaInteractive: CGFloat = 0.2
     

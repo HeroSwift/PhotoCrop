@@ -220,16 +220,19 @@ public class PhotoCrop: UIView {
             angle = 0
         }
 
-        let transform = self.transform.rotated(by: CGFloat(offset))
-        
-        UIView.animate(withDuration: 1, animations: {
-            self.transform = transform
+        startAnimation(duration: 0.5, animations: {
+            self.transform = self.transform.rotated(by: CGFloat(offset))
         })
         
     }
     
     public func reset() {
-        transform = CGAffineTransform.identity
+        
+        startAnimation(duration: 0.5, animations: {
+            self.transform = CGAffineTransform.identity
+            self.photoView.reset()
+        })
+        
     }
     
     public func crop() -> UIImage? {

@@ -241,14 +241,14 @@ public class PhotoCrop: UIView {
     
     public func crop() -> UIImage? {
 
-        guard let source = photoView.imageView.image, isCropping else {
+        guard let source = photoView.imageView.image, let sourceSize = photoView.imageOriginalSize, isCropping else {
             return nil
         }
 
         foregroundView.save()
-        
-        let sourceWidth = source.size.width
-        let sourceHeight = source.size.height
+
+        let sourceWidth = sourceSize.width
+        let sourceHeight = sourceSize.height
 
         let x = abs(foregroundView.relativeX) * sourceWidth
         let y = abs(foregroundView.relativeY) * sourceHeight
@@ -261,26 +261,30 @@ public class PhotoCrop: UIView {
             width: round(width),
             height: round(height)
         )
-        
-        
+
         if let croped = source.cgImage?.cropping(to: rect) {
             
-            // 只有 @2x 图片 scale 才是 2
-            // 但是 PhotoCrop 的场景没这样的，都是本地图片或网络图片
-
-            var cropedImage = UIImage(cgImage: croped, scale: 1, orientation: source.imageOrientation)
-            
-            let cropedSize = CGSize(
+            // 最终输出的图片尺寸
+            let size = CGSize(
                 width: configuration.cropWidth,
                 height: configuration.cropHeight
             )
             
-            UIGraphicsBeginImageContextWithOptions(cropedSize, false, 1)
-            cropedImage.draw(in: CGRect(origin: .zero, size: cropedSize))
-            cropedImage = UIGraphicsGetImageFromCurrentImageContext() ?? cropedImage
+            // 除了定义图片尺寸，还需指定图片的缩放值，也就是像素密度
+            // 这样输出的图片质量才和裁剪时预览所见相同
+            var scale = floor(width / configuration.cropWidth)
+            if scale < 1 {
+                scale = 1
+            }
+            
+            var image = UIImage(cgImage: croped, scale: scale, orientation: source.imageOrientation)
+
+            UIGraphicsBeginImageContextWithOptions(size, false, scale)
+            image.draw(in: CGRect(origin: .zero, size: size))
+            image = UIGraphicsGetImageFromCurrentImageContext() ?? image
             UIGraphicsEndImageContext()
-            print(cropedImage.size)
-            return cropedImage
+
+            return image
             
         }
         
@@ -288,8 +292,17 @@ public class PhotoCrop: UIView {
         
     }
     
-    public func save(image: UIImage) -> String {
-        return ""
+    public func save(image: UIImage) -> CropFile? {
+        
+        if let data = image.jpegData(compressionQuality: 1) as NSData? {
+            let path = getFilePath(dirname: NSTemporaryDirectory(), extname: ".jpg")
+            if data.write(toFile: path, atomically: true) {
+                return CropFile(path: path, size: data.length, width: image.size.width * image.scale, height: image.size.height * image.scale)
+            }
+        }
+        
+        return nil
+        
     }
     
 }
@@ -297,10 +310,7 @@ public class PhotoCrop: UIView {
 extension PhotoCrop {
 
     private func updateFinderMinSize() {
-        
-        let cropWidth = configuration.cropWidth
-        let cropHeight = configuration.cropHeight
-        
+
         let finderMinWidth = configuration.finderMinWidth
         let finderMinHeight = configuration.finderMinHeight
         
@@ -314,17 +324,19 @@ extension PhotoCrop {
         
         // 这是裁剪框能缩放的最小尺寸
         let scaleFactor = photoView.maxScale / photoView.scale
-        var finderWidth = max(normalizedWidth / scaleFactor, finderMinWidth)
-        var finderHeight = max(normalizedHeight / scaleFactor, finderMinHeight)
+        let finderWidth = max(normalizedWidth / scaleFactor, finderMinWidth)
+        let finderHeight = max(normalizedHeight / scaleFactor, finderMinHeight)
         
         // 裁剪框尺寸对应的图片尺寸
         // 因为 photoView 已到达 maxScale，因此裁剪框和图片是 1:1 的关系
-        if (finderWidth < cropWidth) {
-            finderWidth = cropWidth / scaleFactor
-        }
-        if (finderHeight < cropHeight) {
-            finderHeight = cropHeight / scaleFactor
-        }
+//        let cropWidth = configuration.cropWidth
+//        let cropHeight = configuration.cropHeight
+//        if (finderWidth < cropWidth) {
+//            finderWidth = cropWidth / scaleFactor
+//        }
+//        if (finderHeight < cropHeight) {
+//            finderHeight = cropHeight / scaleFactor
+//        }
 
         finderView.minWidth = finderWidth
         finderView.minHeight = finderHeight
@@ -396,6 +408,26 @@ extension PhotoCrop {
             self.isAnimating = false
             completion?()
         })
+        
+    }
+    
+    private func getFilePath(dirname: String, extname: String) -> String {
+        
+        let fileManager = FileManager.default
+        if !fileManager.fileExists(atPath: dirname) {
+            try? fileManager.createDirectory(atPath: dirname, withIntermediateDirectories: true, attributes: nil)
+        }
+        
+        let format = DateFormatter()
+        format.dateFormat = "yyyy_MM_dd_HH_mm_ss"
+        
+        let filename = "\(format.string(from: Date()))\(extname)"
+        
+        if dirname.hasSuffix("/") {
+            return dirname + filename
+        }
+        
+        return "\(dirname)/\(filename)"
         
     }
     

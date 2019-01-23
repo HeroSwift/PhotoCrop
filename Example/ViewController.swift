@@ -28,11 +28,18 @@ class ViewController: UIViewController {
         
         let button = SimpleButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("rotate", for: .normal)
+        button.setTitle("Crop", for: .normal)
         button.onClick = {
-            let image = self.photoCrop.crop()
-            self.photoCrop.setImageBitmap(image!)
+            guard let image = self.photoCrop.crop() else {
+                return
+            }
+            guard let file = self.photoCrop.save(image: image) else {
+                return
+            }
             self.photoCrop.isCropping = false
+            self.photoCrop.setImageBitmap(image)
+            
+            print("\(file.path) \(file.size) \(file.width) \(file.height)")
         }
         view.addSubview(button)
         

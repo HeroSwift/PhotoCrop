@@ -109,12 +109,18 @@ public class PhotoView: UIView {
     
     public var imageOriginalSize: CGSize? {
         get {
-            return imageView.image?.size
+            guard let image = imageView.image else {
+                return nil
+            }
+            return getImageSize(image: image)
         }
     }
     
     public var calculateMaxScale: ((CGFloat) -> CGFloat) = { scale in
         return 3 * scale < 1 ? 1 : (3 * scale)
+    }
+    public var calculateMinScale: ((CGFloat) -> CGFloat) = { scale in
+        return scale
     }
 
     public var onReset: (() -> Void)?
@@ -145,8 +151,8 @@ public class PhotoView: UIView {
             minScale = 1
             maxScale = 1
             scale = 1
-            
-            imageView.frame.size = image.size
+
+            imageView.frame.size = getImageSize(image: image)
             
         }
         
@@ -289,8 +295,9 @@ extension PhotoView {
             zoomScale = min(widthScale, heightScale)
         }
 
-        maxScale = calculateMaxScale(zoomScale)
-        minScale = zoomScale
+        minScale = calculateMinScale(zoomScale)
+        maxScale = max(calculateMaxScale(zoomScale), minScale)
+        
         scale = zoomScale
         
     }
@@ -318,6 +325,13 @@ extension PhotoView {
         
     }
     
+    private func getImageSize(image: UIImage) -> CGSize {
+        return CGSize(
+            width: image.size.width * image.scale,
+            height: image.size.height * image.scale
+        )
+    }
+    
     @objc private func onTapGesture(_ gesture: UILongPressGestureRecognizer) {
         
         onTap?()
@@ -328,6 +342,10 @@ extension PhotoView {
         
         // 距离谁比较远就去谁
         let zoomScale = (scale - minScale > maxScale - scale) ? minScale : maxScale
+        guard zoomScale != scale else {
+            return
+        }
+        
         let point = gesture.location(in: imageView)
 
         scrollView.zoom(to: getZoomRect(point: point, zoomScale: zoomScale), animated: true)

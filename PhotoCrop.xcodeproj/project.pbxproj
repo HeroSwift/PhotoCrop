@@ -21,6 +21,7 @@
 		9DFE528121F026A500E27DD9 /* PhotoCropConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE527521F0202300E27DD9 /* PhotoCropConfiguration.swift */; };
 		9DFE534721F714BF00E27DD9 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE534521F714BF00E27DD9 /* SimpleButton.swift */; };
 		9DFE534C21F7254B00E27DD9 /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE534A21F7254B00E27DD9 /* PhotoView.swift */; };
+		9DFE535121F8BBE600E27DD9 /* CropFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE535021F8BBE600E27DD9 /* CropFile.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		9DFE527521F0202300E27DD9 /* PhotoCropConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCropConfiguration.swift; sourceTree = "<group>"; };
 		9DFE534521F714BF00E27DD9 /* SimpleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 		9DFE534A21F7254B00E27DD9 /* PhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
+		9DFE535021F8BBE600E27DD9 /* CropFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				9DE4494A21EF790C00F47BEC /* CropArea.swift */,
+				9DFE535021F8BBE600E27DD9 /* CropFile.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -265,6 +268,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9DFE527921F026A500E27DD9 /* OverlayView.swift in Sources */,
+				9DFE535121F8BBE600E27DD9 /* CropFile.swift in Sources */,
 				9DFE527A21F026A500E27DD9 /* ForegroundView.swift in Sources */,
 				9DFE527B21F026A500E27DD9 /* FinderView.swift in Sources */,
 				9DFE534C21F7254B00E27DD9 /* PhotoView.swift in Sources */,
@@ -460,7 +464,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -489,7 +493,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.finstao.dev;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

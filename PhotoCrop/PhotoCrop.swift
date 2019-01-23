@@ -12,22 +12,29 @@ public class PhotoCrop: UIView {
         view.backgroundColor = configuration.backgroundColor
         
         view.onScaleChange = {
-            self.updateFinderMinSize()
-            self.foregroundView.updateImageSize()
-            if self.isCropping && !self.isAnimating {
-                self.finderView.addInteractionTimer()
+            if self.finderView.alpha > 0 {
+                self.updateFinderMinSize()
+                if !self.isAnimating {
+                    self.finderView.addInteractionTimer()
+                }
             }
-            
+            if self.foregroundView.alpha > 0 {
+                self.foregroundView.updateImageSize()
+            }
         }
         view.onOriginChange = {
-            self.foregroundView.updateImageOrigin()
-            if self.isCropping && !self.isAnimating {
+            if self.finderView.alpha > 0 && !self.isAnimating {
                 self.finderView.addInteractionTimer()
+            }
+            if self.foregroundView.alpha > 0 {
+                self.foregroundView.updateImageOrigin()
             }
         }
         view.onReset = {
-            self.foregroundView.updateImageSize()
-            self.foregroundView.updateImageOrigin()
+            if self.foregroundView.alpha > 0 {
+                self.foregroundView.updateImageSize()
+                self.foregroundView.updateImageOrigin()
+            }
         }
         
         foregroundView.photoView = view

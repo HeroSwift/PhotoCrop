@@ -222,6 +222,9 @@ public class PhotoCrop: UIView {
         }
 
         let imageSize = image.size
+        
+        foregroundView.save()
+        
         let cropRect = CGRect(
             x: abs(foregroundView.relativeX) * imageSize.width,
             y: abs(foregroundView.relativeY) * imageSize.height,

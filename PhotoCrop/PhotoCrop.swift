@@ -36,6 +36,9 @@ public class PhotoCrop: UIView {
                 self.foregroundView.updateImageOrigin()
             }
         }
+        view.calculateMaxScale = { scale in
+            return 1
+        }
         
         foregroundView.photoView = view
         
@@ -61,6 +64,7 @@ public class PhotoCrop: UIView {
         let view = FinderView()
         
         view.isHidden = true
+        view.cropRatio = configuration.cropWidth / configuration.cropHeight
         view.configuration = configuration
         
         view.onCropAreaChange = {
@@ -237,37 +241,45 @@ public class PhotoCrop: UIView {
     
     public func crop() -> UIImage? {
 
-        guard let image = photoView.imageView.image, isCropping else {
+        guard let source = photoView.imageView.image, isCropping else {
             return nil
         }
 
-        let imageSize = image.size
-        
         foregroundView.save()
         
-        let cropRect = CGRect(
-            x: abs(foregroundView.relativeX) * imageSize.width,
-            y: abs(foregroundView.relativeY) * imageSize.height,
-            width: foregroundView.relativeWidth * imageSize.width,
-            height: foregroundView.relativeHeight * imageSize.height
+        let sourceWidth = source.size.width
+        let sourceHeight = source.size.height
+
+        let x = abs(foregroundView.relativeX) * sourceWidth
+        let y = abs(foregroundView.relativeY) * sourceHeight
+        let width = foregroundView.relativeWidth * sourceWidth
+        let height = foregroundView.relativeHeight * sourceHeight
+        
+        let rect = CGRect(
+            x: floor(x),
+            y: floor(y),
+            width: round(width),
+            height: round(height)
         )
         
-        if let croped = image.cgImage?.cropping(to: cropRect) {
+        
+        if let croped = source.cgImage?.cropping(to: rect) {
             
-            // 只有 @2x 图片才是 2
+            // 只有 @2x 图片 scale 才是 2
             // 但是 PhotoCrop 的场景没这样的，都是本地图片或网络图片
-            let scale: CGFloat = 1
+
+            var cropedImage = UIImage(cgImage: croped, scale: 1, orientation: source.imageOrientation)
             
-            var cropedImage = UIImage(cgImage: croped, scale: scale, orientation: image.imageOrientation)
-            if cropedImage.imageOrientation == .up {
-                return cropedImage
-            }
+            let cropedSize = CGSize(
+                width: configuration.cropWidth,
+                height: configuration.cropHeight
+            )
             
-            UIGraphicsBeginImageContextWithOptions(cropedImage.size, false, scale)
-            cropedImage.draw(in: CGRect(origin: .zero, size: cropedImage.size))
+            UIGraphicsBeginImageContextWithOptions(cropedSize, false, 1)
+            cropedImage.draw(in: CGRect(origin: .zero, size: cropedSize))
             cropedImage = UIGraphicsGetImageFromCurrentImageContext() ?? cropedImage
             UIGraphicsEndImageContext()
-            
+            print(cropedImage.size)
             return cropedImage
             
         }
@@ -276,20 +288,46 @@ public class PhotoCrop: UIView {
         
     }
     
+    public func save(image: UIImage) -> String {
+        return ""
+    }
+    
 }
 
 extension PhotoCrop {
 
     private func updateFinderMinSize() {
         
-        let scaleFactor = photoView.maxScale / photoView.scale
+        let cropWidth = configuration.cropWidth
+        let cropHeight = configuration.cropHeight
+        
         let finderMinWidth = configuration.finderMinWidth
         let finderMinHeight = configuration.finderMinHeight
         
-        let rect = finderView.normalizedCropArea.toRect(width: bounds.width, height: bounds.height)
+        // 有两个限制：
+        // 1. 裁剪框不能小于 finderMinWidth/finderMinHeight
+        // 2. 裁剪后的图片不能小余 cropWidth/cropHeight
         
-        finderView.minWidth = max(rect.width / scaleFactor, finderMinWidth)
-        finderView.minHeight = max(rect.height / scaleFactor, finderMinHeight)
+        let normalizedRect = finderView.normalizedCropArea.toRect(width: bounds.width, height: bounds.height)
+        let normalizedWidth = normalizedRect.width
+        let normalizedHeight = normalizedRect.height
+        
+        // 这是裁剪框能缩放的最小尺寸
+        let scaleFactor = photoView.maxScale / photoView.scale
+        var finderWidth = max(normalizedWidth / scaleFactor, finderMinWidth)
+        var finderHeight = max(normalizedHeight / scaleFactor, finderMinHeight)
+        
+        // 裁剪框尺寸对应的图片尺寸
+        // 因为 photoView 已到达 maxScale，因此裁剪框和图片是 1:1 的关系
+        if (finderWidth < cropWidth) {
+            finderWidth = cropWidth / scaleFactor
+        }
+        if (finderHeight < cropHeight) {
+            finderHeight = cropHeight / scaleFactor
+        }
+
+        finderView.minWidth = finderWidth
+        finderView.minHeight = finderHeight
         
     }
     

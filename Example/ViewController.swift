@@ -11,13 +11,17 @@ import PhotoCrop
 
 class ViewController: UIViewController {
 
-    let photoCrop = PhotoCrop(configuration: PhotoCropConfiguration())
+    var photoCrop: PhotoCrop!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        let configuration = PhotoCropConfiguration()
+        configuration.cropWidth = 360
+        configuration.cropHeight = 360
         
+        photoCrop = PhotoCrop(configuration: configuration)
         
         photoCrop.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(photoCrop)

@@ -27,7 +27,11 @@ open class PhotoCropConfiguration {
     public var overlayAlphaNormal: CGFloat = 1
     public var overlayAlphaInteractive: CGFloat = 0.2
     
-    public var cropRatio: CGFloat = 1
+    // 裁剪宽度，单位是像素，必传
+    public var cropWidth: CGFloat = 0
+    
+    // 裁剪高度，单位是像素，必传
+    public var cropHeight: CGFloat = 0
 
     public init() {
         

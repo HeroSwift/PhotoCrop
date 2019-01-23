@@ -26,6 +26,8 @@ class FinderView: UIView {
     
     var normalizedCropArea = CropArea.zero
     
+    var cropRatio: CGFloat = 1
+
     var minWidth: CGFloat = 0
     var minHeight: CGFloat = 0
     
@@ -119,20 +121,20 @@ class FinderView: UIView {
             }
             
             var cropWidth = size.width - configuration.finderCornerButtonSize - 2 * configuration.finderCornerLineWidth
-            var cropHeight = cropWidth / configuration.cropRatio
+            var cropHeight = cropWidth / cropRatio
             
             if cropHeight > size.height {
                 cropHeight = size.height - configuration.finderCornerButtonSize - 2 * configuration.finderCornerLineWidth
-                cropWidth = cropHeight * configuration.cropRatio
+                cropWidth = cropHeight * cropRatio
             }
             
             if configuration.finderMaxWidth > 0 && cropWidth > configuration.finderMaxWidth {
                 cropWidth = configuration.finderMaxWidth
-                cropHeight = cropWidth / configuration.cropRatio
+                cropHeight = cropWidth / cropRatio
             }
             if configuration.finderMaxHeight > 0 && cropHeight > configuration.finderMaxHeight {
                 cropHeight = configuration.finderMaxHeight
-                cropWidth = cropHeight * configuration.cropRatio
+                cropWidth = cropHeight * cropRatio
             }
             
             let vertical = (size.height - cropHeight) / 2
@@ -181,19 +183,19 @@ class FinderView: UIView {
         switch button {
         case topLeftButton:
             left = min(right - minWidth, max(maxLeft, left + offsetX))
-            top = bottom - (right - left) / configuration.cropRatio
+            top = bottom - (right - left) / cropRatio
             break
         case topRightButton:
             right = min(maxRight, max(left + minWidth, right + offsetX))
-            top = bottom - (right - left) / configuration.cropRatio
+            top = bottom - (right - left) / cropRatio
             break
         case bottomRightButton:
             right = min(maxRight, max(left + minWidth, right + offsetX))
-            bottom = top + (right - left) / configuration.cropRatio
+            bottom = top + (right - left) / cropRatio
             break
         default:
             left = min(right - minWidth, max(maxLeft, left + offsetX))
-            bottom = top + (right - left) / configuration.cropRatio
+            bottom = top + (right - left) / cropRatio
             break
         }
         

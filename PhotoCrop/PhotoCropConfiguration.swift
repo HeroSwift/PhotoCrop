@@ -14,8 +14,8 @@ open class PhotoCropConfiguration {
     
     public var finderCornerButtonSize: CGFloat = 60
     
-    public var finderMinWidth: CGFloat = 60
-    public var finderMinHeight: CGFloat = 60
+    public var finderMinWidth: CGFloat = 50
+    public var finderMinHeight: CGFloat = 50
     
     public var finderMaxWidth: CGFloat = 0
     public var finderMaxHeight: CGFloat = 0

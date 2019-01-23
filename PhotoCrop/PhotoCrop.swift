@@ -295,7 +295,7 @@ public class PhotoCrop: UIView {
     public func save(image: UIImage) -> CropFile? {
         
         if let data = image.jpegData(compressionQuality: 1) as NSData? {
-            let path = getFilePath(dirname: NSTemporaryDirectory(), extname: ".jpg")
+            let path = Util.shared.getFilePath(dirname: NSTemporaryDirectory(), extname: ".jpg")
             if data.write(toFile: path, atomically: true) {
                 return CropFile(path: path, size: data.length, width: image.size.width * image.scale, height: image.size.height * image.scale)
             }
@@ -408,26 +408,6 @@ extension PhotoCrop {
             self.isAnimating = false
             completion?()
         })
-        
-    }
-    
-    private func getFilePath(dirname: String, extname: String) -> String {
-        
-        let fileManager = FileManager.default
-        if !fileManager.fileExists(atPath: dirname) {
-            try? fileManager.createDirectory(atPath: dirname, withIntermediateDirectories: true, attributes: nil)
-        }
-        
-        let format = DateFormatter()
-        format.dateFormat = "yyyy_MM_dd_HH_mm_ss"
-        
-        let filename = "\(format.string(from: Date()))\(extname)"
-        
-        if dirname.hasSuffix("/") {
-            return dirname + filename
-        }
-        
-        return "\(dirname)/\(filename)"
         
     }
     

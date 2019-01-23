@@ -22,6 +22,7 @@
 		9DFE534721F714BF00E27DD9 /* SimpleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE534521F714BF00E27DD9 /* SimpleButton.swift */; };
 		9DFE534C21F7254B00E27DD9 /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE534A21F7254B00E27DD9 /* PhotoView.swift */; };
 		9DFE535121F8BBE600E27DD9 /* CropFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE535021F8BBE600E27DD9 /* CropFile.swift */; };
+		9DFE535421F8BF4600E27DD9 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE535321F8BF4600E27DD9 /* Util.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 		9DFE534521F714BF00E27DD9 /* SimpleButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleButton.swift; sourceTree = "<group>"; };
 		9DFE534A21F7254B00E27DD9 /* PhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
 		9DFE535021F8BBE600E27DD9 /* CropFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropFile.swift; sourceTree = "<group>"; };
+		9DFE535321F8BF4600E27DD9 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,8 +98,9 @@
 			isa = PBXGroup;
 			children = (
 				9D7DBC0C214E52FD00F9923D /* Info.plist */,
-				9DFE534921F7254B00E27DD9 /* PhotoView */,
 				9DFE534421F714BF00E27DD9 /* SimpleButton */,
+				9DFE534921F7254B00E27DD9 /* PhotoView */,
+				9DFE535221F8BF1A00E27DD9 /* util */,
 				9DFE527821F025C900E27DD9 /* view */,
 				9DFE527721F025BC00E27DD9 /* model */,
 				9D7DBC472150A33300F9923D /* PhotoCrop.swift */,
@@ -153,6 +156,14 @@
 				9DFE534A21F7254B00E27DD9 /* PhotoView.swift */,
 			);
 			path = PhotoView;
+			sourceTree = "<group>";
+		};
+		9DFE535221F8BF1A00E27DD9 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				9DFE535321F8BF4600E27DD9 /* Util.swift */,
+			);
+			path = util;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -267,6 +278,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DFE535421F8BF4600E27DD9 /* Util.swift in Sources */,
 				9DFE527921F026A500E27DD9 /* OverlayView.swift in Sources */,
 				9DFE535121F8BBE600E27DD9 /* CropFile.swift in Sources */,
 				9DFE527A21F026A500E27DD9 /* ForegroundView.swift in Sources */,

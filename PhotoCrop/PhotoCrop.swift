@@ -215,40 +215,41 @@ public class PhotoCrop: UIView {
         transform = CGAffineTransform.identity
     }
     
-    public func crop() -> UIImage {
+    public func crop() -> UIImage? {
+
+        guard let image = photoView.imageView.image, isCropping else {
+            return nil
+        }
+
+        let imageSize = image.size
+        let cropRect = CGRect(
+            x: abs(foregroundView.relativeX) * imageSize.width,
+            y: abs(foregroundView.relativeY) * imageSize.height,
+            width: foregroundView.relativeWidth * imageSize.width,
+            height: foregroundView.relativeHeight * imageSize.height
+        )
         
-//        var transform: CGAffineTransform
-        
-//        switch photo.imageOrientation {
-//        case .left:
-//            transform = CGAffineTransform(rotationAngle: radians(90)).translatedBy(x: 0, y: -photo.size.height)
-//        case .right:
-//            transform = CGAffineTransform(rotationAngle: radians(-90)).translatedBy(x: -photo.size.width, y: 0)
-//        case .down:
-//            transform = CGAffineTransform(rotationAngle: radians(-180)).translatedBy(x: -photo.size.width, y: -photo.size.height)
-//        default:
-//            transform = CGAffineTransform.identity
-//        }
-        
-//        transform = transform.scaledBy(x: photo.scale, y: photo.scale)
-        
-        if let croped = image.cgImage?.cropping(to: CGRect(x: 0, y: 0, width: 100, height: 100)) {
+        if let croped = image.cgImage?.cropping(to: cropRect) {
             
-            let scale = image.scale
-            var cropedPhoto = UIImage(cgImage: croped, scale: scale, orientation: image.imageOrientation)
-            if cropedPhoto.imageOrientation == .up {
-                return cropedPhoto
+            // 只有 @2x 图片才是 2
+            // 但是 PhotoCrop 的场景没这样的，都是本地图片或网络图片
+            let scale: CGFloat = 1
+            
+            var cropedImage = UIImage(cgImage: croped, scale: scale, orientation: image.imageOrientation)
+            if cropedImage.imageOrientation == .up {
+                return cropedImage
             }
             
-            UIGraphicsBeginImageContextWithOptions(cropedPhoto.size, false, cropedPhoto.scale)
-            cropedPhoto.draw(in: CGRect(origin: .zero, size: cropedPhoto.size))
-            cropedPhoto = UIGraphicsGetImageFromCurrentImageContext() ?? cropedPhoto
+            UIGraphicsBeginImageContextWithOptions(cropedImage.size, false, scale)
+            cropedImage.draw(in: CGRect(origin: .zero, size: cropedImage.size))
+            cropedImage = UIGraphicsGetImageFromCurrentImageContext() ?? cropedImage
             UIGraphicsEndImageContext()
             
-            return cropedPhoto
+            return cropedImage
+            
         }
         
-        return image
+        return nil
         
     }
     

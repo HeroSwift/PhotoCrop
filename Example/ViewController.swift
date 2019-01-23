@@ -42,7 +42,9 @@ class ViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("rotate", for: .normal)
         button.onClick = {
-            self.photoCrop.rotate()
+            let image = self.photoCrop.crop()
+            self.photoCrop.image = image
+            self.photoCrop.isCropping = false
         }
         view.addSubview(button)
         

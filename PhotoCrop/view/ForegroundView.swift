@@ -29,8 +29,11 @@ class ForegroundView: UIView {
         
     }()
     
-    private var relativeX: CGFloat = 0
-    private var relativeY: CGFloat = 0
+    var relativeX: CGFloat = 0
+    var relativeY: CGFloat = 0
+    
+    var relativeWidth: CGFloat = 0
+    var relativeHeight: CGFloat = 0
     
     // 记录图片的当前位置
     func save() {
@@ -39,6 +42,9 @@ class ForegroundView: UIView {
         
         relativeX = imageFrame.origin.x / imageFrame.width
         relativeY = imageFrame.origin.y / imageFrame.height
+        
+        relativeWidth = frame.width / imageFrame.width
+        relativeHeight = frame.height / imageFrame.height
         
     }
     

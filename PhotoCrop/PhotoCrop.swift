@@ -3,13 +3,6 @@ import UIKit
 
 public class PhotoCrop: UIView {
     
-    public var image: UIImage! {
-        didSet {
-            photoView.imageView.image = image
-            foregroundView.imageView.image = image
-        }
-    }
-    
     // 图片容器，可缩放
     private lazy var photoView: PhotoView = {
        
@@ -20,12 +13,17 @@ public class PhotoCrop: UIView {
         
         view.onScaleChange = {
             self.updateFinderMinSize()
-            self.finderView.addInteractionTimer()
             self.foregroundView.updateImageSize()
+            if self.isCropping && !self.isAnimating {
+                self.finderView.addInteractionTimer()
+            }
+            
         }
         view.onOriginChange = {
-            self.finderView.addInteractionTimer()
             self.foregroundView.updateImageOrigin()
+            if self.isCropping && !self.isAnimating {
+                self.finderView.addInteractionTimer()
+            }
         }
         view.onReset = {
             self.foregroundView.updateImageSize()
@@ -107,6 +105,8 @@ public class PhotoCrop: UIView {
         }
     }
     
+    private var isAnimating = false
+    
     public var isCropping = false {
         didSet {
             
@@ -135,7 +135,7 @@ public class PhotoCrop: UIView {
                 // 停一下(为了触发动画)，调整成符合比例的裁剪框
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     
-                    UIView.animate(withDuration: 0.5, animations: {
+                    self.startAnimation(duration: 0.5, animations: {
                         let cropArea = self.finderView.normalizedCropArea
                         self.finderView.cropArea = cropArea
                         self.photoView.contentInset = cropArea.toEdgeInsets()
@@ -153,13 +153,13 @@ public class PhotoCrop: UIView {
                 photoView.contentInset = nil
                 
                 // 从选定的裁剪区域到图片区域的动画
-                UIView.animate(withDuration: 0.5, animations: {
+                startAnimation(duration: 0.5, animations: {
                     self.photoView.reset()
                     self.finderView.cropArea = self.getCropAreaByPhotoView()
                     self.overlayView.alpha = 0
                     self.finderView.alpha = 0
                     self.gridView.alpha = 0
-                }, completion: { success in
+                }, completion: {
                     self.overlayView.isHidden = true
                     self.finderView.isHidden = true
                     self.gridView.isHidden = true
@@ -191,6 +191,16 @@ public class PhotoCrop: UIView {
         overlayView.frame = bounds
         finderView.frame = bounds
 
+    }
+    
+    public func setImageUrl(_ url: String) {
+        configuration.loadImage(imageView: photoView.imageView, url: url)
+        configuration.loadImage(imageView: foregroundView.imageView, url: url)
+    }
+    
+    public func setImageBitmap(_ image: UIImage) {
+        photoView.imageView.image = image
+        foregroundView.imageView.image = image
     }
 
     public func rotate() {
@@ -301,13 +311,13 @@ extension PhotoCrop {
             return
         }
 
-        UIView.animate(withDuration: 0.3, animations: {
+        startAnimation(duration: 0.3, animations: {
             
             self.foregroundView.save()
             
             self.finderView.cropArea = cropArea
             self.photoView.scale *= scale
-
+            
             self.foregroundView.restore()
             
         })
@@ -320,6 +330,19 @@ extension PhotoCrop {
             self.overlayView.alpha = overlayAlpha
             self.gridView.alpha = gridAlpha
         }
+        
+    }
+    
+    private func startAnimation(duration: TimeInterval, animations: @escaping () -> Void, completion: (() -> Void)? = nil) {
+        
+        isAnimating = true
+        
+        UIView.animate(withDuration: duration, animations: {
+            animations()
+        }, completion: { success in
+            self.isAnimating = false
+            completion?()
+        })
         
     }
     

@@ -43,7 +43,7 @@ class ViewController: UIViewController {
         button.setTitle("rotate", for: .normal)
         button.onClick = {
             let image = self.photoCrop.crop()
-            self.photoCrop.image = image
+            self.photoCrop.setImageBitmap(image!)
             self.photoCrop.isCropping = false
         }
         view.addSubview(button)
@@ -83,7 +83,7 @@ class ViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        photoCrop.image = UIImage(named: "bg")
+        photoCrop.setImageBitmap(UIImage(named: "bg")!)
     }
 
     override func didReceiveMemoryWarning() {

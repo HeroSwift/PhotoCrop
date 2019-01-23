@@ -33,4 +33,8 @@ open class PhotoCropConfiguration {
         
     }
     
+    open func loadImage(imageView: UIImageView, url: String) {
+        
+    }
+    
 }

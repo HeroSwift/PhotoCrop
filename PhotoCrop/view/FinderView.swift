@@ -26,8 +26,8 @@ class FinderView: UIView {
     
     var normalizedCropArea = CropArea.zero
     
-    private var minWidth: CGFloat = 0
-    private var minHeight: CGFloat = 0
+    var minWidth: CGFloat = 0
+    var minHeight: CGFloat = 0
     
     private lazy var topBorder: UIView = {
         return createLine(color: configuration.finderBorderColor)
@@ -204,15 +204,6 @@ class FinderView: UIView {
         
         gestureRecognizer.setTranslation(.zero, in: self)
         
-    }
-    
-    func updateMinSize(scaleFactor: CGFloat, minWidth: CGFloat, minHeight: CGFloat) {
-
-        let rect = normalizedCropArea.toRect(width: bounds.width, height: bounds.height)
-
-        self.minWidth = max(rect.width / scaleFactor, minWidth)
-        self.minHeight = max(rect.height / scaleFactor, minHeight)
-
     }
     
     @objc private func resizeCropArea() {

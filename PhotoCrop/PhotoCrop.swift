@@ -281,11 +281,16 @@ public class PhotoCrop: UIView {
 extension PhotoCrop {
 
     private func updateFinderMinSize() {
-        finderView.updateMinSize(
-            scaleFactor: photoView.maxScale / photoView.scale,
-            minWidth: configuration.finderMinWidth,
-            minHeight: configuration.finderMinHeight
-        )
+        
+        let scaleFactor = photoView.maxScale / photoView.scale
+        let finderMinWidth = configuration.finderMinWidth
+        let finderMinHeight = configuration.finderMinHeight
+        
+        let rect = finderView.normalizedCropArea.toRect(width: bounds.width, height: bounds.height)
+        
+        finderView.minWidth = max(rect.width / scaleFactor, finderMinWidth)
+        finderView.minHeight = max(rect.height / scaleFactor, finderMinHeight)
+        
     }
     
     // CropArea 完全覆盖 PhotoView

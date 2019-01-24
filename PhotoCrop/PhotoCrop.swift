@@ -169,7 +169,6 @@ public class PhotoCrop: UIView {
                     self.finderView.cropArea = self.getCropAreaByPhotoView()
                     self.overlayView.alpha = 0
                     self.finderView.alpha = 0
-                    self.gridView.alpha = 0
                 }, completion: {
                     self.overlayView.isHidden = true
                     self.finderView.isHidden = true

@@ -35,20 +35,12 @@ public class Compressor {
             return source
         }
         
-        guard var image = UIImage(contentsOfFile: source.path) else {
-            return source
-        }
-        
         var width = source.width
         var height = source.height
 
         let ratio = height > 0 ? width / height : 1
         
-        // 是否需要缩放
-        var scaled = false
-        
         if width > maxWidth && height > maxHeight {
-            scaled = true
             // 看短边
             if width / maxWidth > height / maxHeight {
                 height = maxHeight
@@ -60,33 +52,22 @@ public class Compressor {
             }
         }
         else if width > maxWidth && height <= maxHeight {
-            scaled = true
             width = maxWidth
             height = width / ratio
         }
         else if width <= maxWidth && height > maxHeight {
-            scaled = true
             height = maxHeight
             width = height * ratio
         }
 
-        if scaled {
-            image = Util.shared.createNewImage(image: image, size: CGSize(width: width, height: height), scale: 1)
-            // 缩放之后看下体积有没控制住
-            if let file = Util.shared.createNewFile(image: image, quality: 1), file.size < maxSize {
-                return file
-            }
-        }
-        
-        // 没辙，听天由命吧
-        return Util.shared.createNewFile(image: image, quality: quality) ?? source
-        
+        return compress(source: source, width: width, height: height)
+
     }
     
     // 指定输出尺寸
     public func compress(source: CropFile, width: CGFloat, height: CGFloat) -> CropFile {
         
-        guard source.width != width || source.height != height else {
+        guard source.width != width || source.height != height || source.size > maxSize else {
             return source
         }
         

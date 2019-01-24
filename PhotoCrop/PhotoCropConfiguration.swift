@@ -14,8 +14,8 @@ open class PhotoCropConfiguration {
     
     public var finderCornerButtonSize: CGFloat = 60
     
-    public var finderMinWidth: CGFloat = 50
-    public var finderMinHeight: CGFloat = 50
+    public var finderMinWidth: CGFloat = 60
+    public var finderMinHeight: CGFloat = 60
     
     public var finderMaxWidth: CGFloat = 0
     public var finderMaxHeight: CGFloat = 0
@@ -27,10 +27,10 @@ open class PhotoCropConfiguration {
     public var overlayAlphaNormal: CGFloat = 1
     public var overlayAlphaInteractive: CGFloat = 0.2
     
-    // 裁剪宽度，单位是像素，必传
+    // 裁剪宽度
     public var cropWidth: CGFloat = 0
     
-    // 裁剪高度，单位是像素，必传
+    // 裁剪高度
     public var cropHeight: CGFloat = 0
 
     public init() {

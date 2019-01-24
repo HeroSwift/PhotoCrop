@@ -3,12 +3,6 @@ import UIKit
 
 public class Compressor {
     
-    static let shared = Compressor()
-    
-    private init() {
-        
-    }
-    
     private var maxWidth: CGFloat = 3000
     
     private var maxHeight: CGFloat = 3000
@@ -18,24 +12,20 @@ public class Compressor {
     
     private var quality: CGFloat = 0.5
     
-    public func setMaxWidth(_ width: CGFloat) -> Compressor {
-        maxWidth = width
-        return self
-    }
-    
-    public func setMaxHeight(_ height: CGFloat) -> Compressor {
-        maxHeight = height
-        return self
-    }
-    
-    public func setMaxSize(_ size: Int) -> Compressor {
-        maxSize = size
-        return self
-    }
-    
-    public func setQuality(_ quality: CGFloat) -> Compressor {
+    public init(maxWidth: CGFloat, maxHeight: CGFloat, maxSize: Int, quality: CGFloat) {
+        
+        self.maxWidth = maxWidth
+        self.maxHeight = maxHeight
+        self.maxSize = maxSize
         self.quality = quality
-        return self
+        
+    }
+    
+    public init(maxSize: Int, quality: CGFloat) {
+        
+        self.maxSize = maxSize
+        self.quality = quality
+        
     }
     
     // 尽可能的缩小文件大小

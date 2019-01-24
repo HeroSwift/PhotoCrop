@@ -299,9 +299,7 @@ public class PhotoCrop: UIView {
     // 如果无需高清，可压缩
     public func compress(source: CropFile, maxSize: Int, quality: CGFloat) -> CropFile {
         
-        return Compressor.shared
-            .setMaxSize(maxSize)
-            .setQuality(quality)
+        return Compressor(maxSize: maxSize, quality: quality)
             .compress(source: source, width: configuration.cropWidth, height: configuration.cropWidth)
         
     }

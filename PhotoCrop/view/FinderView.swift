@@ -245,7 +245,6 @@ class FinderView: UIView {
         guard let view = super.hitTest(point, with: event) else {
             return nil
         }
-        print(view)
         if topLeftButton === view
             || topRightButton === view
             || bottomLeftButton === view

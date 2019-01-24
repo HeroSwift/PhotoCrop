@@ -82,8 +82,8 @@ class ForegroundView: UIView {
     }
     
     // 无视各种交互
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return false
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        return nil
     }
     
 }

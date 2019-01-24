@@ -14,18 +14,12 @@ public class PhotoCrop: UIView {
         view.onScaleChange = {
             if self.finderView.alpha > 0 {
                 self.updateFinderMinSize()
-                if !self.isAnimating {
-                    self.finderView.addInteractionTimer()
-                }
             }
             if self.foregroundView.alpha > 0 {
                 self.foregroundView.updateImageSize()
             }
         }
         view.onOriginChange = {
-            if self.finderView.alpha > 0 && !self.isAnimating {
-                self.finderView.addInteractionTimer()
-            }
             if self.foregroundView.alpha > 0 {
                 self.foregroundView.updateImageOrigin()
             }
@@ -300,6 +294,16 @@ public class PhotoCrop: UIView {
         
         return Compressor(maxSize: maxSize, quality: quality)
             .compress(source: source, width: configuration.cropWidth, height: configuration.cropWidth)
+        
+    }
+    
+    public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+
+        if finderView.alpha > 0 && !isAnimating {
+            finderView.addInteractionTimer()
+        }
+        
+        return super.hitTest(point, with: event)
         
     }
     

@@ -32,12 +32,14 @@ open class PhotoCropConfiguration {
     
     // 裁剪高度
     public var cropHeight: CGFloat = 0
+    
+    // 裁剪后图片的最大尺寸
+    public var maxSize = 200 * 1024
+    
+    // 裁剪后图片如果大于 maxSize，压缩图片的质量
+    public var quality: CGFloat = 0.5
 
     public init() {
-        
-    }
-    
-    open func loadImage(imageView: UIImageView, url: String) {
         
     }
     

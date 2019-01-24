@@ -14,8 +14,18 @@ class ViewController: UIViewController {
     @IBAction func onClick(_ sender: Any) {
         
         let controller = PhotoCropViewController()
+        let configuration = PhotoCropConfiguration()
+        configuration.cropWidth = 200
+        configuration.cropHeight = 200
+        
         controller.delegate = self
-        controller.show(image: UIImage(named: "bg")!, width: 200, height: 200, maxSize: 200 * 1024, quality: 0.5)
+        controller.configuration = configuration
+        
+        controller.loadImage = { url, callback in
+            callback(UIImage(named: "bg"))
+        }
+        
+        controller.show(url: "123123")
         
     }
     
@@ -45,9 +55,9 @@ extension ViewController: PhotoCropDelegate {
         photoCrop.dismiss(animated: true, completion: nil)
     }
     
-    func photoCropDidSubmit(_ photoCrop: PhotoCropViewController, result: CropFile) {
+    func photoCropDidSubmit(_ photoCrop: PhotoCropViewController, cropFile: CropFile) {
         photoCrop.dismiss(animated: true, completion: nil)
-        print(result)
+        print(cropFile)
     }
     
 }

@@ -3,6 +3,16 @@ import UIKit
 
 public class PhotoCrop: UIView {
     
+    public var image: UIImage? {
+        didSet {
+            if image == oldValue {
+                return
+            }
+            photoView.imageView.image = image
+            foregroundView.imageView.image = image
+        }
+    }
+    
     // 图片容器，可缩放
     private lazy var photoView: PhotoView = {
        
@@ -196,16 +206,6 @@ public class PhotoCrop: UIView {
         finderView.frame = bounds
 
     }
-    
-    public func setImageUrl(_ url: String) {
-        configuration.loadImage(imageView: photoView.imageView, url: url)
-        configuration.loadImage(imageView: foregroundView.imageView, url: url)
-    }
-    
-    public func setImageBitmap(_ image: UIImage) {
-        photoView.imageView.image = image
-        foregroundView.imageView.image = image
-    }
 
     public func rotate() {
         
@@ -290,9 +290,9 @@ public class PhotoCrop: UIView {
     }
     
     // 如果无需高清，可压缩
-    public func compress(source: CropFile, maxSize: Int, quality: CGFloat) -> CropFile {
+    public func compress(source: CropFile) -> CropFile {
         
-        return Compressor(maxSize: maxSize, quality: quality)
+        return Compressor(maxSize: configuration.maxSize, quality: configuration.quality)
             .compress(source: source, width: configuration.cropWidth, height: configuration.cropWidth)
         
     }

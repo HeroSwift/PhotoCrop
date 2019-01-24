@@ -189,8 +189,8 @@ public class PhotoCrop: UIView {
         self.configuration = configuration
         addSubview(photoView)
         addSubview(overlayView)
-        addSubview(finderView)
         addSubview(foregroundView)
+        addSubview(finderView)
         addSubview(gridView)
     }
 

@@ -32,19 +32,19 @@ class FinderView: UIView {
     var minHeight: CGFloat = 0
     
     private lazy var topBorder: UIView = {
-        return createLine(color: configuration.finderBorderColor)
+        return createBorder()
     }()
     
     private lazy var rightBorder: UIView = {
-        return createLine(color: configuration.finderBorderColor)
+        return createBorder()
     }()
     
     private lazy var bottomBorder: UIView = {
-        return createLine(color: configuration.finderBorderColor)
+        return createBorder()
     }()
     
     private lazy var leftBorder: UIView = {
-        return createLine(color: configuration.finderBorderColor)
+        return createBorder()
     }()
     
     private lazy var topLeftButton: UIView = {
@@ -245,6 +245,7 @@ class FinderView: UIView {
         guard let view = super.hitTest(point, with: event) else {
             return nil
         }
+        print(view)
         if topLeftButton === view
             || topRightButton === view
             || bottomLeftButton === view
@@ -263,6 +264,15 @@ extension FinderView {
         let line = UIView()
         line.backgroundColor = color
         addSubview(line)
+        return line
+    }
+    
+    private func createBorder() -> UIView {
+        let line = createLine(color: configuration.finderBorderColor)
+        line.layer.shadowColor = UIColor.black.cgColor
+        line.layer.shadowOpacity = 0.3
+        line.layer.shadowOffset = CGSize(width: 0, height: 0)
+        line.layer.shadowRadius = 3
         return line
     }
     
@@ -303,21 +313,21 @@ extension FinderView {
         bottomBorder.frame = CGRect(x: left, y: bottom, width: right - left, height: finderBorderWidth)
         leftBorder.frame = CGRect(x: left - finderBorderWidth, y: top, width: finderBorderWidth, height: bottom - top)
 
-        topLeftButton.frame.origin = CGPoint(x: left - finderCornerLineWidth - halfButtonSize, y: top - finderCornerLineWidth - halfButtonSize)
         topLeftHorizontalLine.frame.origin = CGPoint(x: left - finderCornerLineWidth, y: top - finderCornerLineWidth)
         topLeftVerticalLine.frame.origin = CGPoint(x: left - finderCornerLineWidth, y: top - finderCornerLineWidth)
-        
-        topRightButton.frame.origin = CGPoint(x: right + finderCornerLineWidth - halfButtonSize, y: top - finderCornerLineWidth - halfButtonSize)
+        topLeftButton.frame.origin = CGPoint(x: left - finderCornerLineWidth - halfButtonSize, y: top - finderCornerLineWidth - halfButtonSize)
+
         topRightHorizontalLine.frame.origin = CGPoint(x: right + finderCornerLineWidth - finderCornerLineSize, y: top - finderCornerLineWidth)
         topRightVerticalLine.frame.origin = CGPoint(x: right, y: top - finderCornerLineWidth)
-        
-        bottomRightButton.frame.origin = CGPoint(x: right + finderCornerLineWidth - halfButtonSize, y: bottom + finderCornerLineWidth - halfButtonSize)
+        topRightButton.frame.origin = CGPoint(x: right + finderCornerLineWidth - halfButtonSize, y: top - finderCornerLineWidth - halfButtonSize)
+
         bottomRightHorizontalLine.frame.origin = CGPoint(x: right + finderCornerLineWidth - finderCornerLineSize, y: bottom)
         bottomRightVerticalLine.frame.origin = CGPoint(x: right, y: bottom + finderCornerLineWidth - finderCornerLineSize)
-        
-        bottomLeftButton.frame.origin = CGPoint(x: left - finderCornerLineWidth - halfButtonSize, y: bottom + finderCornerLineWidth - halfButtonSize)
+        bottomRightButton.frame.origin = CGPoint(x: right + finderCornerLineWidth - halfButtonSize, y: bottom + finderCornerLineWidth - halfButtonSize)
+
         bottomLeftHorizontalLine.frame.origin = CGPoint(x: left - finderCornerLineWidth, y: bottom)
         bottomLeftVerticalLine.frame.origin = CGPoint(x: left - finderCornerLineWidth, y: bottom + finderCornerLineWidth - finderCornerLineSize)
+        bottomLeftButton.frame.origin = CGPoint(x: left - finderCornerLineWidth - halfButtonSize, y: bottom + finderCornerLineWidth - halfButtonSize)
         
     }
     

@@ -40,6 +40,9 @@ class ViewController: UIViewController {
             self.photoCrop.setImageBitmap(image)
             
             print("\(file.path) \(file.size) \(file.width) \(file.height)")
+            
+            let result = self.photoCrop.compress(source: file, maxSize: 200 * 1024, quality: 0.5)
+            print("\(result.path) \(result.size) \(result.width) \(result.height)")
         }
         view.addSubview(button)
         

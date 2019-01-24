@@ -8,7 +8,7 @@ public class CropFile {
     public let width: CGFloat
     public let height: CGFloat
     
-    init(path: String, size: Int, width: CGFloat, height: CGFloat) {
+    public init(path: String, size: Int, width: CGFloat, height: CGFloat) {
         self.path = path
         self.size = size
         self.width = width

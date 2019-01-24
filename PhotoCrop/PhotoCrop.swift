@@ -276,15 +276,12 @@ public class PhotoCrop: UIView {
             if scale < 1 {
                 scale = 1
             }
-            
-            var image = UIImage(cgImage: croped, scale: scale, orientation: source.imageOrientation)
 
-            UIGraphicsBeginImageContextWithOptions(size, false, scale)
-            image.draw(in: CGRect(origin: .zero, size: size))
-            image = UIGraphicsGetImageFromCurrentImageContext() ?? image
-            UIGraphicsEndImageContext()
-
-            return image
+            return Util.shared.createNewImage(
+                image: UIImage(cgImage: croped, scale: scale, orientation: source.imageOrientation),
+                size: size,
+                scale: scale
+            )
             
         }
         
@@ -292,16 +289,20 @@ public class PhotoCrop: UIView {
         
     }
     
+    // 裁剪出来的是最高清的图，这里保存的也是高清图
     public func save(image: UIImage) -> CropFile? {
         
-        if let data = image.jpegData(compressionQuality: 1) as NSData? {
-            let path = Util.shared.getFilePath(dirname: NSTemporaryDirectory(), extname: ".jpg")
-            if data.write(toFile: path, atomically: true) {
-                return CropFile(path: path, size: data.length, width: image.size.width * image.scale, height: image.size.height * image.scale)
-            }
-        }
+        return Util.shared.createNewFile(image: image, quality: 1)
         
-        return nil
+    }
+    
+    // 如果无需高清，可压缩
+    public func compress(source: CropFile, maxSize: Int, quality: CGFloat) -> CropFile {
+        
+        return Compressor.shared
+            .setMaxSize(maxSize)
+            .setQuality(quality)
+            .compress(source: source, width: configuration.cropWidth, height: configuration.cropWidth)
         
     }
     

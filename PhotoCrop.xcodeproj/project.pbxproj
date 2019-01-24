@@ -23,6 +23,7 @@
 		9DFE534C21F7254B00E27DD9 /* PhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE534A21F7254B00E27DD9 /* PhotoView.swift */; };
 		9DFE535121F8BBE600E27DD9 /* CropFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE535021F8BBE600E27DD9 /* CropFile.swift */; };
 		9DFE535421F8BF4600E27DD9 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE535321F8BF4600E27DD9 /* Util.swift */; };
+		9DFE535621F94B1200E27DD9 /* Compressor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DFE535521F94B1200E27DD9 /* Compressor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		9DFE534A21F7254B00E27DD9 /* PhotoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoView.swift; sourceTree = "<group>"; };
 		9DFE535021F8BBE600E27DD9 /* CropFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CropFile.swift; sourceTree = "<group>"; };
 		9DFE535321F8BF4600E27DD9 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		9DFE535521F94B1200E27DD9 /* Compressor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compressor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				9DFE535321F8BF4600E27DD9 /* Util.swift */,
+				9DFE535521F94B1200E27DD9 /* Compressor.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 				9DFE527921F026A500E27DD9 /* OverlayView.swift in Sources */,
 				9DFE535121F8BBE600E27DD9 /* CropFile.swift in Sources */,
 				9DFE527A21F026A500E27DD9 /* ForegroundView.swift in Sources */,
+				9DFE535621F94B1200E27DD9 /* Compressor.swift in Sources */,
 				9DFE527B21F026A500E27DD9 /* FinderView.swift in Sources */,
 				9DFE534C21F7254B00E27DD9 /* PhotoView.swift in Sources */,
 				9DFE527C21F026A500E27DD9 /* GridView.swift in Sources */,

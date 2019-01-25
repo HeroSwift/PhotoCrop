@@ -1,7 +1,7 @@
 
 import UIKit
 
-public class Compressor {
+@objc public class Compressor: NSObject {
     
     private var maxWidth: CGFloat = 3000
     
@@ -12,7 +12,7 @@ public class Compressor {
     
     private var quality: CGFloat = 0.5
     
-    public init(maxWidth: CGFloat, maxHeight: CGFloat, maxSize: Int, quality: CGFloat) {
+    @objc public init(maxWidth: CGFloat, maxHeight: CGFloat, maxSize: Int, quality: CGFloat) {
         
         self.maxWidth = maxWidth
         self.maxHeight = maxHeight
@@ -21,7 +21,7 @@ public class Compressor {
         
     }
     
-    public init(maxSize: Int, quality: CGFloat) {
+    @objc public init(maxSize: Int, quality: CGFloat) {
         
         self.maxSize = maxSize
         self.quality = quality
@@ -29,7 +29,7 @@ public class Compressor {
     }
     
     // 尽可能的缩小文件大小
-    public func compress(source: CropFile) -> CropFile {
+    @objc public func compress(source: CropFile) -> CropFile {
         
         if source.size < maxSize {
             return source
@@ -65,7 +65,7 @@ public class Compressor {
     }
     
     // 指定输出尺寸
-    public func compress(source: CropFile, width: CGFloat, height: CGFloat) -> CropFile {
+    @objc public func compress(source: CropFile, width: CGFloat, height: CGFloat) -> CropFile {
         
         guard source.width != width || source.height != height || source.size > maxSize else {
             return source

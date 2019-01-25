@@ -1,14 +1,14 @@
 
 import UIKit
 
-public class CropFile {
+@objc public class CropFile: NSObject {
     
-    public let path: String
-    public let size: Int
-    public let width: CGFloat
-    public let height: CGFloat
+    @objc public let path: String
+    @objc public let size: Int
+    @objc public let width: CGFloat
+    @objc public let height: CGFloat
     
-    public init(path: String, size: Int, width: CGFloat, height: CGFloat) {
+    @objc public init(path: String, size: Int, width: CGFloat, height: CGFloat) {
         self.path = path
         self.size = size
         self.width = width

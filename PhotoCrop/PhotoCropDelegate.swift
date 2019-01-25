@@ -1,7 +1,7 @@
 
 import UIKit
 
-public protocol PhotoCropDelegate {
+@objc public protocol PhotoCropDelegate {
     
     // 点击取消按钮
     func photoCropDidCancel(_ photoCrop: PhotoCropViewController)

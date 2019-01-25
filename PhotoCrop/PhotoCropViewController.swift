@@ -3,12 +3,15 @@ import UIKit
 
 public class PhotoCropViewController: UIViewController {
     
-    public var delegate: PhotoCropDelegate!
-    public var configuration: PhotoCropConfiguration!
+    @objc public static var loadImage: ((String, @escaping (UIImage?) -> Void) -> Void)!
     
-    public var loadImage: ((String, (UIImage?) -> Void) -> Void)!
-    
+    @objc public var delegate: PhotoCropDelegate!
+    @objc public var configuration: PhotoCropConfiguration!
+
     private var photoCrop: PhotoCrop!
+    private var cancelButton: SimpleButton!
+    private var resetButton: SimpleButton!
+    private var submitButton: SimpleButton!
     
     private var url: String!
 
@@ -18,13 +21,16 @@ public class PhotoCropViewController: UIViewController {
         return true
     }
 
-    public func show(url: String) {
+    @objc public func show(url: String) {
         
         self.url = url
         
         self.modalPresentationStyle = .custom
         self.modalTransitionStyle = .crossDissolve
-        UIApplication.shared.keyWindow?.rootViewController?.present(self, animated: true, completion: nil)
+        
+        DispatchQueue.main.async {
+            UIApplication.shared.keyWindow?.rootViewController?.present(self, animated: true, completion: nil)
+        }
         
     }
     
@@ -55,7 +61,7 @@ public class PhotoCropViewController: UIViewController {
         let buttonWidth: CGFloat = 50
         let buttonHeight: CGFloat = 50
         
-        let cancelButton = SimpleButton()
+        cancelButton = SimpleButton()
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.setTitle("取消", for: .normal)
         cancelButton.setTitleColor(buttonTextColor, for: .normal)
@@ -64,7 +70,7 @@ public class PhotoCropViewController: UIViewController {
             self.delegate.photoCropDidCancel(self)
         }
 
-        let resetButton = SimpleButton()
+        resetButton = SimpleButton()
         resetButton.isHidden = true
         resetButton.translatesAutoresizingMaskIntoConstraints = false
         resetButton.setTitle("重置", for: .normal)
@@ -74,13 +80,13 @@ public class PhotoCropViewController: UIViewController {
             self.photoCrop.reset()
         }
         
-        let cropButton = SimpleButton()
-        cropButton.isHidden = true
-        cropButton.translatesAutoresizingMaskIntoConstraints = false
-        cropButton.setTitle("确定", for: .normal)
-        cropButton.setTitleColor(buttonTextColor, for: .normal)
-        cropButton.titleLabel?.font = buttonTextFont
-        cropButton.onClick = {
+        submitButton = SimpleButton()
+        submitButton.isHidden = true
+        submitButton.translatesAutoresizingMaskIntoConstraints = false
+        submitButton.setTitle("确定", for: .normal)
+        submitButton.setTitleColor(buttonTextColor, for: .normal)
+        submitButton.titleLabel?.font = buttonTextFont
+        submitButton.onClick = {
             guard let image = self.photoCrop.crop() else {
                 return
             }
@@ -97,7 +103,7 @@ public class PhotoCropViewController: UIViewController {
         
         bottomBar.addSubview(cancelButton)
         bottomBar.addSubview(resetButton)
-        bottomBar.addSubview(cropButton)
+        bottomBar.addSubview(submitButton)
         
         view.addSubview(bottomBar)
         
@@ -115,29 +121,28 @@ public class PhotoCropViewController: UIViewController {
             NSLayoutConstraint(item: cancelButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: buttonWidth),
             NSLayoutConstraint(item: cancelButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: buttonHeight),
             
-            NSLayoutConstraint(item: resetButton, attribute: .centerY, relatedBy: .equal, toItem: cropButton, attribute: .centerY, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: resetButton, attribute: .centerY, relatedBy: .equal, toItem: cancelButton, attribute: .centerY, multiplier: 1, constant: 0),
             NSLayoutConstraint(item: resetButton, attribute: .centerX, relatedBy: .equal, toItem: bottomBar, attribute: .centerX, multiplier: 1, constant: 0),
             NSLayoutConstraint(item: resetButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: buttonWidth),
             NSLayoutConstraint(item: resetButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: buttonHeight),
             
-            NSLayoutConstraint(item: cropButton, attribute: .centerY, relatedBy: .equal, toItem: cropButton, attribute: .centerY, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: cropButton, attribute: .right, relatedBy: .equal, toItem: bottomBar, attribute: .right, multiplier: 1, constant: -20),
-            NSLayoutConstraint(item: cropButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: buttonWidth),
-            NSLayoutConstraint(item: cropButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: buttonHeight),
+            NSLayoutConstraint(item: submitButton, attribute: .centerY, relatedBy: .equal, toItem: cancelButton, attribute: .centerY, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: submitButton, attribute: .right, relatedBy: .equal, toItem: bottomBar, attribute: .right, multiplier: 1, constant: -20),
+            NSLayoutConstraint(item: submitButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: buttonWidth),
+            NSLayoutConstraint(item: submitButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: buttonHeight),
 
         ])
-        
-        loadImage(url) { image in
+
+        PhotoCropViewController.loadImage(url) { [weak self] image in
             
-            guard let image = image else {
+            guard let _self = self, let image = image else {
                 return
             }
-            self.photoCrop.image = image
             
-            resetButton.isHidden = false
-            cropButton.isHidden = false
-            
-            Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(startCropping), userInfo: nil, repeats: false)
+            DispatchQueue.main.async {
+                _self.photoCrop.image = image
+                Timer.scheduledTimer(timeInterval: 0.5, target: _self, selector: #selector(_self.startCropping), userInfo: nil, repeats: false)
+            }
             
         }
         
@@ -145,6 +150,8 @@ public class PhotoCropViewController: UIViewController {
     
     @objc private func startCropping() {
         photoCrop.isCropping = true
+        resetButton.isHidden = false
+        submitButton.isHidden = false
     }
     
     public override func viewDidLayoutSubviews() {

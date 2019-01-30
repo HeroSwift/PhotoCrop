@@ -39,8 +39,9 @@ import UIKit
             return source
         }
         
-        if let temp = Util.shared.createNewFile(image: image, quality: quality), temp.size < maxSize {
-            return temp
+        let lowQuality = Util.shared.createNewFile(image: image, quality: quality) ?? source
+        if lowQuality.size < maxSize {
+            return lowQuality
         }
         
         var width = source.width
@@ -68,7 +69,11 @@ import UIKit
             width = height * ratio
         }
         
-        return compress(image: image, source: source, width: width, height: height)
+        if width != source.width || height != source.height {
+            return compress(image: image, source: source, width: width, height: height)
+        }
+        
+        return lowQuality
 
     }
     

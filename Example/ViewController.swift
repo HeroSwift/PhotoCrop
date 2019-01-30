@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         controller.delegate = self
         controller.configuration = configuration
         
-        controller.loadImage = { url, callback in
+        PhotoCropViewController.loadImage = { url, callback in
             callback(UIImage(named: "bg"))
         }
         

@@ -17,6 +17,7 @@ class ViewController: UIViewController {
         let configuration = PhotoCropConfiguration()
         configuration.cropWidth = 200
         configuration.cropHeight = 200
+        configuration.submitButtonTitle = "123123123123123123"
         
         controller.delegate = self
         controller.configuration = configuration

@@ -61,6 +61,8 @@ public class PhotoCropViewController: UIViewController {
         
         cancelButton = SimpleButton()
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.contentEdgeInsets.left = 6
+        cancelButton.contentEdgeInsets.right = 6
         cancelButton.setTitle(configuration.cancelButtonTitle, for: .normal)
         cancelButton.setTitleColor(configuration.buttonTextColor, for: .normal)
         cancelButton.titleLabel?.font = configuration.buttonTextFont
@@ -72,6 +74,8 @@ public class PhotoCropViewController: UIViewController {
         resetButton = SimpleButton()
         resetButton.isHidden = true
         resetButton.translatesAutoresizingMaskIntoConstraints = false
+        resetButton.contentEdgeInsets.left = 6
+        resetButton.contentEdgeInsets.right = 6
         resetButton.setTitle(configuration.resetButtonTitle, for: .normal)
         resetButton.setTitleColor(configuration.buttonTextColor, for: .normal)
         resetButton.titleLabel?.font = configuration.buttonTextFont
@@ -83,6 +87,8 @@ public class PhotoCropViewController: UIViewController {
         submitButton = SimpleButton()
         submitButton.isHidden = true
         submitButton.translatesAutoresizingMaskIntoConstraints = false
+        submitButton.contentEdgeInsets.left = 6
+        submitButton.contentEdgeInsets.right = 6
         submitButton.setTitle(configuration.submitButtonTitle, for: .normal)
         submitButton.setTitleColor(configuration.buttonTextColor, for: .normal)
         submitButton.titleLabel?.font = configuration.buttonTextFont
@@ -128,17 +134,14 @@ public class PhotoCropViewController: UIViewController {
 
             NSLayoutConstraint(item: cancelButton, attribute: .top, relatedBy: .equal, toItem: separatorView, attribute: .bottom, multiplier: 1, constant: configuration.separatorLineSpacingBottom),
             NSLayoutConstraint(item: cancelButton, attribute: .left, relatedBy: .equal, toItem: view, attribute: .left, multiplier: 1, constant: configuration.cancelButtonMarginLeft),
-            NSLayoutConstraint(item: cancelButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: configuration.buttonWidth),
             NSLayoutConstraint(item: cancelButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: configuration.buttonHeight),
             
             NSLayoutConstraint(item: resetButton, attribute: .top, relatedBy: .equal, toItem: separatorView, attribute: .bottom, multiplier: 1, constant: configuration.separatorLineSpacingBottom),
             NSLayoutConstraint(item: resetButton, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: resetButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: configuration.buttonWidth),
             NSLayoutConstraint(item: resetButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: configuration.buttonHeight),
             
             NSLayoutConstraint(item: submitButton, attribute: .top, relatedBy: .equal, toItem: separatorView, attribute: .bottom, multiplier: 1, constant: configuration.separatorLineSpacingBottom),
             NSLayoutConstraint(item: submitButton, attribute: .right, relatedBy: .equal, toItem: view, attribute: .right, multiplier: 1, constant: -configuration.submitButtonMarginRight),
-            NSLayoutConstraint(item: submitButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: configuration.buttonWidth),
             NSLayoutConstraint(item: submitButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: configuration.buttonHeight),
 
             NSLayoutConstraint(item: rotateButton, attribute: .bottom, relatedBy: .equal, toItem: separatorView, attribute: .top, multiplier: 1, constant: -configuration.separatorLineSpacingTop),
